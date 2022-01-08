@@ -1,0 +1,704 @@
+<html>
+  <head>
+    <title>web-swedish-reader</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="canonical"
+      href="https://arthow4n.github.io/web-swedish-reader/"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://unpkg.com/normalize.css@8.0.1/normalize.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://unpkg.com/sakura.css@1.3.1/css/sakura.css"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: ui-sans-serif;
+        font-size: 16px;
+        background: beige;
+
+        max-width: 100%;
+        height: 100vh;
+        padding: 0;
+      }
+
+      input[type="checkbox"],
+      form,
+      label {
+        margin: 0;
+      }
+
+      iframe {
+        border: 0;
+      }
+
+      .flex {
+        display: flex;
+      }
+
+      .dic-iframe[src] + p {
+        display: none;
+      }
+
+      .dic-iframe:not([src]) + p {
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        font-size: 24px;
+      }
+
+      article[contenteditable]:empty::before {
+        content: "1. Paste or write something here.\00000a2. Click finish edit.\00000a3. Click on a word and the dictionary will show up.";
+        opacity: 0.8;
+      }
+
+      article[contenteditable] * {
+        outline: 0;
+      }
+
+      @media (max-width: 767px) {
+        input {
+          font-size: 20px;
+        }
+      }
+
+      .reader {
+        display: grid;
+        height: 100vh;
+      }
+
+      @media (max-width: 767px) {
+        .reader {
+          grid: 50% 50% / 100%;
+          gap: 8px;
+          padding: 16px;
+          margin: 0;
+        }
+
+        .is-query-expanded .reader {
+          grid: 64px 100% / 100%;
+        }
+      }
+
+      @media (min-width: 768px) {
+        .reader {
+          grid: 100% / 1fr 33%;
+          gap: 16px;
+          padding: 8px 32px;
+          max-width: 1280px;
+          margin: auto;
+        }
+
+        .is-query-expanded .reader {
+          grid: 100% / 10% 1fr;
+        }
+      }
+
+      .form-dics-query {
+        display: grid;
+        grid: auto / 1fr auto;
+      }
+
+      .leading-controls {
+        display: grid;
+        grid: auto / 1fr auto;
+        margin: 0 0 32px;
+      }
+
+      main {
+        overflow-y: scroll;
+        overflow-x: hidden;
+        padding: 0 4px 0 0;
+      }
+
+      article {
+        padding: 8px;
+        min-height: calc(100% - 72px);
+      }
+
+      .ending-controls {
+        padding: 8px 0;
+      }
+
+      .dics {
+        display: flex;
+        flex-direction: column;
+
+        border: 1px black solid;
+      }
+
+      .dics > *:not(:last-child) {
+        border-bottom: 1px black solid;
+      }
+
+      .aside-row {
+        margin: 0;
+        padding: 4px 8px;
+      }
+
+      .query-alternatives {
+        white-space: nowrap;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        padding-right: 0;
+      }
+
+      .query-alternatives:empty::before {
+        content: "\200b";
+      }
+
+      body:not(.is-edit-mode) .edit-mode-only {
+        display: none;
+      }
+
+      .is-edit-mode .edit-mode-hidden {
+        display: none;
+      }
+
+      .is-query-expanded .query-expanded-hidden {
+        display: none;
+      }
+
+      .control-label {
+        display: grid;
+        grid: auto / auto 1fr;
+        gap: 8px;
+        place-items: center start;
+
+        padding: 4px 8px;
+      }
+
+      .control-label-text {
+        white-space: nowrap;
+      }
+
+      .dics-query-input {
+        width: 100%;
+        padding: 0 8px;
+      }
+
+      .dic {
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .dic-iframe {
+        width: 100%;
+        height: 100%;
+      }
+
+      .dic-saol {
+        /* Magic value for skipping the website header */
+        /* 270 is better than 285 when there are multiple entries */
+        margin-top: -270px;
+        height: calc(100% + 270px);
+      }
+
+      @media (min-width: 768px) {
+        .is-query-expanded .dic-saol {
+          margin-top: -495px;
+          height: calc(100% + 495px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reader">
+      <main>
+        <div class="leading-controls">
+          <span>
+            <button class="control-clear edit-mode-hidden">Clear</button>
+            <button class="control-edit edit-mode-hidden">Edit</button>
+            <button class="control-enhance edit-mode-hidden">Enhance</button>
+            <button class="control-finish-edit edit-mode-only">
+              Finish edit
+            </button>
+            <button class="control-import edit-mode-only">Import</button></span
+          >
+          <span>
+            <a href="bookmarklets.html" target="_blank">Bookmarklets</a> |
+            <a
+              href="https://github.com/arthow4n/web-swedish-reader"
+              target="_blank"
+              rel="noopener noreferrer"
+              >GitHub</a
+            >
+          </span>
+        </div>
+        <article></article>
+        <div class="ending-controls edit-mode-hidden">
+          <button class="control-clear">Clear</button>
+          <button class="control-import">Import</button>
+        </div>
+      </main>
+      <aside class="dics">
+        <div class="aside-row edit-mode-only query-expanded-hidden">
+          <button class="control-finish-edit">Finish edit</button>
+          <button class="control-import">Import</button>
+        </div>
+        <p class="aside-row query-alternatives"></p>
+        <form class="form-dics-query">
+          <div class="flex">
+            <input class="dics-query-input" /><button
+              type="button"
+              class="control-search-google"
+            >
+              Goo</button
+            ><button type="button" class="control-search-slangopedia">
+              Sla</button
+            ><button type="button" class="control-search-wiktionary">Wik</button
+            ><button type="button" class="control-search-tyda">Tyd</button>
+          </div>
+          <label class="control-label label-dics-expand"
+            ><span class="control-label-text">+ </span
+            ><span><input type="checkbox" /></span
+          ></label>
+        </form>
+        <div class="dic">
+          <iframe
+            class="dic-iframe dic-folkets"
+            referrerpolicy="no-referrer"
+          ></iframe>
+          <p>Folkets lexikon</p>
+        </div>
+        <div class="dic">
+          <iframe
+            class="dic-iframe dic-saol"
+            referrerpolicy="no-referrer"
+          ></iframe>
+          <p>SAOL/SO/SAOB</p>
+        </div>
+      </aside>
+    </div>
+    <script type="module">
+      const queryInput = document.querySelector(".dics-query-input");
+      const expandCheckbox = document.querySelector(".label-dics-expand input");
+      const clearAndEditButtons = document.querySelectorAll(".control-clear");
+      const editButton = document.querySelector(".control-edit");
+      const enhanceButton = document.querySelector(".control-enhance");
+      const importButtons = document.querySelectorAll(".control-import");
+      const finishEditButtons = document.querySelectorAll(
+        ".control-finish-edit"
+      );
+      const main = document.querySelector("main");
+      const article = document.querySelector("article");
+      const queryAlternatives = document.querySelector(".query-alternatives");
+      const folkets = document.querySelector(".dic-folkets");
+      const saol = document.querySelector(".dic-saol");
+      const searchGoogleButton = document.querySelector(
+        ".control-search-google"
+      );
+      const searchSlangopediaButton = document.querySelector(
+        ".control-search-slangopedia"
+      );
+      const searchWiktionaryButton = document.querySelector(
+        ".control-search-wiktionary"
+      );
+      const searchTydaButton = document.querySelector(".control-search-tyda");
+
+      const getDictionary = async () => {
+        const { setMany, set, get, clear, createStore } = await import(
+          "https://cdn.jsdelivr.net/npm/idb-keyval@6/+esm"
+        );
+        const dictionaryEntriesJsonHashKey = "_dictionaryEntriesJsonHash";
+        const dictionaryStore = createStore("wsr-dictionary", "wsr-dictionary");
+        const versionStore = createStore(
+          "wsr-dictionary-versions",
+          "wsr-dictionary-versions"
+        );
+
+        const installDictionary = async () => {
+          if (
+            !window.confirm(
+              `Enhance the dictionary by installing the compound analyzer!
+
+It's not very accurate but often helpful. After the installation, when you click on a word you'll get more insights on the structure of the word. For example when clicking on "partiledare" you'll see "parti+ledare" above the dictionary query zone, besides you can click on "parti" and "ledare" to perform further query.
+
+During the install/update you can always close the browser and click this button to resume progress.
+
+Do you want to proceed to install/update? (~50 MB download upon fresh install, ~125 MB after installed).
+`
+            )
+          ) {
+            return;
+          }
+          enhanceButton.disabled = true;
+
+          const dir = `${location.origin}/web-swedish-reader-data/dictionary`;
+
+          try {
+            queryAlternatives.innerHTML = `Checking updates...`;
+            const { getInfo } = await import(`${dir}/dictionary.meta.mjs`);
+            const { chunks, totalEntriesCount } = getInfo();
+            let installedEntriesCount = 0;
+
+            const renderProgress = () => {
+              queryAlternatives.innerHTML = `Upgrading dictionary... (${installedEntriesCount}/${totalEntriesCount})`;
+            };
+
+            const updateInstalledEntriesCount = (count) => {
+              installedEntriesCount += count;
+              renderProgress();
+            };
+
+            for (const chunk of chunks) {
+              const { name, version: expectedVersion, entriesCount } = chunk;
+              const localInstalledVersion = await get(name, versionStore);
+              if (localInstalledVersion === expectedVersion) {
+                updateInstalledEntriesCount(entriesCount);
+                continue;
+              }
+
+              const { version: fetchedVersion, getEntries } = await import(
+                `${dir}/${name}`
+              );
+              if (fetchedVersion !== expectedVersion) {
+                throw new Error(
+                  `Remote version mistmatch: fetchedVersion=${fetchedVersion}, expectedVersion=${expectedVersion}`
+                );
+              }
+
+              const entries = getEntries();
+              const entriesLength = entries.length;
+              let nextSliceSize = 1;
+              const updateNextSliceSize = () => {
+                nextSliceSize = Math.floor(Math.random() * (1155 - 899) + 899);
+              };
+              for (
+                let i = 0;
+                i < entriesLength;
+                updateNextSliceSize(), i += nextSliceSize
+              ) {
+                const slice = entries.slice(i, i + nextSliceSize);
+                await setMany(slice, dictionaryStore);
+                updateInstalledEntriesCount(slice.length);
+              }
+
+              await set(name, fetchedVersion, versionStore);
+            }
+
+            queryAlternatives.innerHTML = `Compound analyzer installed!`;
+          } catch (err) {
+            queryAlternatives.innerHTML = `Error! ${queryAlternatives.innerHTML}`;
+            throw err;
+          } finally {
+            enhanceButton.disabled = false;
+          }
+        };
+
+        const removeVersionsCache = async () => {
+          await clear(versionStore);
+        };
+
+        const uninstallDictionary = async () => {
+          await clear(dictionaryStore);
+          await removeVersionsCache();
+        };
+
+        return {
+          installDictionary,
+          uninstallDictionary,
+          get: (key) => get(key, dictionaryStore),
+        };
+      };
+
+      enhanceButton.addEventListener("click", async () => {
+        const d = await getDictionary();
+        d.installDictionary();
+      });
+
+      const openExternal = (link) => {
+        window.open(link, "_blank", "noopener,noreferrer");
+      };
+
+      const debounce = (fn, ms = 300) => {
+        let timeout;
+        return (...args) => {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => fn(...args), ms);
+        };
+      };
+
+      const setMainScrollState = (num) => {
+        const url = new URL(location);
+        if (num) {
+          url.searchParams.set("mainScroll", num.toFixed(0));
+        } else {
+          url.searchParams.delete("mainScroll");
+        }
+        history.replaceState(undefined, undefined, url);
+      };
+
+      const onMainScroll = debounce(() => {
+        setMainScrollState(main.scrollTop);
+      });
+
+      const toWordSpans = (text) =>
+        text.replace(/[\p{L}&<>"']+/gu, (x) => {
+          return `<span class="word">${x
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;")}</span>`;
+        });
+
+      const updateDics = async (
+        text,
+        { cleanup = true, keepQueryAlternatives = false } = {}
+      ) => {
+        const cleanedText = (
+          cleanup ? text.replace(/(^[^\p{L}]+|[^\p{L}]+$)/gu, "") : text
+        ).toLocaleLowerCase();
+        const encodedText = encodeURIComponent(cleanedText);
+        const url = new URL(location);
+
+        if (!encodedText) {
+          url.searchParams.delete("dictionaryQuery");
+          history.replaceState(undefined, undefined, url);
+          searchGoogleButton.onclick = undefined;
+          searchSlangopediaButton.onclick = undefined;
+          searchWiktionaryButton.onclick = undefined;
+          searchTydaButton.onclick = undefined;
+          queryAlternatives.innerHTML = "";
+          folkets.removeAttribute("src");
+          saol.removeAttribute("src");
+          return;
+        }
+
+        url.searchParams.set("dictionaryQuery", cleanedText);
+        history.replaceState(undefined, undefined, url);
+        queryInput.value = cleanedText;
+        searchGoogleButton.onclick = () => {
+          openExternal(`https://www.google.com/search?q=${encodedText}`);
+        };
+        searchSlangopediaButton.onclick = () => {
+          openExternal(
+            `http://www.slangopedia.se/ordlista/?ord=${encodedText}`
+          );
+        };
+        searchWiktionaryButton.onclick = () => {
+          openExternal(`https://sv.wiktionary.org/wiki/${encodedText}#Svenska`);
+        };
+        searchTydaButton.onclick = () => {
+          openExternal(`https://tyda.se/search/${encodedText}`);
+        };
+        {
+          const next = `https://folkets-lexikon.csc.kth.se/folkets/service?lang=sv&interface=sv&word=${encodedText}`;
+          if (folkets.src !== next) folkets.src = next;
+        }
+        {
+          const next = `https://svenska.se/tre/?sok=${encodedText}`;
+          if (saol.src !== next) saol.src = next;
+        }
+
+        if (!keepQueryAlternatives) {
+          const d = await getDictionary();
+          const entry = await d.get(cleanedText);
+          if (queryInput.value === cleanedText) {
+            queryAlternatives.innerHTML = !entry
+              ? ""
+              : toWordSpans(
+                  [entry.compounds.join(", "), entry.baseforms.join(", ")]
+                    .filter((x) => x)
+                    .join(", ")
+                );
+          }
+        }
+      };
+
+      const updateArticle = (input, init = false) => {
+        history.pushState(
+          undefined,
+          undefined,
+          "#" + encodeURIComponent(input)
+        );
+
+        const text = input.trim();
+        if (!text) {
+          article.innerHTML = "";
+          return;
+        }
+
+        article.innerHTML = text
+          .split("\n")
+          .map((line) => {
+            return (
+              "<p>" +
+              line
+                .split(/\s+/)
+                .filter((x) => x.trim())
+                .map((x) => toWordSpans(x))
+                .join(" ") +
+              "</p>"
+            );
+          })
+          .join("");
+
+        main.scrollTo(
+          0,
+          init
+            ? parseInt(new URL(location).searchParams.get("mainScroll"), 10) ||
+                0
+            : 0
+        );
+        main.addEventListener("scroll", onMainScroll);
+      };
+
+      const setIsQueryExpanded = (isExpanded) => {
+        expandCheckbox.checked = isExpanded;
+        document.body.classList.remove("is-query-expanded");
+        if (isExpanded) {
+          document.body.classList.add("is-query-expanded");
+        }
+      };
+
+      const setIsEditMode = (isEditable, init = false) => {
+        document.body.classList.remove("is-edit-mode");
+
+        if (isEditable) {
+          main.removeEventListener("scroll", onMainScroll);
+          setMainScrollState(0);
+          document.body.classList.add("is-edit-mode");
+          article.contentEditable = "plaintext-only";
+          article.focus();
+
+          if (!init) {
+            setIsQueryExpanded(false);
+          }
+
+          return;
+        }
+
+        if (!init) {
+          updateArticle(article.innerText);
+        }
+
+        article.contentEditable = false;
+      };
+
+      {
+        const hashText = decodeURIComponent(location.hash.slice(1));
+        if (hashText) {
+          updateArticle(hashText, true);
+        }
+
+        const dictionaryQuery = new URL(location).searchParams.get(
+          "dictionaryQuery"
+        );
+        if (dictionaryQuery) {
+          updateDics(dictionaryQuery);
+        }
+
+        setIsEditMode(!article.innerText.trim(), true);
+        setIsQueryExpanded(!!(dictionaryQuery && !hashText));
+      }
+
+      document.addEventListener("mouseup", (event) => {
+        if (
+          article.isContentEditable ||
+          !event.target.closest("article,.query-alternatives")
+        ) {
+          return;
+        }
+
+        const selection = window.getSelection().toString();
+
+        if (selection) {
+          updateDics(selection, { cleanup: false });
+          return;
+        }
+
+        if (!event.target.classList.contains("word")) return;
+        updateDics(event.target.innerText, {
+          keepQueryAlternatives: !!event.target.closest(".query-alternatives"),
+        });
+      });
+
+      queryInput.closest("form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        updateDics(queryInput.value, { cleanup: false });
+      });
+      queryInput.addEventListener("focus", (event) => {
+        queryInput.value = "";
+      });
+      queryInput.addEventListener("blur", (event) => {
+        updateDics(queryInput.value, { cleanup: false });
+      });
+      queryInput.addEventListener("paste", (event) => {
+        const text = event.clipboardData.getData("Text");
+        if (text) {
+          event.preventDefault();
+          // Cleaning pasted data makes it easier to paste from SAOL.
+          updateDics(text);
+        }
+      });
+
+      expandCheckbox.addEventListener("change", () => {
+        setIsQueryExpanded(expandCheckbox.checked);
+      });
+
+      clearAndEditButtons.forEach((x) =>
+        x.addEventListener("click", () => {
+          article.innerHTML = "";
+          setIsEditMode(true);
+        })
+      );
+      editButton.addEventListener("click", () => {
+        setIsEditMode(true);
+      });
+      finishEditButtons.forEach((x) => {
+        x.addEventListener("click", () => {
+          setIsEditMode(false);
+        });
+      });
+
+      importButtons.forEach((x) =>
+        x.addEventListener("click", () => {
+          const input = document.createElement("input");
+          input.type = "file";
+          input.accept = ".txt";
+          input.multiple = true;
+          input.hidden = true;
+          input.onchange = async (event) => {
+            const allFiles = await Promise.all(
+              [...event.target.files].map(
+                (file) =>
+                  new Promise((resolve) => {
+                    const r = new FileReader();
+                    r.onload = () => {
+                      resolve(`==start: ${file.name}\n\n${r.result}\n\n==end: ${file.name}`);
+                    };
+                    r.onerror = (r) => {
+                      resolve("");
+                    };
+
+                    r.readAsText(file);
+                  })
+              )
+            );
+            document.body.removeChild(input);
+            article.innerText = allFiles.join("\n\n");
+            setIsEditMode(false);
+          };
+
+          document.body.appendChild(input);
+          input.click();
+        })
+      );
+    </script>
+  </body>
+</html>
