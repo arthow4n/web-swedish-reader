@@ -699,15 +699,17 @@
         }
 
         const selection = window.getSelection().toString();
-
-        if (selection) {
+        const isInsideAlternatives = !!event.target.closest(
+          ".query-alternatives"
+        );
+        if (selection && !isInsideAlternatives) {
           updateDics(selection, { cleanup: false });
           return;
         }
 
         if (!event.target.classList.contains("word")) return;
         updateDics(event.target.innerText, {
-          keepQueryAlternatives: !!event.target.closest(".query-alternatives"),
+          keepQueryAlternatives: isInsideAlternatives,
         });
       });
 
@@ -715,12 +717,23 @@
         event.preventDefault();
         updateDics(queryInput.value, { cleanup: false });
       });
-      queryInput.addEventListener("focus", (event) => {
-        queryInput.value = "";
-      });
-      queryInput.addEventListener("blur", (event) => {
-        updateDics(queryInput.value, { cleanup: false });
-      });
+
+      {
+        let queryInputValueBeforeFocus = "";
+        queryInput.addEventListener("focus", (event) => {
+          queryInputValueBeforeFocus = queryInput.value;
+          queryInput.value = "";
+        });
+        queryInput.addEventListener("blur", (event) => {
+          if (queryInputValueBeforeFocus && !queryInput.value) {
+            queryInput.value = queryInputValueBeforeFocus;
+            return;
+          }
+
+          updateDics(queryInput.value, { cleanup: false });
+        });
+      }
+
       queryInput.addEventListener("paste", (event) => {
         const text = event.clipboardData.getData("Text");
         if (text) {
