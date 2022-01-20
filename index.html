@@ -479,7 +479,7 @@
 
             const drop = word.slice(0, word.length - 1);
             return drop
-              ? [sliceDownBackward(drop, false, power - 1), word[0]]
+              ? [sliceDownBackward(drop, false, power - 1), word.slice(-1)]
               : [word];
           };
 
