@@ -152,11 +152,21 @@
         white-space: nowrap;
         overflow-x: scroll;
         overflow-y: hidden;
-        padding-right: 0;
+        margin: 0 -8px 0 0;
+      }
+
+      .query-alternatives .word {
+        margin: 0 4px 0;
       }
 
       .query-alternatives:empty::before {
         content: "\200b";
+      }
+
+      @media (max-width: 767px) {
+        .query-alternatives {
+          padding: 0 0 8px;
+        }
       }
 
       body:not(.is-edit-mode) .edit-mode-only {
@@ -248,7 +258,9 @@
           <button class="control-finish-edit">Finish edit</button>
           <button class="control-import">Import</button>
         </div>
-        <p class="aside-row query-alternatives"></p>
+        <div class="aside-row">
+          <p class="query-alternatives"></p>
+        </div>
         <form class="form-dics-query">
           <div class="flex">
             <input class="dics-query-input" /><button
