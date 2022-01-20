@@ -501,6 +501,8 @@
           compoundsSet.add(b0);
           compoundsSet.add(b1);
 
+          compoundsSet.delete(word);
+
           return {
             baseforms: [],
             compounds: Array.from(compoundsSet).filter((x) => x),
