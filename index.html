@@ -545,13 +545,27 @@
 
       const toWordSpans = (text) =>
         text.replace(/[\p{L}&<>"']+/gu, (x) => {
-          return `<span class="word">${x
+          return `<span class="word" role="button" tabindex="0">${x
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;")}</span>`;
         });
+
+      // Force blur away from SAOL iframe for once because SAOL steals focus to its input with its JS
+      {
+        let getFocusBackFromSaolInterval;
+        saol.addEventListener("load", () => {
+          clearInterval(getFocusBackFromSaolInterval);
+          getFocusBackFromSaolInterval = setInterval(() => {
+            if (document.activeElement === saol) {
+              clearInterval(getFocusBackFromSaolInterval);
+              saol.blur();
+            }
+          }, 50);
+        });
+      }
 
       const updateDics = async (
         text,
