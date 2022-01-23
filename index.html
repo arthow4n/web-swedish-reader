@@ -702,7 +702,7 @@
         history.pushState(
           undefined,
           undefined,
-          "#" + encodeURIComponent(input)
+          "#" + encodeURIComponent("text=" + input)
         );
 
         const text = input.trim();
@@ -769,11 +769,6 @@
       };
 
       {
-        const hashText = decodeURIComponent(location.hash.slice(1));
-        if (hashText) {
-          updateArticle(hashText, true);
-        }
-
         const dictionaryQuery = new URL(location).searchParams.get(
           "dictionaryQuery"
         );
@@ -781,8 +776,15 @@
           updateDics(dictionaryQuery);
         }
 
+        if (location.hash.startsWith("#" + encodeURIComponent("text="))) {
+          const hashText = decodeURIComponent(location.hash.slice(8));
+          setIsQueryExpanded(!!(dictionaryQuery && !hashText));
+          if (hashText) {
+            updateArticle(hashText, true);
+          }
+        }
+
         setIsEditMode(!article.innerText.trim(), true);
-        setIsQueryExpanded(!!(dictionaryQuery && !hashText));
       }
 
       document.addEventListener("mouseup", (event) => {

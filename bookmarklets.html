@@ -70,7 +70,7 @@
               const text = title + "\n\n" + content;
               const link =
                 "https://arthow4n.github.io/web-swedish-reader/#" +
-                encodeURIComponent(text);
+                encodeURIComponent("text=" + text);
               window.open(link, "_blank", "noopener,noreferrer");
               document.body.removeChild(st);
               document.head.removeChild(s);
@@ -2848,7 +2848,7 @@
             const text = title + "\n\n" + content;
             const link =
               "https://arthow4n.github.io/web-swedish-reader/#" +
-              encodeURIComponent(text);
+              encodeURIComponent("text=" + text);
             window.open(link, "_blank", "noopener,noreferrer");
           },
         },
@@ -2859,7 +2859,7 @@
           code: () => {
             const link =
               "https://arthow4n.github.io/web-swedish-reader/#" +
-              encodeURIComponent(document.body.innerText);
+              encodeURIComponent("text=" + document.body.innerText);
             window.open(link, "_blank", "noopener,noreferrer");
           },
         },
