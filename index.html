@@ -746,21 +746,9 @@
         updateDics(queryInput.value, { cleanup: false });
       });
 
-      {
-        let queryInputValueBeforeFocus = "";
-        queryInput.addEventListener("focus", (event) => {
-          queryInputValueBeforeFocus = queryInput.value;
-          queryInput.value = "";
-        });
-        queryInput.addEventListener("blur", (event) => {
-          if (queryInputValueBeforeFocus && !queryInput.value) {
-            queryInput.value = queryInputValueBeforeFocus;
-            return;
-          }
-
-          updateDics(queryInput.value, { cleanup: false });
-        });
-      }
+      queryInput.addEventListener("focus", (event) => {
+        queryInput.select();
+      });
 
       queryInput.addEventListener("paste", (event) => {
         const text = event.clipboardData.getData("Text");
