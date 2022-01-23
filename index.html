@@ -155,12 +155,16 @@
         margin: 0 -8px 0 0;
       }
 
-      .query-alternatives .word {
-        margin: 0 4px 0;
+      .query-alternatives-line {
+        margin: 0;
       }
 
-      .query-alternatives:empty::before {
+      .query-alternatives-line:empty::before {
         content: "\200b";
+      }
+
+      .query-alternatives .word {
+        padding: 0 4px 0;
       }
 
       @media (max-width: 767px) {
@@ -259,7 +263,14 @@
           <button class="control-import">Import</button>
         </div>
         <div class="aside-row">
-          <p class="query-alternatives"></p>
+          <div class="query-alternatives">
+            <p
+              class="query-alternatives-line query-alternatives-line-local"
+            ></p>
+            <p
+              class="query-alternatives-line query-alternatives-line-remote"
+            ></p>
+          </div>
         </div>
         <form class="form-dics-query">
           <div class="flex">
@@ -305,7 +316,12 @@
       );
       const main = document.querySelector("main");
       const article = document.querySelector("article");
-      const queryAlternatives = document.querySelector(".query-alternatives");
+      const queryAlternativesLocal = document.querySelector(
+        ".query-alternatives-line-local"
+      );
+      const queryAlternativesRemote = document.querySelector(
+        ".query-alternatives-line-remote"
+      );
       const folkets = document.querySelector(".dic-folkets");
       const saol = document.querySelector(".dic-saol");
       const searchGoogleButton = document.querySelector(
@@ -372,7 +388,7 @@
               dictionaryStore
             );
           } catch (err) {
-            queryAlternatives.innerHTML = `Error! ${queryAlternatives.innerHTML}`;
+            queryAlternativesLocal.innerHTML = `Error! ${queryAlternativesLocal.innerHTML}`;
             throw err;
           }
         };
@@ -584,7 +600,8 @@
           searchSlangopediaButton.onclick = undefined;
           searchWiktionaryButton.onclick = undefined;
           searchTydaButton.onclick = undefined;
-          queryAlternatives.innerHTML = "";
+          queryAlternativesLocal.innerHTML = "";
+          queryAlternativesRemote.innerHTML = "";
           folkets.removeAttribute("src");
           saol.removeAttribute("src");
           return;
@@ -617,17 +634,67 @@
         }
 
         if (!keepQueryAlternatives) {
-          const d = await getDictionary();
-          const entry = await d.query(cleanedText);
-          if (queryInput.value === cleanedText) {
-            queryAlternatives.innerHTML = !entry
-              ? ""
-              : toWordSpans(
-                  [entry.compounds.join(", "), entry.baseforms.join(", ")]
-                    .filter((x) => x)
-                    .join(", ")
+          const setLocal = async () => {
+            const localEntry = await (await getDictionary()).query(cleanedText);
+            if (queryInput.value === cleanedText) {
+              queryAlternativesLocal.innerHTML = !localEntry
+                ? ""
+                : toWordSpans(
+                    [
+                      localEntry.compounds.join(", "),
+                      localEntry.baseforms.join(", "),
+                    ]
+                      .filter((x) => x)
+                      .join(", ")
+                  );
+            }
+          };
+
+          const setRemote = async () => {
+            const remoteCompounds = await new Promise(async (resolve) => {
+              const resolveEmpty = () => {
+                resolve({
+                  baseform: "",
+                  compounds: [],
+                  compoundsLemma: [],
+                  alternatives: [],
+                });
+              };
+
+              if (location.origin !== "https://arthow4n.github.io") {
+                resolveEmpty();
+                return;
+              }
+
+              try {
+                const res = await fetch(
+                  `https://fetch-swedish-word-compounds.fly.dev/compounds?word=${cleanedText}`
                 );
-          }
+                if (res.status !== 200) {
+                  return resolveEmpty();
+                }
+                resolve(await res.json());
+              } catch {
+                resolveEmpty();
+              }
+            });
+
+            if (queryInput.value === cleanedText) {
+              queryAlternativesRemote.innerHTML = toWordSpans(
+                [
+                  remoteCompounds.alternatives.join("+"),
+                  remoteCompounds.compoundsLemma.join("+"),
+                  remoteCompounds.compounds.join("+"),
+                  remoteCompounds.baseform,
+                ]
+                  .filter((x) => x)
+                  .join(", ")
+              );
+            }
+          };
+
+          setLocal().catch(console.error);
+          setRemote().catch(console.error);
         }
       };
 
