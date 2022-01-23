@@ -50,6 +50,29 @@
     <script>
       const bookmarklets = [
         {
+          name: "WSR + Body Text",
+          description:
+            "Get all text in the web page (body.innerText) then open with WSR.",
+          code: () => {
+            const link =
+              "https://arthow4n.github.io/web-swedish-reader/#" +
+              encodeURIComponent("text=" + document.body.innerText);
+            window.open(link, "_blank", "noopener,noreferrer");
+          },
+        },
+        {
+          name: "Open simplified website",
+          description:
+            "Jump to simplified website so you can then run one of the bookmarklets above for better result. For example try this on Reddit then run WSR + Body Text. (Currently only supports Reddit.)",
+          code: () => {
+            const url = new URL(location);
+            if (/reddit\.com$/.test(url.host)) {
+              url.host = "i.reddit.com";
+              window.open(url, "_blank", "noopener,noreferrer");
+            }
+          },
+        },
+        {
           name: "WSR + External Readability.js",
           description:
             "Parse page with Readability.js then open result with WSR. Gives better layout but could miss text depending on the page. Doesn't work on sites with CSP.",
@@ -2850,29 +2873,6 @@
               "https://arthow4n.github.io/web-swedish-reader/#" +
               encodeURIComponent("text=" + text);
             window.open(link, "_blank", "noopener,noreferrer");
-          },
-        },
-        {
-          name: "WSR + Body Text",
-          description:
-            "Get body.innerText then open with WSR, dirty but effective.",
-          code: () => {
-            const link =
-              "https://arthow4n.github.io/web-swedish-reader/#" +
-              encodeURIComponent("text=" + document.body.innerText);
-            window.open(link, "_blank", "noopener,noreferrer");
-          },
-        },
-        {
-          name: "Open simplified website",
-          description:
-            "Jump to simplified website so you can then run one of the bookmarklets above for better result. For example try this on Reddit then run WSR + Body Text. (Currently only supports Reddit.)",
-          code: () => {
-            const url = new URL(location);
-            if (/reddit\.com$/.test(url.host)) {
-              url.host = "i.reddit.com";
-              window.open(url, "_blank", "noopener,noreferrer");
-            }
           },
         },
       ];
