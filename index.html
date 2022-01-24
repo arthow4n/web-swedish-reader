@@ -500,11 +500,24 @@
           };
 
           const join = (x) => {
-            console.log(`Compound tree for ${word}: ${JSON.stringify(x)}`);
-            return x
+            const joined = x
               .flat(Infinity)
               .filter((x) => x)
-              .join("+");
+              .join("+")
+              // Attemp to clean up the result to make better guess for example elgitarr+s+r+i+f+f => elgitarr+s+riff
+              .replace(
+                // First 2 groups are mandatory to not join e.g. o+gillar
+                /(^|\+)([^s])(?:\+([^s]))(?:\+([^s]))?(?:\+([^s]))?(?:\+([^s]))?(?:\+([^s]))?(?:\+([^s]))?(?:\+([^s]))?(?:\+([^s]))?(?:\+([^s]))?/gu,
+                (match, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11) =>
+                  [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11]
+                    .filter((x) => x)
+                    .join("")
+              );
+
+            console.log(
+              `Compound tree for ${word}: ${joined} => ${JSON.stringify(x)}`
+            );
+            return joined;
           };
 
           const f0 = join(sliceDownForward(word, true));
