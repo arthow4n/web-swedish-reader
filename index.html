@@ -279,10 +279,11 @@
               class="control-search-google"
             >
               Goo</button
-            ><button type="button" class="control-search-slangopedia">
-              Sla</button
+            ><button type="button" class="control-search-tyda">Tyd</button
             ><button type="button" class="control-search-wiktionary">Wik</button
-            ><button type="button" class="control-search-tyda">Tyd</button>
+            ><button type="button" class="control-deeper-alternatives">
+              ↑↑
+            </button>
           </div>
           <label class="control-label label-dics-expand"
             ><span class="control-label-text">+ </span
@@ -318,6 +319,9 @@
       );
       const main = document.querySelector("main");
       const article = document.querySelector("article");
+      const queryAlternativesContainer = document.querySelector(
+        ".query-alternatives"
+      );
       const queryAlternativesLocal = document.querySelector(
         ".query-alternatives-line-local"
       );
@@ -329,8 +333,8 @@
       const searchGoogleButton = document.querySelector(
         ".control-search-google"
       );
-      const searchSlangopediaButton = document.querySelector(
-        ".control-search-slangopedia"
+      const deeperAlternativesButton = document.querySelector(
+        ".control-deeper-alternatives"
       );
       const searchWiktionaryButton = document.querySelector(
         ".control-search-wiktionary"
@@ -612,7 +616,6 @@
           url.searchParams.delete("dictionaryQuery");
           history.replaceState(undefined, undefined, url);
           searchGoogleButton.onclick = undefined;
-          searchSlangopediaButton.onclick = undefined;
           searchWiktionaryButton.onclick = undefined;
           searchTydaButton.onclick = undefined;
           queryAlternativesLocal.innerHTML = "";
@@ -627,11 +630,6 @@
         queryInput.value = cleanedText;
         searchGoogleButton.onclick = () => {
           openExternal(`https://www.google.com/search?q=${encodedText}`);
-        };
-        searchSlangopediaButton.onclick = () => {
-          openExternal(
-            `http://www.slangopedia.se/ordlista/?ord=${encodedText}`
-          );
         };
         searchWiktionaryButton.onclick = () => {
           openExternal(`https://sv.wiktionary.org/wiki/${encodedText}#Svenska`);
@@ -708,8 +706,14 @@
             }
           };
 
-          setLocal().catch(console.error);
-          setRemote().catch(console.error);
+          Promise.all([
+            setLocal().catch(console.error),
+            setRemote().catch(console.error),
+          ]).then(() => {
+            if (queryInput.value === cleanedText) {
+              queryAlternativesContainer.scrollTo(0, 0);
+            }
+          });
         }
       };
 
@@ -897,6 +901,10 @@
           input.click();
         })
       );
+
+      deeperAlternativesButton.addEventListener("click", () => {
+        updateDics(queryInput.value);
+      });
     </script>
   </body>
 </html>
