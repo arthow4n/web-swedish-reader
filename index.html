@@ -808,7 +808,7 @@
 
       document.addEventListener("mouseup", (event) => {
         if (
-          article.isContentEditable ||
+          (article.isContentEditable && event.target.closest("article")) ||
           !event.target.closest("article,.query-alternatives")
         ) {
           return;
