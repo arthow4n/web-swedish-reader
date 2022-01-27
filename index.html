@@ -579,14 +579,18 @@
       });
 
       const toWordSpans = (text) =>
-        text.replace(/[\p{L}&<>"']+/gu, (x) => {
-          return `<span class="word" role="button" tabindex="0">${x
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;")}</span>`;
-        });
+        text
+          // Drop soft hyphen because it breaks a word into multiple parts which is often not desirable for searching dictionary,
+          // although it could be useful for compoud guessing in some cases
+          .replace(/\u00AD/gu, "")
+          .replace(/[\p{L}&<>"']+/gu, (x) => {
+            return `<span class="word" role="button" tabindex="0">${x
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&#039;")}</span>`;
+          });
 
       // Force blur away from SAOL iframe for once because SAOL steals focus to its input with its JS
       {
