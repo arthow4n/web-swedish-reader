@@ -806,7 +806,7 @@
         setIsEditMode(!article.innerText.trim(), true);
       }
 
-      document.addEventListener("mouseup", (event) => {
+      document.addEventListener("click", (event) => {
         if (
           (article.isContentEditable && event.target.closest("article")) ||
           !event.target.closest("article,.query-alternatives")
@@ -814,14 +814,9 @@
           return;
         }
 
-        const selection = window.getSelection().toString();
         const isInsideAlternatives = !!event.target.closest(
           ".query-alternatives"
         );
-        if (selection && !isInsideAlternatives) {
-          updateDics(selection, { cleanup: false });
-          return;
-        }
 
         if (!event.target.classList.contains("word")) return;
         updateDics(event.target.innerText, {
