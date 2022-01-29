@@ -81,7 +81,7 @@
 
       @media (max-width: 767px) {
         .reader {
-          grid: 50% 50% / 100%;
+          grid: 45% 55% / 100%;
           gap: 8px;
           padding: 16px;
           margin: 0;
@@ -270,6 +270,9 @@
             <p
               class="query-alternatives-line query-alternatives-line-remote"
             ></p>
+            <p
+              class="query-alternatives-line query-alternatives-line-english-translation"
+            ></p>
           </div>
         </div>
         <form class="form-dics-query">
@@ -327,6 +330,9 @@
       );
       const queryAlternativesRemote = document.querySelector(
         ".query-alternatives-line-remote"
+      );
+      const queryAlternativesEnglishTranslation = document.querySelector(
+        ".query-alternatives-line-english-translation"
       );
       const folkets = document.querySelector(".dic-folkets");
       const saol = document.querySelector(".dic-saol");
@@ -555,9 +561,15 @@
           };
         };
 
+        const queryEnglishTranslation = async (word) => {
+          const { folketsSven } = await installDictionaries();
+          return folketsSven[word] ?? [];
+        };
+
         return {
           installDictionaries,
           query,
+          queryEnglishTranslation,
         };
       };
 
@@ -589,13 +601,13 @@
         setMainScrollState(main.scrollTop);
       });
 
-      const toWordSpans = (text) =>
+      const toWordSpans = (text, { className = "" } = {}) =>
         text
           // Drop soft hyphen because it breaks a word into multiple parts which is often not desirable for searching dictionary,
           // although it could be useful for compoud guessing in some cases
           .replace(/\u00AD/gu, "")
           .replace(/[\p{L}&<>"']+/gu, (x) => {
-            return `<span class="word" role="button" tabindex="0">${x
+            return `<span class="word ${className}" role="button" tabindex="0">${x
               .replace(/&/g, "&amp;")
               .replace(/</g, "&lt;")
               .replace(/>/g, "&gt;")
@@ -635,6 +647,7 @@
           searchTydaButton.onclick = undefined;
           queryAlternativesLocal.innerHTML = "";
           queryAlternativesRemote.innerHTML = "";
+          queryAlternativesEnglishTranslation.innerHTML = "";
           folkets.removeAttribute("src");
           saol.removeAttribute("src");
           return;
@@ -661,75 +674,89 @@
           if (saol.src !== next) saol.src = next;
         }
 
-        if (!keepQueryAlternatives) {
-          const setLocal = async () => {
-            const localEntry = await (await getDictionary()).query(cleanedText);
-            if (queryInput.value === cleanedText) {
-              queryAlternativesLocal.innerHTML = !localEntry
-                ? ""
-                : toWordSpans(
-                    uniq([...localEntry.compounds, ...localEntry.baseforms])
-                      .filter((x) => x)
-                      .join(", ")
-                  );
-            }
-          };
-
-          const setRemote = async () => {
-            const remoteCompounds = await new Promise(async (resolve) => {
-              const resolveEmpty = () => {
-                resolve({
-                  baseform: "",
-                  compounds: [],
-                  compoundsLemma: [],
-                  alternatives: [],
-                  definitions: [],
-                });
-              };
-
-              if (location.origin !== "https://arthow4n.github.io") {
-                resolveEmpty();
-                return;
-              }
-
-              try {
-                const res = await fetch(
-                  `https://fetch-swedish-word-compounds.fly.dev/compounds?cacheBuster=2&word=${cleanedText}`
+        const setLocal = async () => {
+          const localEntry = await (await getDictionary()).query(cleanedText);
+          if (queryInput.value === cleanedText) {
+            queryAlternativesLocal.innerHTML = !localEntry
+              ? ""
+              : toWordSpans(
+                  uniq([...localEntry.compounds, ...localEntry.baseforms])
+                    .filter((x) => x)
+                    .join(", ")
                 );
-                if (res.status !== 200) {
-                  return resolveEmpty();
-                }
-                resolve(await res.json());
-              } catch {
-                resolveEmpty();
-              }
-            });
+          }
+        };
 
-            if (queryInput.value === cleanedText) {
-              const wordParts = uniq([
-                remoteCompounds.alternatives.join("+"),
-                remoteCompounds.compoundsLemma.join("+"),
-                remoteCompounds.compounds.join("+"),
-                remoteCompounds.baseform,
-              ])
-                .filter((x) => x)
-                .join(", ");
-              const definitions = remoteCompounds.definitions.join("; ");
-              queryAlternativesRemote.innerHTML = toWordSpans(
-                [wordParts, definitions].filter((x) => x).join("; ")
-              );
+        const setRemote = async () => {
+          const remoteCompounds = await new Promise(async (resolve) => {
+            const resolveEmpty = () => {
+              resolve({
+                baseform: "",
+                compounds: [],
+                compoundsLemma: [],
+                alternatives: [],
+                definitions: [],
+              });
+            };
+
+            if (location.origin !== "https://arthow4n.github.io") {
+              resolveEmpty();
+              return;
             }
-          };
 
-          Promise.all([
-            setLocal().catch(console.error),
-            setRemote().catch(console.error),
-          ]).then(() => {
-            if (queryInput.value === cleanedText) {
-              queryAlternativesContainer.scrollTo(0, 0);
+            try {
+              const res = await fetch(
+                `https://fetch-swedish-word-compounds.fly.dev/compounds?cacheBuster=2&word=${cleanedText}`
+              );
+              if (res.status !== 200) {
+                return resolveEmpty();
+              }
+              resolve(await res.json());
+            } catch {
+              resolveEmpty();
             }
           });
-        }
+
+          if (queryInput.value === cleanedText) {
+            const wordParts = uniq([
+              remoteCompounds.alternatives.join("+"),
+              remoteCompounds.compoundsLemma.join("+"),
+              remoteCompounds.compounds.join("+"),
+              remoteCompounds.baseform,
+            ])
+              .filter((x) => x)
+              .join(", ");
+            const definitions = remoteCompounds.definitions.join("; ");
+            queryAlternativesRemote.innerHTML = toWordSpans(
+              [wordParts, definitions].filter((x) => x).join("; ")
+            );
+          }
+        };
+
+        const setEnglishTranslation = async () => {
+          const translations = await (
+            await getDictionary()
+          ).queryEnglishTranslation(cleanedText);
+
+          if (queryInput.value === cleanedText) {
+            queryAlternativesEnglishTranslation.innerHTML = toWordSpans(
+              translations.join("; "),
+              {
+                className: "word-english",
+              }
+            );
+          }
+        };
+
+        Promise.all([
+          !keepQueryAlternatives && setLocal().catch(console.error),
+          !keepQueryAlternatives && setRemote().catch(console.error),
+          setEnglishTranslation().catch(console.error),
+        ]).then(() => {
+          if (queryInput.value === cleanedText) {
+            queryAlternativesContainer.scrollTo(0, 0);
+          }
+        });
       };
 
       const updateArticle = (input, init = false) => {
@@ -833,6 +860,10 @@
         const isInsideAlternatives = !!event.target.closest(
           ".query-alternatives"
         );
+
+        if (event.target.classList.contains("word-english")) {
+          return;
+        }
 
         if (!event.target.classList.contains("word")) return;
         updateDics(event.target.innerText, {
