@@ -209,6 +209,14 @@
         position: relative;
       }
 
+      .dic-sub-single:not(.active) {
+        display: none;
+      }
+
+      .dic-sub-single.active ~ .dic {
+        display: none;
+      }
+
       .dic-iframe {
         width: 100%;
         height: 100%;
@@ -219,6 +227,13 @@
         /* 270 is better than 285 when there are multiple entries */
         margin-top: -270px;
         height: calc(100% + 270px);
+      }
+
+      .dic-cambridge {
+        /* Skipping the website header */
+        margin-top: -555px;
+        /* Padding more height than header to skip occ */
+        height: calc(100% + 655px);
       }
 
       @media (min-width: 768px) {
@@ -293,6 +308,13 @@
             ><span><input type="checkbox" /></span
           ></label>
         </form>
+        <div class="dic dic-sub-single">
+          <iframe
+            class="dic-iframe dic-cambridge"
+            referrerpolicy="no-referrer"
+          ></iframe>
+          <p>Cambridge Dictionary</p>
+        </div>
         <div class="dic">
           <iframe
             class="dic-iframe dic-folkets"
@@ -334,8 +356,12 @@
       const queryAlternativesEnglishTranslation = document.querySelector(
         ".query-alternatives-line-english-translation"
       );
+
       const folkets = document.querySelector(".dic-folkets");
       const saol = document.querySelector(".dic-saol");
+      const dicSubSingle = document.querySelector(".dic-sub-single");
+      const cambridge = document.querySelector(".dic-cambridge");
+
       const searchGoogleButton = document.querySelector(
         ".control-search-google"
       );
@@ -639,6 +665,8 @@
         const encodedText = encodeURIComponent(cleanedText);
         const url = new URL(location);
 
+        dicSubSingle.classList.remove("active");
+
         if (!encodedText) {
           url.searchParams.delete("dictionaryQuery");
           history.replaceState(undefined, undefined, url);
@@ -650,6 +678,7 @@
           queryAlternativesEnglishTranslation.innerHTML = "";
           folkets.removeAttribute("src");
           saol.removeAttribute("src");
+          cambridge.removeAttribute("src");
           return;
         }
 
@@ -849,6 +878,7 @@
         setIsEditMode(!article.innerText.trim(), true);
       }
 
+      let hasShownCambridgeDictionary = false;
       document.addEventListener("click", (event) => {
         if (
           (article.isContentEditable && event.target.closest("article")) ||
@@ -862,6 +892,23 @@
         );
 
         if (event.target.classList.contains("word-english")) {
+          dicSubSingle.classList.add("active");
+          const show = () => {
+            const next = `https://dictionary.cambridge.org/dictionary/english/${event.target.innerText}`;
+            if (cambridge.src !== next) {
+              // There's a very aggressive cookie modal inside that doesn't stop showing even after accepting.
+              cambridge.sandbox = "";
+              cambridge.src = next;
+            }
+          };
+
+          if (hasShownCambridgeDictionary) {
+            show();
+          } else {
+            hasShownCambridgeDictionary = true;
+            setTimeout(show, 1500);
+          }
+
           return;
         }
 
