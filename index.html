@@ -341,66 +341,77 @@
       );
       const searchTydaButton = document.querySelector(".control-search-tyda");
 
-      const folketsCompoundStorageKey = "_folkets-compound";
-      let folketsCompound;
-
       const getDictionary = async () => {
         const { setMany, set, get, clear, createStore } = await import(
           "https://cdn.jsdelivr.net/npm/idb-keyval@6/+esm"
         );
         const dictionaryStore = createStore("wsr-dictionary", "wsr-dictionary");
 
-        const installDictionary = async () => {
-          const dir = `${location.origin}/web-swedish-reader-data/folkets-compound`;
+        const installDictionary = async (
+          dictionaryName,
+          moduleDataAccessor
+        ) => {
+          const storageKey = `_2_${dictionaryName}`;
+          const dir = `${location.origin}/web-swedish-reader-data/${dictionaryName}`;
 
           try {
             const { getInfo } = await import(
-              `${dir}/folkets-compound.meta.mjs`
+              `${dir}/${dictionaryName}.meta.mjs`
             );
             const { chunks, totalEntriesCount } = getInfo();
 
             if (chunks.length !== 1) {
-              throw new Error("Can't update compound analyser.");
+              throw new Error(`Can't update ${dictionaryName}.`);
             }
             const { name, version: expectedVersion, entriesCount } = chunks[0];
 
-            const folketsCompoundStorage = await get(
-              folketsCompoundStorageKey,
-              dictionaryStore
-            );
+            const stored = await get(storageKey, dictionaryStore);
 
-            if (folketsCompoundStorage?.version === expectedVersion) {
-              folketsCompound = folketsCompoundStorage.folketsCompound;
-              return;
+            if (stored?.version === expectedVersion) {
+              return stored.data;
             }
 
-            const { version: fetchedVersion, getCompoundParts } = await import(
-              `${dir}/${name}`
-            );
-
+            const dictionaryModule = await import(`${dir}/${name}`);
+            const { version: fetchedVersion } = dictionaryModule;
             if (fetchedVersion !== expectedVersion) {
               throw new Error(
                 `Remote version mistmatch: fetchedVersion=${fetchedVersion}, expectedVersion=${expectedVersion}`
               );
             }
 
-            folketsCompound = new Set(getCompoundParts());
+            const data = moduleDataAccessor(dictionaryModule);
             await set(
-              folketsCompoundStorageKey,
+              storageKey,
               {
                 version: fetchedVersion,
-                folketsCompound,
+                data,
               },
               dictionaryStore
             );
+            return data;
           } catch (err) {
             queryAlternativesLocal.innerHTML = `Error! ${queryAlternativesLocal.innerHTML}`;
             throw err;
           }
         };
 
+        const installDictionaries = async () => {
+          const [folketsCompound, folketsSven] = await Promise.all([
+            installDictionary(
+              "folkets-compound",
+              (m) => new Set(m.getCompoundParts())
+            ),
+            installDictionary("folkets-sven", (m) => m.getTranslationLookUp()),
+          ]);
+
+          return {
+            folketsCompound,
+            folketsSven,
+          };
+        };
+
         const query = async (word) => {
-          await installDictionary();
+          const { folketsCompound } = await installDictionaries();
 
           const compoundsSet = new Set();
 
@@ -545,12 +556,12 @@
         };
 
         return {
-          installDictionary,
+          installDictionaries,
           query,
         };
       };
 
-      getDictionary().then((d) => d.installDictionary());
+      getDictionary().then((d) => d.installDictionaries());
 
       const openExternal = (link) => {
         window.open(link, "_blank", "noopener,noreferrer");
