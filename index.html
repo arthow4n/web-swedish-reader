@@ -791,7 +791,7 @@
         history.pushState(
           undefined,
           undefined,
-          "#" + encodeURIComponent("text=" + input)
+          "#text=" + encodeURIComponent(input)
         );
 
         const text = input.trim();
@@ -865,13 +865,12 @@
           updateDics(dictionaryQuery);
         }
 
-        const hashText = decodeURIComponent(location.hash.slice(8));
+        const hashQuery = new URLSearchParams(location.hash.slice(1));
+        const hashText = hashQuery.get("text");
         setIsQueryExpanded(!!(dictionaryQuery && !hashText));
 
-        if (location.hash.startsWith("#" + encodeURIComponent("text="))) {
-          if (hashText) {
-            updateArticle(hashText, true);
-          }
+        if (hashText) {
+          updateArticle(hashText, true);
         }
 
         setIsEditMode(!article.innerText.trim(), true);

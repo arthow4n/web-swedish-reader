@@ -55,8 +55,8 @@
             "Get all text in the web page (body.innerText) then open with WSR.",
           code: () => {
             const link =
-              "https://arthow4n.github.io/web-swedish-reader/#" +
-              encodeURIComponent("text=" + document.body.innerText);
+              "https://arthow4n.github.io/web-swedish-reader/#text=" +
+              encodeURIComponent(document.body.innerText);
             window.open(link, "_blank", "noopener,noreferrer");
           },
         },
@@ -117,8 +117,8 @@
               console.log(root);
               window.r = root;
               const link =
-                "https://arthow4n.github.io/web-swedish-reader/#" +
-                encodeURIComponent("text=" + root.body.innerText);
+                "https://arthow4n.github.io/web-swedish-reader/#text=" +
+                encodeURIComponent(root.body.innerText);
               const w = window.open(link, "_blank", "noopener,noreferrer");
             }
           },
@@ -143,8 +143,8 @@
               const content = article.textContent;
               const text = title + "\n\n" + content;
               const link =
-                "https://arthow4n.github.io/web-swedish-reader/#" +
-                encodeURIComponent("text=" + text);
+                "https://arthow4n.github.io/web-swedish-reader/#text=" +
+                encodeURIComponent(text);
               window.open(link, "_blank", "noopener,noreferrer");
               document.body.removeChild(st);
               document.head.removeChild(s);
@@ -2921,8 +2921,8 @@
             const content = article.textContent;
             const text = title + "\n\n" + content;
             const link =
-              "https://arthow4n.github.io/web-swedish-reader/#" +
-              encodeURIComponent("text=" + text);
+              "https://arthow4n.github.io/web-swedish-reader/#text=" +
+              encodeURIComponent(text);
             window.open(link, "_blank", "noopener,noreferrer");
           },
         },
