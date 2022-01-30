@@ -77,26 +77,27 @@
                 .querySelectorAll(".post-user")
                 .forEach(
                   (x) =>
-                    (x.innerHTML = x.querySelector(
-                      ".post-user-username"
-                    ).innerText)
+                    (x.innerHTML = x
+                      .querySelector(".post-user-username")
+                      .innerText.trim())
                 );
 
-              root.querySelectorAll(".post-bbcode-quote").forEach(
-                (x) =>
-                  (x.innerHTML = x.innerText
-                    .split("\n")
-                    .map((x) => {
-                      const p = root.createElement("p");
-                      p.innerText = `>> ${x}`;
-                      return p.outerHTML;
-                    })
-                    .join("\n"))
-              );
+              root.querySelectorAll(".post-bbcode-quote").forEach((x) => {
+                x.innerHTML = x.innerText
+                  .trim()
+                  .split("\n")
+                  .map((x) => {
+                    const p = root.createElement("p");
+                    p.innerText = `>> ${x}`;
+                    return p.outerHTML;
+                  })
+                  .join("\n");
+              });
 
               root.querySelectorAll(".post-heading").forEach(
                 (x) =>
                   (x.innerText = x.innerText
+                    .trim()
                     .split("\n")
                     .reverse()
                     .filter((x) => x.trim())
@@ -104,8 +105,7 @@
               );
 
               root.querySelectorAll(".post").forEach((x) => {
-                x.prepend(root.createTextNode("========"));
-                x.append(root.createTextNode("========"));
+                x.prepend(root.createTextNode("========================"));
               });
 
               root
@@ -114,8 +114,6 @@
                 )
                 .forEach((x) => x.remove());
 
-              console.log(root);
-              window.r = root;
               const link =
                 "https://arthow4n.github.io/web-swedish-reader/#text=" +
                 encodeURIComponent(root.body.innerText);
