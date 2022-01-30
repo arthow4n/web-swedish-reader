@@ -81,7 +81,7 @@
 
       @media (max-width: 767px) {
         .reader {
-          grid: 45% 55% / 100%;
+          grid: 60% 40% / 100%;
           gap: 8px;
           padding: 16px;
           margin: 0;
@@ -315,13 +315,14 @@
           ></iframe>
           <p>Cambridge Dictionary</p>
         </div>
-        <div class="dic">
+        <!-- Temporarily commented out to get a feeling of whether if this is really needed -->
+        <!-- <div class="dic">
           <iframe
             class="dic-iframe dic-folkets"
             referrerpolicy="no-referrer"
           ></iframe>
           <p>Folkets lexikon</p>
-        </div>
+        </div> -->
         <div class="dic">
           <iframe
             class="dic-iframe dic-saol"
@@ -357,7 +358,7 @@
         ".query-alternatives-line-english-translation"
       );
 
-      const folkets = document.querySelector(".dic-folkets");
+      // const folkets = document.querySelector(".dic-folkets");
       const saol = document.querySelector(".dic-saol");
       const dicSubSingle = document.querySelector(".dic-sub-single");
       const cambridge = document.querySelector(".dic-cambridge");
@@ -675,7 +676,7 @@
           queryAlternativesLocal.innerHTML = "";
           queryAlternativesRemote.innerHTML = "";
           queryAlternativesEnglishTranslation.innerHTML = "";
-          folkets.removeAttribute("src");
+          // folkets.removeAttribute("src");
           saol.removeAttribute("src");
           cambridge.removeAttribute("src");
           return;
@@ -693,10 +694,10 @@
         searchTydaButton.onclick = () => {
           openExternal(`https://tyda.se/search/${encodedText}`);
         };
-        {
-          const next = `https://folkets-lexikon.csc.kth.se/folkets/service?lang=sv&interface=sv&word=${encodedText}`;
-          if (folkets.src !== next) folkets.src = next;
-        }
+        // {
+        //   const next = `https://folkets-lexikon.csc.kth.se/folkets/service?lang=sv&interface=sv&word=${encodedText}`;
+        //   if (folkets.src !== next) folkets.src = next;
+        // }
         {
           const next = `https://svenska.se/tre/?sok=${encodedText}`;
           if (saol.src !== next) saol.src = next;
