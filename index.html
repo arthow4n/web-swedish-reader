@@ -81,7 +81,7 @@
 
       @media (max-width: 767px) {
         .reader {
-          grid: 60% 40% / 100%;
+          grid: 50% 50% / 100%;
           gap: 8px;
           padding: 16px;
           margin: 0;
@@ -286,6 +286,9 @@
               class="query-alternatives-line query-alternatives-line-remote"
             ></p>
             <p
+              class="query-alternatives-line query-alternatives-line-swedish-definition"
+            ></p>
+            <p
               class="query-alternatives-line query-alternatives-line-english-translation"
             ></p>
           </div>
@@ -353,6 +356,9 @@
       );
       const queryAlternativesRemote = document.querySelector(
         ".query-alternatives-line-remote"
+      );
+      const queryAlternativesSwedishDefinition = document.querySelector(
+        ".query-alternatives-line-swedish-definition"
       );
       const queryAlternativesEnglishTranslation = document.querySelector(
         ".query-alternatives-line-english-translation"
@@ -755,10 +761,11 @@
             ])
               .filter((x) => x)
               .join(", ");
+            queryAlternativesRemote.innerHTML = toWordSpans(wordParts);
+
             const definitions = remoteCompounds.definitions.join("; ");
-            queryAlternativesRemote.innerHTML = toWordSpans(
-              [wordParts, definitions].filter((x) => x).join("; ")
-            );
+            queryAlternativesSwedishDefinition.innerHTML =
+              toWordSpans(definitions);
           }
         };
 
