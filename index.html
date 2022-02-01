@@ -6,6 +6,23 @@
       rel="canonical"
       href="https://arthow4n.github.io/web-swedish-reader/"
     />
+
+    <link
+      rel="modulepreload"
+      href="https://cdn.jsdelivr.net/npm/idb-keyval@6/+esm"
+    />
+    <link rel="modulepreload" href="./js/dictionaryDatabase.mjs" />
+    <link rel="modulepreload" href="./js/dictionaryView.mjs" />
+    <link rel="modulepreload" href="./js/utils.mjs" />
+    <link
+      rel="modulepreload"
+      href="/web-swedish-reader-data/folkets-compound/folkets-compound.meta.mjs"
+    />
+    <link
+      rel="modulepreload"
+      href="/web-swedish-reader-data/folkets-sven/folkets-sven.meta.mjs"
+    />
+
     <link
       rel="stylesheet"
       type="text/css"
@@ -16,233 +33,7 @@
       type="text/css"
       href="https://unpkg.com/sakura.css@1.3.1/css/sakura.css"
     />
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: ui-sans-serif;
-        font-size: 16px;
-        background: beige;
-
-        max-width: 100%;
-        height: 100vh;
-        padding: 0;
-      }
-
-      input[type="checkbox"],
-      form,
-      label {
-        margin: 0;
-      }
-
-      iframe {
-        border: 0;
-      }
-
-      .flex {
-        display: flex;
-      }
-
-      .dic-iframe[src] + p {
-        display: none;
-      }
-
-      .dic-iframe:not([src]) + p {
-        display: block;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-
-        font-size: 24px;
-      }
-
-      article[contenteditable]:empty::before {
-        content: "1. Paste or write something here.\00000a2. Click finish edit.\00000a3. Click on a word and the dictionary will show up.";
-        opacity: 0.8;
-      }
-
-      article[contenteditable] * {
-        outline: 0;
-      }
-
-      @media (max-width: 767px) {
-        input {
-          font-size: 20px;
-        }
-      }
-
-      .reader {
-        display: grid;
-        height: 100vh;
-      }
-
-      @media (max-width: 767px) {
-        .reader {
-          grid: 50% 50% / 100%;
-          gap: 8px;
-          padding: 16px;
-          margin: 0;
-        }
-
-        .is-query-expanded .reader {
-          grid: 64px 100% / 100%;
-        }
-      }
-
-      @media (min-width: 768px) {
-        .reader {
-          grid: 100% / 1fr 33%;
-          gap: 16px;
-          padding: 8px 32px;
-          max-width: 1280px;
-          margin: auto;
-        }
-
-        .is-query-expanded .reader {
-          grid: 100% / 10% 1fr;
-        }
-      }
-
-      .form-dics-query {
-        display: grid;
-        grid: auto / 1fr auto;
-      }
-
-      .leading-controls {
-        display: grid;
-        grid: auto / 1fr auto;
-        margin: 0 0 32px;
-      }
-
-      main {
-        overflow-y: scroll;
-        overflow-x: hidden;
-        padding: 0 4px 0 0;
-      }
-
-      article {
-        padding: 8px;
-        min-height: calc(100% - 72px);
-      }
-
-      .ending-controls {
-        padding: 8px 0;
-      }
-
-      .dics {
-        display: flex;
-        flex-direction: column;
-
-        border: 1px black solid;
-      }
-
-      .dics > *:not(:last-child) {
-        border-bottom: 1px black solid;
-      }
-
-      .aside-row {
-        margin: 0;
-        padding: 4px 8px;
-      }
-
-      .query-alternatives {
-        white-space: nowrap;
-        overflow-x: scroll;
-        overflow-y: hidden;
-        margin: 0 -8px 0 0;
-      }
-
-      .query-alternatives-line {
-        margin: 0;
-      }
-
-      .query-alternatives-line:empty::before {
-        content: "\200b";
-      }
-
-      .query-alternatives .word {
-        padding: 0 4px 0;
-      }
-
-      @media (max-width: 767px) {
-        .query-alternatives {
-          padding: 0 0 8px;
-        }
-      }
-
-      body:not(.is-edit-mode) .edit-mode-only {
-        display: none;
-      }
-
-      .is-edit-mode .edit-mode-hidden {
-        display: none;
-      }
-
-      .is-query-expanded .query-expanded-hidden {
-        display: none;
-      }
-
-      .control-label {
-        display: grid;
-        grid: auto / auto 1fr;
-        gap: 8px;
-        place-items: center start;
-
-        padding: 4px 8px;
-      }
-
-      .control-label-text {
-        white-space: nowrap;
-      }
-
-      .dics-query-input {
-        width: 100%;
-        padding: 0 8px;
-      }
-
-      .dic {
-        flex: 1;
-        overflow: hidden;
-        position: relative;
-      }
-
-      .dic-sub-single:not(.active) {
-        display: none;
-      }
-
-      .dic-sub-single.active ~ .dic {
-        display: none;
-      }
-
-      .dic-iframe {
-        width: 100%;
-        height: 100%;
-      }
-
-      .dic-saol {
-        /* Magic value for skipping the website header */
-        /* 270 is better than 285 when there are multiple entries */
-        margin-top: -270px;
-        height: calc(100% + 270px);
-      }
-
-      .dic-cambridge {
-        /* Skipping the website header */
-        margin-top: -555px;
-        /* Padding more height than header to skip occ */
-        height: calc(100% + 655px);
-      }
-
-      @media (min-width: 768px) {
-        .is-query-expanded .dic-saol {
-          margin-top: -495px;
-          height: calc(100% + 495px);
-        }
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="./css/index.css" />
   </head>
   <body>
     <div class="reader">
@@ -336,10 +127,12 @@
       </aside>
     </div>
     <script type="module">
-      const uniq = (x) => Array.from(new Set(x));
+      import {
+        setIsQueryExpanded,
+        updateDictionaryViews,
+      } from "./js/dictionaryView.mjs";
+      import { toWordSpans, debounce } from "./js/utils.mjs";
 
-      const queryInput = document.querySelector(".dics-query-input");
-      const expandCheckbox = document.querySelector(".label-dics-expand input");
       const clearAndEditButtons = document.querySelectorAll(".control-clear");
       const editButton = document.querySelector(".control-edit");
       const importButtons = document.querySelectorAll(".control-import");
@@ -348,277 +141,8 @@
       );
       const main = document.querySelector("main");
       const article = document.querySelector("article");
-      const queryAlternativesContainer = document.querySelector(
-        ".query-alternatives"
-      );
-      const queryAlternativesLocal = document.querySelector(
-        ".query-alternatives-line-local"
-      );
-      const queryAlternativesRemote = document.querySelector(
-        ".query-alternatives-line-remote"
-      );
-      const queryAlternativesSwedishDefinition = document.querySelector(
-        ".query-alternatives-line-swedish-definition"
-      );
-      const queryAlternativesEnglishTranslation = document.querySelector(
-        ".query-alternatives-line-english-translation"
-      );
-
-      // const folkets = document.querySelector(".dic-folkets");
-      const saol = document.querySelector(".dic-saol");
       const dicSubSingle = document.querySelector(".dic-sub-single");
       const cambridge = document.querySelector(".dic-cambridge");
-
-      const searchGoogleButton = document.querySelector(
-        ".control-search-google"
-      );
-      const deeperAlternativesButton = document.querySelector(
-        ".control-deeper-alternatives"
-      );
-      const searchWiktionaryButton = document.querySelector(
-        ".control-search-wiktionary"
-      );
-      const searchTydaButton = document.querySelector(".control-search-tyda");
-
-      const getDictionary = async () => {
-        const { setMany, set, get, clear, createStore } = await import(
-          "https://cdn.jsdelivr.net/npm/idb-keyval@6/+esm"
-        );
-        const dictionaryStore = createStore("wsr-dictionary", "wsr-dictionary");
-
-        const installDictionary = async (
-          dictionaryName,
-          moduleDataAccessor
-        ) => {
-          const storageKey = `_2_${dictionaryName}`;
-          const dir = `${location.origin}/web-swedish-reader-data/${dictionaryName}`;
-
-          try {
-            const { getInfo } = await import(
-              `${dir}/${dictionaryName}.meta.mjs`
-            );
-            const { chunks, totalEntriesCount } = getInfo();
-
-            if (chunks.length !== 1) {
-              throw new Error(`Can't update ${dictionaryName}.`);
-            }
-            const { name, version: expectedVersion, entriesCount } = chunks[0];
-
-            const stored = await get(storageKey, dictionaryStore);
-
-            if (stored?.version === expectedVersion) {
-              return stored.data;
-            }
-
-            const dictionaryModule = await import(`${dir}/${name}`);
-            const { version: fetchedVersion } = dictionaryModule;
-            if (fetchedVersion !== expectedVersion) {
-              throw new Error(
-                `Remote version mistmatch: fetchedVersion=${fetchedVersion}, expectedVersion=${expectedVersion}`
-              );
-            }
-
-            const data = moduleDataAccessor(dictionaryModule);
-            await set(
-              storageKey,
-              {
-                version: fetchedVersion,
-                data,
-              },
-              dictionaryStore
-            );
-            return data;
-          } catch (err) {
-            queryAlternativesLocal.innerHTML = `Error! ${queryAlternativesLocal.innerHTML}`;
-            throw err;
-          }
-        };
-
-        const installDictionaries = async () => {
-          const [folketsCompound, folketsSven] = await Promise.all([
-            installDictionary(
-              "folkets-compound",
-              (m) => new Set(m.getCompoundParts())
-            ),
-            installDictionary("folkets-sven", (m) => m.getTranslationLookUp()),
-          ]);
-
-          return {
-            folketsCompound,
-            folketsSven,
-          };
-        };
-
-        const query = async (word) => {
-          const { folketsCompound } = await installDictionaries();
-
-          const compoundsSet = new Set();
-
-          const sliceDownForward = (word, init = false, power = 0) => {
-            if (!word) {
-              return [];
-            }
-
-            if (word.length === 1) {
-              return [word];
-            }
-
-            if (folketsCompound.has(word) && power <= 0) {
-              // Break down trailing s because it often causes query miss on Folkets Lexikon.
-              if (!init && word.startsWith("s")) {
-                const withoutLeadingS = word.slice(1);
-
-                if (folketsCompound.has(withoutLeadingS)) {
-                  return ["s", withoutLeadingS];
-                }
-              }
-
-              return [word];
-            }
-
-            for (let i = word.length - 1; i > 0; i--) {
-              const slice = word.slice(0, i);
-
-              if (!init && slice.startsWith("s")) {
-                const withoutLeadingS = slice.slice(1);
-
-                if (folketsCompound.has(withoutLeadingS)) {
-                  return [
-                    "s",
-                    withoutLeadingS,
-                    sliceDownForward(word.slice(i), false, power - 1),
-                  ];
-                }
-              }
-
-              if (folketsCompound.has(slice)) {
-                return [
-                  slice,
-                  sliceDownForward(word.slice(i), false, power - 1),
-                ];
-              }
-            }
-
-            const drop = word.slice(1);
-            return drop
-              ? [word[0], sliceDownForward(drop, false, power - 1)]
-              : [word];
-          };
-
-          const sliceDownBackward = (word, init = false, power = 0) => {
-            if (!word) {
-              return [];
-            }
-
-            if (word.length === 1) {
-              return [word];
-            }
-
-            if (folketsCompound.has(word) && power <= 0) {
-              if (!init && word.endsWith("s")) {
-                const withoutEndingS = word.slice(0, word.length - 1);
-
-                if (folketsCompound.has(withoutEndingS)) {
-                  return [withoutEndingS, "s"];
-                }
-              }
-
-              return [word];
-            }
-
-            for (let i = 1; i < word.length; i++) {
-              const slice = word.slice(i, word.length);
-
-              if (!init && slice.endsWith("s")) {
-                const withoutEndingS = word.slice(i, word.length - 1);
-
-                if (folketsCompound.has(withoutEndingS)) {
-                  return [
-                    sliceDownBackward(word.slice(0, i), false, power - 1),
-                    withoutEndingS,
-                    "s",
-                  ];
-                }
-              }
-
-              if (folketsCompound.has(slice)) {
-                return [
-                  sliceDownBackward(word.slice(0, i), false, power - 1),
-                  slice,
-                ];
-              }
-            }
-
-            const drop = word.slice(0, word.length - 1);
-            return drop
-              ? [sliceDownBackward(drop, false, power - 1), word.slice(-1)]
-              : [word];
-          };
-
-          const join = (x) => {
-            const joined = x
-              .flat(Infinity)
-              .filter((x) => x)
-              .join("+")
-              // Attemp to clean up the result to make better guess for example elgitarr+s+r+i+f+f => elgitarr+s+riff
-              .replace(
-                // First 2 groups are mandatory to not join e.g. o+gillar
-                /(^|\+)([^s])(?:\+([^s]))(?:\+([^s]))?(?:\+([^s]))?(?:\+([^s]))?(?:\+([^s]))?(?:\+([^s]))?(?:\+([^s]))?(?:\+([^s]))?(?:\+([^s]))?/gu,
-                (match, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11) =>
-                  [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11]
-                    .filter((x) => x)
-                    .join("")
-              );
-
-            console.log(
-              `Compound tree for ${word}: ${joined} => ${JSON.stringify(x)}`
-            );
-            return joined;
-          };
-
-          const f0 = join(sliceDownForward(word, true));
-          const f1 = join(sliceDownForward(word, true, 1));
-          compoundsSet.add(f0);
-          compoundsSet.add(f1);
-
-          const b0 = join(sliceDownBackward(word, true));
-          const b1 = join(sliceDownBackward(word, true, 1));
-          compoundsSet.add(b0);
-          compoundsSet.add(b1);
-
-          compoundsSet.delete(word);
-
-          return {
-            baseforms: [],
-            compounds: Array.from(compoundsSet).filter((x) => x),
-          };
-        };
-
-        const queryEnglishTranslation = async (word) => {
-          const { folketsSven } = await installDictionaries();
-          return folketsSven[word] ?? [];
-        };
-
-        return {
-          installDictionaries,
-          query,
-          queryEnglishTranslation,
-        };
-      };
-
-      getDictionary().then((d) => d.installDictionaries());
-
-      const openExternal = (link) => {
-        window.open(link, "_blank", "noopener,noreferrer");
-      };
-
-      const debounce = (fn, ms = 300) => {
-        let timeout;
-        return (...args) => {
-          clearTimeout(timeout);
-          timeout = setTimeout(() => fn(...args), ms);
-        };
-      };
 
       const setMainScrollState = (num) => {
         const url = new URL(location);
@@ -633,167 +157,6 @@
       const onMainScroll = debounce(() => {
         setMainScrollState(main.scrollTop);
       });
-      const toWordSpans = (text, { className = "" } = {}) =>
-        text
-          // Drop format characters e.g. soft hyphen (\u00AD) because it breaks a word into multiple parts which is often not desirable for searching dictionary,
-          // although it could be useful for compoud guessing in some cases
-          .replace(/\p{Cf}/gu, "")
-          .replace(/[\p{L}&<>"']+/gu, (x) => {
-            return `<span class="word ${className}" role="button" tabindex="0">${x
-              .replace(/&/g, "&amp;")
-              .replace(/</g, "&lt;")
-              .replace(/>/g, "&gt;")
-              .replace(/"/g, "&quot;")
-              .replace(/'/g, "&#039;")}</span>`;
-          });
-
-      // Force blur away from SAOL iframe for once because SAOL steals focus to its input with its JS
-      {
-        let getFocusBackFromSaolInterval;
-        saol.addEventListener("load", () => {
-          clearInterval(getFocusBackFromSaolInterval);
-          getFocusBackFromSaolInterval = setInterval(() => {
-            if (document.activeElement === saol) {
-              clearInterval(getFocusBackFromSaolInterval);
-              saol.blur();
-            }
-          }, 50);
-        });
-      }
-
-      const updateDics = async (
-        text,
-        { cleanup = true, keepQueryAlternatives = false } = {}
-      ) => {
-        const cleanedText = (
-          cleanup ? text.replace(/(^[^\p{L}]+|[^\p{L}]+$)/gu, "") : text
-        ).toLocaleLowerCase();
-        const encodedText = encodeURIComponent(cleanedText);
-        const url = new URL(location);
-
-        dicSubSingle.classList.remove("active");
-
-        if (!encodedText) {
-          url.searchParams.delete("dictionaryQuery");
-          history.replaceState(undefined, undefined, url);
-          searchGoogleButton.onclick = undefined;
-          searchWiktionaryButton.onclick = undefined;
-          searchTydaButton.onclick = undefined;
-          queryAlternativesLocal.innerHTML = "";
-          queryAlternativesRemote.innerHTML = "";
-          queryAlternativesEnglishTranslation.innerHTML = "";
-          // folkets.removeAttribute("src");
-          saol.removeAttribute("src");
-          cambridge.removeAttribute("src");
-          return;
-        }
-
-        url.searchParams.set("dictionaryQuery", cleanedText);
-        history.replaceState(undefined, undefined, url);
-        queryInput.value = cleanedText;
-        searchGoogleButton.onclick = () => {
-          openExternal(`https://www.google.com/search?q=${encodedText}`);
-        };
-        searchWiktionaryButton.onclick = () => {
-          openExternal(`https://sv.wiktionary.org/wiki/${encodedText}#Svenska`);
-        };
-        searchTydaButton.onclick = () => {
-          openExternal(`https://tyda.se/search/${encodedText}`);
-        };
-        // {
-        //   const next = `https://folkets-lexikon.csc.kth.se/folkets/service?lang=sv&interface=sv&word=${encodedText}`;
-        //   if (folkets.src !== next) folkets.src = next;
-        // }
-        {
-          const next = `https://svenska.se/tre/?sok=${encodedText}`;
-          if (saol.src !== next) saol.src = next;
-        }
-
-        const setLocal = async () => {
-          const localEntry = await (await getDictionary()).query(cleanedText);
-          if (queryInput.value === cleanedText) {
-            queryAlternativesLocal.innerHTML = !localEntry
-              ? ""
-              : toWordSpans(
-                  uniq([...localEntry.compounds, ...localEntry.baseforms])
-                    .filter((x) => x)
-                    .join(", ")
-                );
-          }
-        };
-
-        const setRemote = async () => {
-          const remoteCompounds = await new Promise(async (resolve) => {
-            const resolveEmpty = () => {
-              resolve({
-                baseform: "",
-                compounds: [],
-                compoundsLemma: [],
-                alternatives: [],
-                definitions: [],
-              });
-            };
-
-            if (location.origin !== "https://arthow4n.github.io") {
-              resolveEmpty();
-              return;
-            }
-
-            try {
-              const res = await fetch(
-                `https://fetch-swedish-word-compounds.fly.dev/compounds?cacheBuster=2&word=${cleanedText}`
-              );
-              if (res.status !== 200) {
-                return resolveEmpty();
-              }
-              resolve(await res.json());
-            } catch {
-              resolveEmpty();
-            }
-          });
-
-          if (queryInput.value === cleanedText) {
-            const wordParts = uniq([
-              remoteCompounds.alternatives.join("+"),
-              remoteCompounds.compoundsLemma.join("+"),
-              remoteCompounds.compounds.join("+"),
-              remoteCompounds.baseform,
-            ])
-              .filter((x) => x)
-              .join(", ");
-            queryAlternativesRemote.innerHTML = toWordSpans(wordParts);
-
-            const definitions = remoteCompounds.definitions.join("; ");
-            queryAlternativesSwedishDefinition.innerHTML =
-              toWordSpans(definitions);
-          }
-        };
-
-        const setEnglishTranslation = async () => {
-          const translations = await (
-            await getDictionary()
-          ).queryEnglishTranslation(cleanedText);
-
-          if (queryInput.value === cleanedText) {
-            queryAlternativesEnglishTranslation.innerHTML = toWordSpans(
-              translations.join("; "),
-              {
-                className: "word-english",
-              }
-            );
-          }
-        };
-
-        Promise.all([
-          !keepQueryAlternatives && setLocal().catch(console.error),
-          !keepQueryAlternatives && setRemote().catch(console.error),
-          setEnglishTranslation().catch(console.error),
-        ]).then(() => {
-          if (queryInput.value === cleanedText && !keepQueryAlternatives) {
-            queryAlternativesContainer.scrollTo(0, 0);
-          }
-        });
-      };
 
       const updateArticle = (input, init = false) => {
         history.pushState(
@@ -833,14 +196,6 @@
         main.addEventListener("scroll", onMainScroll);
       };
 
-      const setIsQueryExpanded = (isExpanded) => {
-        expandCheckbox.checked = isExpanded;
-        document.body.classList.remove("is-query-expanded");
-        if (isExpanded) {
-          document.body.classList.add("is-query-expanded");
-        }
-      };
-
       const setIsEditMode = (isEditable, init = false) => {
         document.body.classList.remove("is-edit-mode");
 
@@ -870,7 +225,7 @@
           "dictionaryQuery"
         );
         if (dictionaryQuery) {
-          updateDics(dictionaryQuery);
+          updateDictionaryViews(dictionaryQuery);
         }
 
         const hashQuery = new URLSearchParams(location.hash.slice(1));
@@ -919,31 +274,9 @@
         }
 
         if (!event.target.classList.contains("word")) return;
-        updateDics(event.target.innerText, {
+        updateDictionaryViews(event.target.innerText, {
           keepQueryAlternatives: isInsideAlternatives,
         });
-      });
-
-      queryInput.closest("form").addEventListener("submit", (event) => {
-        event.preventDefault();
-        updateDics(queryInput.value, { cleanup: false });
-      });
-
-      queryInput.addEventListener("focus", (event) => {
-        queryInput.select();
-      });
-
-      queryInput.addEventListener("paste", (event) => {
-        const text = event.clipboardData.getData("Text");
-        if (text) {
-          event.preventDefault();
-          // Cleaning pasted data makes it easier to paste from SAOL.
-          updateDics(text);
-        }
-      });
-
-      expandCheckbox.addEventListener("change", () => {
-        setIsQueryExpanded(expandCheckbox.checked);
       });
 
       clearAndEditButtons.forEach((x) =>
@@ -996,10 +329,6 @@
           input.click();
         })
       );
-
-      deeperAlternativesButton.addEventListener("click", () => {
-        updateDics(queryInput.value);
-      });
     </script>
   </body>
 </html>

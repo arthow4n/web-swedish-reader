@@ -1,0 +1,225 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: ui-sans-serif;
+  font-size: 16px;
+  background: beige;
+
+  max-width: 100%;
+  height: 100vh;
+  padding: 0;
+}
+
+input[type="checkbox"],
+form,
+label {
+  margin: 0;
+}
+
+iframe {
+  border: 0;
+}
+
+.flex {
+  display: flex;
+}
+
+.dic-iframe[src] + p {
+  display: none;
+}
+
+.dic-iframe:not([src]) + p {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  font-size: 24px;
+}
+
+article[contenteditable]:empty::before {
+  content: "1. Paste or write something here.\00000a2. Click finish edit.\00000a3. Click on a word and the dictionary will show up.";
+  opacity: 0.8;
+}
+
+article[contenteditable] * {
+  outline: 0;
+}
+
+@media (max-width: 767px) {
+  input {
+    font-size: 20px;
+  }
+}
+
+.reader {
+  display: grid;
+  height: 100vh;
+}
+
+@media (max-width: 767px) {
+  .reader {
+    grid: 50% 50% / 100%;
+    gap: 8px;
+    padding: 16px;
+    margin: 0;
+  }
+
+  .is-query-expanded .reader {
+    grid: 64px 100% / 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  .reader {
+    grid: 100% / 1fr 33%;
+    gap: 16px;
+    padding: 8px 32px;
+    max-width: 1280px;
+    margin: auto;
+  }
+
+  .is-query-expanded .reader {
+    grid: 100% / 10% 1fr;
+  }
+}
+
+.form-dics-query {
+  display: grid;
+  grid: auto / 1fr auto;
+}
+
+.leading-controls {
+  display: grid;
+  grid: auto / 1fr auto;
+  margin: 0 0 32px;
+}
+
+main {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding: 0 4px 0 0;
+}
+
+article {
+  padding: 8px;
+  min-height: calc(100% - 72px);
+}
+
+.ending-controls {
+  padding: 8px 0;
+}
+
+.dics {
+  display: flex;
+  flex-direction: column;
+
+  border: 1px black solid;
+}
+
+.dics > *:not(:last-child) {
+  border-bottom: 1px black solid;
+}
+
+.aside-row {
+  margin: 0;
+  padding: 4px 8px;
+}
+
+.query-alternatives {
+  white-space: nowrap;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  margin: 0 -8px 0 0;
+}
+
+.query-alternatives-line {
+  margin: 0;
+}
+
+.query-alternatives-line:empty::before {
+  content: "\200b";
+}
+
+.query-alternatives .word {
+  padding: 0 4px 0;
+}
+
+@media (max-width: 767px) {
+  .query-alternatives {
+    padding: 0 0 8px;
+  }
+}
+
+body:not(.is-edit-mode) .edit-mode-only {
+  display: none;
+}
+
+.is-edit-mode .edit-mode-hidden {
+  display: none;
+}
+
+.is-query-expanded .query-expanded-hidden {
+  display: none;
+}
+
+.control-label {
+  display: grid;
+  grid: auto / auto 1fr;
+  gap: 8px;
+  place-items: center start;
+
+  padding: 4px 8px;
+}
+
+.control-label-text {
+  white-space: nowrap;
+}
+
+.dics-query-input {
+  width: 100%;
+  padding: 0 8px;
+}
+
+.dic {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.dic-sub-single:not(.active) {
+  display: none;
+}
+
+.dic-sub-single.active ~ .dic {
+  display: none;
+}
+
+.dic-iframe {
+  width: 100%;
+  height: 100%;
+}
+
+.dic-saol {
+  /* Magic value for skipping the website header */
+  /* 270 is better than 285 when there are multiple entries */
+  margin-top: -270px;
+  height: calc(100% + 270px);
+}
+
+.dic-cambridge {
+  /* Skipping the website header */
+  margin-top: -555px;
+  /* Padding more height than header to skip occ */
+  height: calc(100% + 655px);
+}
+
+@media (min-width: 768px) {
+  .is-query-expanded .dic-saol {
+    margin-top: -495px;
+    height: calc(100% + 495px);
+  }
+}
