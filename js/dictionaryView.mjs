@@ -119,8 +119,10 @@ export const updateDictionaryViews = async (
       }
 
       try {
+        // Server was on Fly.io because I thought I needed a bigger DB,
+        // moved to Heroku to sleep better on the free tier network bandwidth.
         const res = await fetch(
-          `https://fetch-swedish-word-compounds.fly.dev/compounds?cacheBuster=2&word=${cleanedText}`
+          `https://nameless-sierra-00019.herokuapp.com/compounds?cacheBuster=2&word=${cleanedText}`
         );
         if (res.status !== 200) {
           return resolveEmpty();
