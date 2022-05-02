@@ -150,13 +150,34 @@
       const dicSubSingle = document.querySelector(".dic-sub-single");
       const cambridge = document.querySelector(".dic-cambridge");
 
+      const mainScrollQueryKey = "mainScrollId";
       const setMainScrollState = (num) => {
         const url = new URL(location);
+        let storageId = url.searchParams.get(mainScrollQueryKey);
+
         if (num) {
-          url.searchParams.set("mainScroll", num.toFixed(0));
-        } else {
-          url.searchParams.delete("mainScroll");
+          if (!storageId) {
+            // Not ideal but good enough.
+            storageId = Date.now();
+            url.searchParams.set(mainScrollQueryKey, storageId);
+            history.replaceState(undefined, undefined, url);
+            Object.keys(localStorage)
+              .concat()
+              .sort()
+              .reverse()
+              .slice(2048)
+              .forEach((key) => localStorage.removeItem(key));
+          }
+
+          localStorage.setItem(`${mainScrollQueryKey}=${storageId}`, num);
+          return;
         }
+
+        if (!storageId) {
+          return;
+        }
+
+        localStorage.removeItem(`${mainScrollQueryKey}=${storageId}`);
         history.replaceState(undefined, undefined, url);
       };
 
@@ -192,11 +213,23 @@
           })
           .join("");
 
+        const url = new URL(location);
+        if (!init) {
+          url.searchParams.delete(mainScrollQueryKey);
+          history.replaceState(undefined, undefined, url);
+        }
+
         main.scrollTo(
           0,
           init
-            ? parseInt(new URL(location).searchParams.get("mainScroll"), 10) ||
-                0
+            ? parseInt(
+                localStorage.getItem(
+                  `${mainScrollQueryKey}=${url.searchParams.get(
+                    mainScrollQueryKey
+                  )}`
+                ),
+                10
+              ) || 0
             : 0
         );
         main.addEventListener("scroll", onMainScroll);
