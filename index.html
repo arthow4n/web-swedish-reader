@@ -83,6 +83,10 @@
               class="query-alternatives-line query-alternatives-line-english-translation"
             ></p>
           </div>
+          <div class="query-alternatives-floating-button-row">
+            <!-- TODO: OCR <button type="button" class="control-deeper-alternatives">📸</button  > -->
+            <button type="button" class="control-full-screen">🔳</button>
+          </div>
         </div>
         <form class="form-dics-query">
           <div class="flex">
@@ -139,6 +143,7 @@
       const finishEditButtons = document.querySelectorAll(
         ".control-finish-edit"
       );
+      const fullScreenButton = document.querySelector(".control-full-screen");
       const main = document.querySelector("main");
       const article = document.querySelector("article");
       const dicSubSingle = document.querySelector(".dic-sub-single");
@@ -329,6 +334,15 @@
           input.click();
         })
       );
+
+      fullScreenButton.addEventListener("click", () => {
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+          return;
+        }
+
+        document.documentElement.requestFullscreen();
+      });
     </script>
   </body>
 </html>

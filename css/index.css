@@ -125,6 +125,7 @@ article {
 }
 
 .aside-row {
+  position: relative;
   margin: 0;
   padding: 4px 8px;
 }
@@ -132,8 +133,15 @@ article {
 .query-alternatives {
   white-space: nowrap;
   overflow-x: scroll;
-  overflow-y: hidden;
-  margin: 0 -8px 0 0;
+
+  margin: -4px -8px 0 0;
+  padding: 4px 0 0 0;
+}
+
+.query-alternatives-floating-button-row {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .query-alternatives-line {
@@ -142,6 +150,12 @@ article {
 
 .query-alternatives-line:empty::before {
   content: "\200b";
+}
+
+/* To make sure the button doesn't cover the content */
+.query-alternatives-line:not(:empty):after {
+  content: ' ';
+  padding: 0 96px 0 0;
 }
 
 .query-alternatives .word {
