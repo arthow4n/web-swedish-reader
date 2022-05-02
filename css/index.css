@@ -198,6 +198,10 @@ body:not(.is-edit-mode) .edit-mode-only {
   padding: 0 8px;
 }
 
+.dics-query-input:focus ~ * {
+  display: none;
+}
+
 .dic {
   flex: 1;
   overflow: hidden;
