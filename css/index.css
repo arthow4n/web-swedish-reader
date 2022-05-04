@@ -168,6 +168,10 @@ article {
   }
 }
 
+.word-selected-in-article {
+  background: rgba(128, 128, 128, 0.2);
+}
+
 body:not(.is-edit-mode) .edit-mode-only {
   display: none;
 }

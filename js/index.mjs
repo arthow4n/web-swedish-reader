@@ -136,6 +136,7 @@ const setIsEditMode = (isEditable, init = false) => {
 }
 
 let hasShownCambridgeDictionary = false;
+let currentSelectedWordElementInArticle = null;
 document.addEventListener("click", (event) => {
   if (
     (article.isContentEditable && event.target.closest("article")) ||
@@ -167,7 +168,20 @@ document.addEventListener("click", (event) => {
     return;
   }
 
-  if (!event.target.classList.contains("word")) return;
+  if (!event.target.classList.contains("word")) {
+    return;
+  }
+
+  if (event.target.closest("article")) {
+    currentSelectedWordElementInArticle?.classList.remove(
+      "word-selected-in-article"
+    );
+    currentSelectedWordElementInArticle = event.target;
+    currentSelectedWordElementInArticle.classList.add(
+      "word-selected-in-article"
+    );
+  }
+
   updateDictionaryViews(event.target.innerText, {
     keepQueryAlternatives: isInsideAlternatives,
   });
