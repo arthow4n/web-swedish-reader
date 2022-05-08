@@ -150,7 +150,9 @@ document.addEventListener("click", (event) => {
   if (event.target.classList.contains("word-english")) {
     dicSubSingle.classList.add("active");
     const show = () => {
-      const next = `https://dictionary.cambridge.org/dictionary/english/${event.target.innerText}`;
+      const next = `https://dictionary.cambridge.org/dictionary/english/${encodeURIComponent(
+        event.target.innerText
+      )}`;
       if (cambridge.src !== next) {
         // There's a very aggressive cookie modal inside that doesn't stop showing even after accepting.
         cambridge.sandbox = "";
