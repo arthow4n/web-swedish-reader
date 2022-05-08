@@ -2,7 +2,11 @@ import {
   setIsQueryExpanded,
   updateDictionaryViews,
 } from "./dictionaryView.mjs";
-import { toWordSpans, debounce } from "./utils.mjs";
+import {
+  wordSelectedInAreaClassName,
+  toWordSpans,
+  debounce,
+} from "./utils.mjs";
 
 const clearAndEditButtons = document.querySelectorAll(".control-clear");
 const editButton = document.querySelector(".control-edit");
@@ -94,13 +98,20 @@ const updateArticle = (input, init = false) => {
   main.addEventListener("scroll", onMainScroll);
 };
 
+let currentSelectedWordElementInArticle = null;
+
 const setIsEditMode = (isEditable, init = false) => {
   document.body.classList.remove("is-edit-mode");
 
   if (isEditable) {
     main.removeEventListener("scroll", onMainScroll);
     setMainScrollState(0);
+
     document.body.classList.add("is-edit-mode");
+    currentSelectedWordElementInArticle?.classList.remove(
+      wordSelectedInAreaClassName
+    );
+
     article.contentEditable = "plaintext-only";
     article.focus();
 
@@ -136,7 +147,6 @@ const setIsEditMode = (isEditable, init = false) => {
 }
 
 let hasShownCambridgeDictionary = false;
-let currentSelectedWordElementInArticle = null;
 document.addEventListener("click", (event) => {
   if (
     (article.isContentEditable && event.target.closest("article")) ||
@@ -176,11 +186,11 @@ document.addEventListener("click", (event) => {
 
   if (event.target.closest("article")) {
     currentSelectedWordElementInArticle?.classList.remove(
-      "word-selected-in-article"
+      wordSelectedInAreaClassName
     );
     currentSelectedWordElementInArticle = event.target;
     currentSelectedWordElementInArticle.classList.add(
-      "word-selected-in-article"
+      wordSelectedInAreaClassName
     );
   }
 

@@ -168,9 +168,14 @@ article {
   }
 }
 
-.word-selected-in-article {
+.word-selected-in-area {
   background: rgba(128, 128, 128, 0.2);
 }
+
+.word-has-english-translation {
+  text-decoration: underline dotted rgba(255, 0, 0, 0.2) 4px;
+}
+
 
 body:not(.is-edit-mode) .edit-mode-only {
   display: none;
@@ -244,8 +249,4 @@ body:not(.is-edit-mode) .edit-mode-only {
     margin-top: -495px;
     height: calc(100% + 495px);
   }
-}
-
-.word-has-english-translation {
-  text-decoration: underline dotted rgba(255, 0, 0, 0.2) 4px;
 }

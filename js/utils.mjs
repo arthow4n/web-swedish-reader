@@ -1,4 +1,5 @@
 export const wordClassName = "word";
+export const wordSelectedInAreaClassName = "word-selected-in-area";
 
 export const toWordSpans = (text, { className = "" } = {}) =>
   text
