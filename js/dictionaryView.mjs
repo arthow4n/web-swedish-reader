@@ -1,4 +1,4 @@
-import { toWordSpans, uniq } from "./utils.mjs";
+import { wordClassName, toWordSpans, uniq } from "./utils.mjs";
 import {
   queryCompounds,
   queryEnglishTranslation,
@@ -88,6 +88,20 @@ export const updateDictionaryViews = async (
     if (saol.src !== next) saol.src = next;
   }
 
+  const markAvailableEnglishTranslationsInDescendants = async (element) => {
+    await Promise.all(
+      [...element.querySelectorAll("." + wordClassName)].map(
+        async (wordElement) => {
+          const word = wordElement.innerText;
+          const translations = await queryEnglishTranslation(word);
+          if (translations.length) {
+            wordElement.classList.add("word-has-english-translation");
+          }
+        }
+      )
+    );
+  };
+
   const setLocal = async () => {
     const localEntry = await queryCompounds(cleanedText);
     if (queryInput.value === cleanedText) {
@@ -98,6 +112,8 @@ export const updateDictionaryViews = async (
               .filter((x) => x)
               .join(", ")
           );
+
+      markAvailableEnglishTranslationsInDescendants(queryAlternativesLocal);
     }
   };
 
@@ -143,6 +159,7 @@ export const updateDictionaryViews = async (
         .filter((x) => x)
         .join(", ");
       queryAlternativesRemote.innerHTML = toWordSpans(wordParts);
+      markAvailableEnglishTranslationsInDescendants(queryAlternativesRemote);
 
       const definitions = remoteCompounds.definitions.join("; ");
       queryAlternativesSwedishDefinition.innerHTML = toWordSpans(definitions);

@@ -245,3 +245,7 @@ body:not(.is-edit-mode) .edit-mode-only {
     height: calc(100% + 495px);
   }
 }
+
+.word-has-english-translation {
+  text-decoration: underline dotted rgba(255, 0, 0, 0.2) 4px;
+}
