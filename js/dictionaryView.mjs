@@ -48,13 +48,9 @@ export const updateDictionaryViews = async (
     cleanup ? text.replace(/(^[^\p{L}]+|[^\p{L}]+$)/gu, "") : text
   ).toLocaleLowerCase();
   const encodedText = encodeURIComponent(cleanedText);
-  const url = new URL(location);
-
   dicSubSingle.classList.remove("active");
 
   if (!encodedText) {
-    url.searchParams.delete("dictionaryQuery");
-    history.replaceState(undefined, undefined, url);
     searchGoogleButton.onclick = undefined;
     searchWiktionaryButton.onclick = undefined;
     searchTydaButton.onclick = undefined;
@@ -67,8 +63,6 @@ export const updateDictionaryViews = async (
     return;
   }
 
-  url.searchParams.set("dictionaryQuery", cleanedText);
-  history.replaceState(undefined, undefined, url);
   queryInput.value = cleanedText;
   searchGoogleButton.onclick = () => {
     openExternal(`https://www.google.com/search?q=${encodedText}`);

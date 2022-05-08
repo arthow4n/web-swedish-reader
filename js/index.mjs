@@ -130,6 +130,8 @@ const setIsEditMode = (isEditable, init = false) => {
 };
 
 {
+  // dictionaryQuery=... is mainly for jumping directly to the dictionary view
+  // when loading web-swedish-reader from browser custom search engine.
   const dictionaryQuery = new URL(location).searchParams.get("dictionaryQuery");
   if (dictionaryQuery) {
     updateDictionaryViews(dictionaryQuery);
