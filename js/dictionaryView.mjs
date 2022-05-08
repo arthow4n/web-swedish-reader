@@ -163,6 +163,9 @@ export const updateDictionaryViews = async (
 
       const definitions = remoteCompounds.definitions.join("; ");
       queryAlternativesSwedishDefinition.innerHTML = toWordSpans(definitions);
+      markAvailableEnglishTranslationsInDescendants(
+        queryAlternativesSwedishDefinition
+      );
     }
   };
 
