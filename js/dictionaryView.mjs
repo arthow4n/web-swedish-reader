@@ -79,7 +79,9 @@ export const updateDictionaryViews = async (
   // }
   {
     const next = `https://svenska.se/tre/?sok=${encodedText}`;
-    if (saol.src !== next) saol.src = next;
+    if (saol.src !== next) {
+      saol.src = next;
+    }
   }
 
   const markAvailableEnglishTranslationsInDescendants = async (element) => {
@@ -234,3 +236,27 @@ export const setIsQueryExpanded = (isExpanded) => {
 expandCheckbox.addEventListener("change", () => {
   setIsQueryExpanded(expandCheckbox.checked);
 });
+
+let hasShownCambridgeDictionary = false;
+
+export const showCambridgeDictionary = (word) => {
+  dicSubSingle.classList.add("active");
+
+  const show = () => {
+    const next = `https://dictionary.cambridge.org/dictionary/english/${encodeURIComponent(
+      word
+    )}`;
+    if (cambridge.src !== next) {
+      // There's a very aggressive cookie modal inside that doesn't stop showing even after accepting.
+      cambridge.sandbox = "";
+      cambridge.src = next;
+    }
+  };
+
+  if (hasShownCambridgeDictionary) {
+    show();
+  } else {
+    hasShownCambridgeDictionary = true;
+    setTimeout(show, 1000);
+  }
+};

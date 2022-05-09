@@ -1,5 +1,6 @@
 import {
   setIsQueryExpanded,
+  showCambridgeDictionary,
   updateDictionaryViews,
 } from "./dictionaryView.mjs";
 import {
@@ -16,8 +17,6 @@ const ocrButton = document.querySelector(".control-ocr");
 const fullScreenButton = document.querySelector(".control-full-screen");
 const main = document.querySelector("main");
 const article = document.querySelector("article");
-const dicSubSingle = document.querySelector(".dic-sub-single");
-const cambridge = document.querySelector(".dic-cambridge");
 
 const mainScrollQueryKey = "mainScrollId";
 const setMainScrollState = (num) => {
@@ -148,7 +147,6 @@ const setIsEditMode = (isEditable, init = false) => {
   setIsEditMode(!article.innerText.trim(), true);
 }
 
-let hasShownCambridgeDictionary = false;
 document.addEventListener("click", (event) => {
   if (
     (article.isContentEditable && event.target.closest("article")) ||
@@ -160,25 +158,7 @@ document.addEventListener("click", (event) => {
   const isInsideAlternatives = !!event.target.closest(".query-alternatives");
 
   if (event.target.classList.contains("word-english")) {
-    dicSubSingle.classList.add("active");
-    const show = () => {
-      const next = `https://dictionary.cambridge.org/dictionary/english/${encodeURIComponent(
-        event.target.innerText
-      )}`;
-      if (cambridge.src !== next) {
-        // There's a very aggressive cookie modal inside that doesn't stop showing even after accepting.
-        cambridge.sandbox = "";
-        cambridge.src = next;
-      }
-    };
-
-    if (hasShownCambridgeDictionary) {
-      show();
-    } else {
-      hasShownCambridgeDictionary = true;
-      setTimeout(show, 1500);
-    }
-
+    showCambridgeDictionary(event.target.innerText);
     return;
   }
 
