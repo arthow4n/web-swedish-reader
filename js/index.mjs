@@ -200,7 +200,7 @@ importButtons.forEach((x) =>
   x.addEventListener("click", () => {
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = ".txt";
+    input.accept = "text/plain";
     input.multiple = true;
     input.hidden = true;
     input.onchange = async (event) => {
