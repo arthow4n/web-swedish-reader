@@ -239,16 +239,17 @@ body:not(.is-edit-mode) .edit-mode-only {
   height: 100%;
 }
 
+/* Known issue: These magic numbers don't work well when the page is zoomed in. */
 .dic-saol {
-  /* Magic value for skipping the website header */
+  /* Magic number for skipping the website header */
   /* 270 is better than 285 when there are multiple entries */
   margin-top: -270px;
   height: calc(100% + 270px);
 }
 
 .dic-cambridge {
-  /* Skipping the website header */
+  /* Magic number for skipping the website header */
   margin-top: -555px;
-  /* Padding more height than header to skip occ */
+  /* Adding more height at the end to hide the bottom bar */
   height: calc(100% + 655px);
 }
