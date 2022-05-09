@@ -40,9 +40,25 @@ const openExternal = (link) => {
   window.open(link, "_blank", "noopener,noreferrer");
 };
 
+export const setIsDictionaryVisible = (isExpanded) => {
+  expandCheckbox.checked = isExpanded;
+  document.body.classList.remove("is-dictionary-visible");
+  if (isExpanded) {
+    document.body.classList.add("is-dictionary-visible");
+  }
+};
+
+expandCheckbox.addEventListener("change", () => {
+  setIsDictionaryVisible(expandCheckbox.checked);
+});
+
 export const updateDictionaryViews = async (
   text,
-  { cleanup = true, keepQueryAlternatives = false } = {}
+  {
+    cleanup = true,
+    keepQueryAlternatives = false,
+    forceExpandDictionary = true,
+  } = {}
 ) => {
   const cleanedText = (
     cleanup ? text.replace(/(^[^\p{L}]+|[^\p{L}]+$)/gu, "") : text
@@ -81,6 +97,10 @@ export const updateDictionaryViews = async (
     const next = `https://svenska.se/tre/?sok=${encodedText}`;
     if (saol.src !== next) {
       saol.src = next;
+    }
+
+    if (forceExpandDictionary) {
+      setIsDictionaryVisible(true);
     }
   }
 
@@ -225,22 +245,11 @@ deeperAlternativesButton.addEventListener("click", () => {
   });
 }
 
-export const setIsQueryExpanded = (isExpanded) => {
-  expandCheckbox.checked = isExpanded;
-  document.body.classList.remove("is-query-expanded");
-  if (isExpanded) {
-    document.body.classList.add("is-query-expanded");
-  }
-};
-
-expandCheckbox.addEventListener("change", () => {
-  setIsQueryExpanded(expandCheckbox.checked);
-});
-
 let hasShownCambridgeDictionary = false;
 
 export const showCambridgeDictionary = (word) => {
   dicSubSingle.classList.add("active");
+  setIsDictionaryVisible(true);
 
   const show = () => {
     const next = `https://dictionary.cambridge.org/dictionary/english/${encodeURIComponent(

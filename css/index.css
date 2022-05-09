@@ -62,14 +62,14 @@ article[contenteditable] * {
 
 @media (max-width: 767px) {
   .reader {
-    grid: 50% 50% / 100%;
+    grid: 1fr auto / 100%;
     gap: 8px;
     padding: 16px;
     margin: 0;
   }
 
-  .is-query-expanded .reader {
-    grid: 64px 100% / 100%;
+  .is-dictionary-visible .reader {
+    grid: 50% 50% / 100%;
   }
 }
 
@@ -80,10 +80,6 @@ article[contenteditable] * {
     padding: 8px 32px;
     max-width: 1280px;
     margin: auto;
-  }
-
-  .is-query-expanded .reader {
-    grid: 100% / 10% 1fr;
   }
 }
 
@@ -154,7 +150,7 @@ article {
 
 /* To make sure the button doesn't cover the content */
 .query-alternatives-line:not(:empty):after {
-  content: ' ';
+  content: " ";
   padding: 0 96px 0 0;
 }
 
@@ -176,16 +172,11 @@ article {
   text-decoration: underline dotted rgba(255, 0, 0, 0.2) 4px;
 }
 
-
 body:not(.is-edit-mode) .edit-mode-only {
   display: none;
 }
 
 .is-edit-mode .edit-mode-hidden {
-  display: none;
-}
-
-.is-query-expanded .query-expanded-hidden {
   display: none;
 }
 
@@ -217,6 +208,24 @@ body:not(.is-edit-mode) .edit-mode-only {
   position: relative;
 }
 
+.label-dics-expand {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .dic {
+    display: none;
+  }
+
+  .is-dictionary-visible .dic {
+    display: initial;
+  }
+
+  .label-dics-expand {
+    display: initial;
+  }
+}
+
 .dic-sub-single:not(.active) {
   display: none;
 }
@@ -242,11 +251,4 @@ body:not(.is-edit-mode) .edit-mode-only {
   margin-top: -555px;
   /* Padding more height than header to skip occ */
   height: calc(100% + 655px);
-}
-
-@media (min-width: 768px) {
-  .is-query-expanded .dic-saol {
-    margin-top: -495px;
-    height: calc(100% + 495px);
-  }
 }

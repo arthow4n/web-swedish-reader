@@ -1,5 +1,5 @@
 import {
-  setIsQueryExpanded,
+  setIsDictionaryVisible,
   showCambridgeDictionary,
   updateDictionaryViews,
 } from "./dictionaryView.mjs";
@@ -115,7 +115,7 @@ const setIsEditMode = (isEditable, init = false) => {
     article.focus();
 
     if (!init) {
-      setIsQueryExpanded(false);
+      setIsDictionaryVisible(false);
     }
 
     return;
@@ -138,7 +138,6 @@ const setIsEditMode = (isEditable, init = false) => {
 
   const hashQuery = new URLSearchParams(location.hash.slice(1));
   const hashText = hashQuery.get("text");
-  setIsQueryExpanded(!!(dictionaryQuery && !hashText));
 
   if (hashText) {
     updateArticle(hashText, true);
@@ -166,7 +165,8 @@ document.addEventListener("click", (event) => {
     return;
   }
 
-  if (event.target.closest("article")) {
+  const isInsideArticle = event.target.closest("article");
+  if (isInsideArticle) {
     currentSelectedWordElementInArticle?.classList.remove(
       wordSelectedInAreaClassName
     );
@@ -178,6 +178,7 @@ document.addEventListener("click", (event) => {
 
   updateDictionaryViews(event.target.innerText, {
     keepQueryAlternatives: isInsideAlternatives,
+    forceExpandDictionary: !isInsideArticle,
   });
 });
 
