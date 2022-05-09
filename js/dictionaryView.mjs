@@ -5,7 +5,9 @@ import {
 } from "./dictionaryDatabase.mjs";
 
 const queryInput = document.querySelector(".dics-query-input");
-const expandCheckbox = document.querySelector(".label-dics-expand input");
+const keepDictionaryVisibleCheckBox = document.querySelector(
+  ".label-dics-expand input"
+);
 const queryAlternativesContainer = document.querySelector(
   ".query-alternatives"
 );
@@ -47,7 +49,6 @@ export const checkIsDictionaryVisible = () => {
 };
 
 export const setIsDictionaryVisible = (isVisible) => {
-  expandCheckbox.checked = isVisible;
   document.body.classList.remove(isDictionaryVisibleClassName);
   // Don't clean up SAOL iframe's src, because it could be that the user wants to quickly toggle between states.
 
@@ -59,16 +60,24 @@ export const setIsDictionaryVisible = (isVisible) => {
   }
 };
 
-expandCheckbox.addEventListener("change", () => {
-  setIsDictionaryVisible(expandCheckbox.checked);
+export const hideDictionaryIfNotOpenedFromCheckBox = () => {
+  if (!keepDictionaryVisibleCheckBox.checked) {
+    setIsDictionaryVisible(false);
+  }
+};
+
+keepDictionaryVisibleCheckBox.addEventListener("change", () => {
+  setIsDictionaryVisible(keepDictionaryVisibleCheckBox.checked);
 });
+
+setIsDictionaryVisible(keepDictionaryVisibleCheckBox.checked);
 
 export const updateDictionaryViews = async (
   text,
   {
     cleanup = true,
     keepQueryAlternatives = false,
-    forceExpandDictionary = true,
+    shouldSetDictionaryToVisible = true,
   } = {}
 ) => {
   const cleanedText = (
@@ -116,7 +125,7 @@ export const updateDictionaryViews = async (
       saol.removeAttribute("src");
     }
 
-    if (forceExpandDictionary) {
+    if (shouldSetDictionaryToVisible) {
       setIsDictionaryVisible(true);
     }
   }

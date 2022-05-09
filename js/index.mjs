@@ -1,5 +1,5 @@
 import {
-  setIsDictionaryVisible,
+  hideDictionaryIfNotOpenedFromCheckBox,
   showCambridgeDictionary,
   updateDictionaryViews,
 } from "./dictionaryView.mjs";
@@ -114,10 +114,6 @@ const setIsEditMode = (isEditable, init = false) => {
     article.contentEditable = "plaintext-only";
     article.focus();
 
-    if (!init) {
-      setIsDictionaryVisible(false);
-    }
-
     return;
   }
 
@@ -174,11 +170,12 @@ document.addEventListener("click", (event) => {
     currentSelectedWordElementInArticle.classList.add(
       wordSelectedInAreaClassName
     );
+    hideDictionaryIfNotOpenedFromCheckBox();
   }
 
   updateDictionaryViews(event.target.innerText, {
     keepQueryAlternatives: isInsideAlternatives,
-    forceExpandDictionary: !isInsideArticle,
+    shouldSetDictionaryToVisible: !isInsideArticle,
   });
 });
 
