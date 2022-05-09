@@ -40,11 +40,22 @@ const openExternal = (link) => {
   window.open(link, "_blank", "noopener,noreferrer");
 };
 
-export const setIsDictionaryVisible = (isExpanded) => {
-  expandCheckbox.checked = isExpanded;
-  document.body.classList.remove("is-dictionary-visible");
-  if (isExpanded) {
-    document.body.classList.add("is-dictionary-visible");
+const isDictionaryVisibleClassName = "is-dictionary-visible";
+
+export const checkIsDictionaryVisible = () => {
+  return document.body.classList.contains(isDictionaryVisibleClassName);
+};
+
+export const setIsDictionaryVisible = (isVisible) => {
+  expandCheckbox.checked = isVisible;
+  document.body.classList.remove(isDictionaryVisibleClassName);
+  // Don't clean up SAOL iframe's src, because it could be that the user wants to quickly toggle between states.
+
+  if (isVisible) {
+    document.body.classList.add(isDictionaryVisibleClassName);
+    if (saol.src !== saol.dataset.src) {
+      saol.src = saol.dataset.src;
+    }
   }
 };
 
@@ -95,8 +106,14 @@ export const updateDictionaryViews = async (
   // }
   {
     const next = `https://svenska.se/tre/?sok=${encodedText}`;
-    if (saol.src !== next) {
-      saol.src = next;
+    saol.dataset.src = next;
+
+    if (checkIsDictionaryVisible()) {
+      if (saol.src !== next) {
+        saol.src = next;
+      }
+    } else {
+      saol.removeAttribute("src");
     }
 
     if (forceExpandDictionary) {
