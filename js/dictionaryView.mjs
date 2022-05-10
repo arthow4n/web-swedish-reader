@@ -54,7 +54,7 @@ export const setIsDictionaryVisible = (isVisible) => {
 
   if (isVisible) {
     document.body.classList.add(isDictionaryVisibleClassName);
-    if (saol.src !== saol.dataset.src) {
+    if (saol.src !== saol.dataset.src && saol.dataset.src) {
       saol.src = saol.dataset.src;
     }
   }
