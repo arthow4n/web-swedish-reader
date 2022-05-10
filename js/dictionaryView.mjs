@@ -1,4 +1,9 @@
-import { wordClassName, toWordSpans, uniq } from "./utils.mjs";
+import {
+  wordClassName,
+  toWordSpans,
+  uniq,
+  isElementVisible,
+} from "./utils.mjs";
 import {
   queryCompounds,
   queryEnglishTranslation,
@@ -295,3 +300,10 @@ export const showCambridgeDictionary = (word) => {
     setTimeout(show, 1000);
   }
 };
+
+window.addEventListener("resize", () => {
+  if (!isElementVisible(keepDictionaryVisibleCheckBox)) {
+    keepDictionaryVisibleCheckBox.checked = true;
+    setIsDictionaryVisible(keepDictionaryVisibleCheckBox.checked);
+  }
+});

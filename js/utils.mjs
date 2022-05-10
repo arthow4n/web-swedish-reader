@@ -24,3 +24,7 @@ export const debounce = (fn, ms = 300) => {
     timeout = setTimeout(() => fn(...args), ms);
   };
 };
+
+export const isElementVisible = (x) => {
+  return x.offsetWidth || x.offsetHeight || x.getClientRects().length;
+};
