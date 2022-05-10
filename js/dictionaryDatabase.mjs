@@ -190,7 +190,10 @@ export const queryCompounds = async (word) => {
   compoundsSet.add(b0);
   compoundsSet.add(b1);
 
+  // Move/append the original word to the end,
+  // so it's easier for the user to jump back from query alternatives to the original word.
   compoundsSet.delete(word);
+  compoundsSet.add(word);
 
   return {
     baseforms: [],
