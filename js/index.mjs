@@ -142,6 +142,7 @@ const setIsEditMode = (isEditable, init = false) => {
   setIsEditMode(!article.innerText.trim(), true);
 }
 
+let lastSwedishWordClickEventTarget = null;
 document.addEventListener("click", (event) => {
   if (
     (article.isContentEditable && event.target.closest("article")) ||
@@ -175,8 +176,11 @@ document.addEventListener("click", (event) => {
 
   updateDictionaryViews(event.target.innerText, {
     keepQueryAlternatives: isInsideAlternatives,
-    shouldSetDictionaryToVisible: !isInsideArticle,
+    shouldSetDictionaryToVisible:
+      isInsideAlternatives && lastSwedishWordClickEventTarget === event.target,
   });
+
+  lastSwedishWordClickEventTarget = event.target;
 });
 
 clearAndEditButtons.forEach((x) =>
