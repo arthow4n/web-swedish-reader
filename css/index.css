@@ -64,12 +64,14 @@ article[contenteditable] * {
   .reader {
     grid: 1fr auto / 100%;
     gap: 8px;
-    padding: 16px;
+    /* Extra padding at the bottom since it's not so easy to touch the buttons in mobile*/
+    padding: 16px 16px 40px;
     margin: 0;
   }
 
   .is-dictionary-visible .reader {
     grid: 50% 50% / 100%;
+    padding: 16px;
   }
 }
 
