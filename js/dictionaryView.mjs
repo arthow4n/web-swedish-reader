@@ -25,6 +25,9 @@ const queryAlternativesRemote = document.querySelector(
 const queryAlternativesSwedishDefinition = document.querySelector(
   ".query-alternatives-line-swedish-definition"
 );
+const queryAlternativesSwedishDefinition2 = document.querySelector(
+  ".query-alternatives-line-swedish-definition-2"
+);
 const queryAlternativesEnglishTranslation = document.querySelector(
   ".query-alternatives-line-english-translation"
 );
@@ -167,13 +170,7 @@ export const updateDictionaryViews = async (
   const setRemote = async () => {
     const remoteCompounds = await new Promise(async (resolve) => {
       const resolveEmpty = () => {
-        resolve({
-          baseform: "",
-          compounds: [],
-          compoundsLemma: [],
-          alternatives: [],
-          definitions: [],
-        });
+        resolve([]);
       };
 
       if (location.origin !== "https://arthow4n.github.io") {
@@ -185,7 +182,7 @@ export const updateDictionaryViews = async (
         // Server was on Fly.io because I thought I needed a bigger DB,
         // moved to Heroku to sleep better on the free tier network bandwidth.
         const res = await fetch(
-          `https://nameless-sierra-00019.herokuapp.com/compounds?cacheBuster=2&word=${encodedText}`
+          `https://nameless-sierra-00019.herokuapp.com/analyse?word=${encodedText}`
         );
         if (res.status !== 200) {
           return resolveEmpty();
@@ -197,21 +194,34 @@ export const updateDictionaryViews = async (
     });
 
     if (queryInput.value === cleanedText) {
+      const saolCompounds = remoteCompounds.filter(
+        (r) => r.upstream === "saol"
+      );
+      const soCompounds = remoteCompounds.filter((r) => r.upstream === "so");
+
       const wordParts = uniq([
-        remoteCompounds.alternatives.join("+"),
-        remoteCompounds.compoundsLemma.join("+"),
-        remoteCompounds.compounds.join("+"),
-        remoteCompounds.baseform,
+        saolCompounds.map((r) => r.baseform).join("+"),
+        saolCompounds.flatMap((r) => r.compoundsLemma).join("+"),
+        saolCompounds.flatMap((r) => r.compounds).join("+"),
       ])
         .filter((x) => x)
         .join(", ");
+
       queryAlternativesRemote.innerHTML = toWordSpans(wordParts);
       markAvailableEnglishTranslationsInDescendants(queryAlternativesRemote);
 
-      const definitions = remoteCompounds.definitions.join("; ");
-      queryAlternativesSwedishDefinition.innerHTML = toWordSpans(definitions);
+      queryAlternativesSwedishDefinition.innerHTML = toWordSpans(
+        saolCompounds.flatMap((r) => r.definitions).join("; ")
+      );
       markAvailableEnglishTranslationsInDescendants(
         queryAlternativesSwedishDefinition
+      );
+
+      queryAlternativesSwedishDefinition2.innerHTML = toWordSpans(
+        soCompounds.flatMap((r) => r.definitions).join("; ")
+      );
+      markAvailableEnglishTranslationsInDescendants(
+        queryAlternativesSwedishDefinition2
       );
     }
   };
