@@ -1,5 +1,6 @@
 import {
   hideDictionaryIfNotOpenedFromCheckBox,
+  queryInput,
   showCambridgeDictionary,
   updateDictionaryViews,
 } from "./dictionaryView.mjs";
@@ -174,11 +175,22 @@ document.addEventListener("click", (event) => {
     hideDictionaryIfNotOpenedFromCheckBox();
   }
 
-  updateDictionaryViews(event.target.innerText, {
-    keepQueryAlternatives: isInsideAlternatives,
-    shouldSetDictionaryToVisible:
-      isInsideAlternatives && lastSwedishWordClickEventTarget === event.target,
-  });
+  const shouldGoToDeeperAlternative =
+    isInsideAlternatives &&
+    lastSwedishWordClickEventTarget === event.target &&
+    event.target.innerText === queryInput.value;
+
+  updateDictionaryViews(
+    event.target.innerText,
+    shouldGoToDeeperAlternative
+      ? undefined
+      : {
+          keepQueryAlternatives: isInsideAlternatives,
+          shouldSetDictionaryToVisible:
+            isInsideAlternatives &&
+            lastSwedishWordClickEventTarget === event.target,
+        }
+  );
 
   lastSwedishWordClickEventTarget = event.target;
 });

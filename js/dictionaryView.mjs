@@ -9,7 +9,7 @@ import {
   queryEnglishTranslation,
 } from "./dictionaryDatabase.mjs";
 
-const queryInput = document.querySelector(".dics-query-input");
+export const queryInput = document.querySelector(".dics-query-input");
 const keepDictionaryVisibleCheckBox = document.querySelector(
   ".label-dics-expand input"
 );
