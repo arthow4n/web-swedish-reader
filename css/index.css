@@ -142,6 +142,38 @@ article {
   right: 0;
 }
 
+.query-alternatives-so-expanded .query-alternatives-line {
+  display: none;
+}
+
+.query-alternatives-so-expanded .query-alternatives-line-swedish-definition-2 {
+  display: block;
+  white-space: normal;
+  max-height: 20vh;
+
+  overflow-x: hidden;
+  overflow-y: scroll;
+
+  /* To make sure the flaoting button doesn't cover the content */
+  padding-right: 48px;
+
+  padding-bottom: 8px;
+  border-bottom: 1px solid gray;
+  margin-bottom: 8px;
+}
+
+.query-alternatives-so-expanded .query-alternatives-line-english-translation {
+  display: block;
+  white-space: normal;
+  max-height: 20vh;
+
+  overflow-x: hidden;
+  overflow-y: scroll;
+
+  /* To make sure the flaoting button doesn't cover the content */
+  padding-right: 48px;
+}
+
 .query-alternatives-line {
   margin: 0;
 }
@@ -150,10 +182,10 @@ article {
   content: "\200b";
 }
 
-/* To make sure the button doesn't cover the content */
+/* To make sure the flaoting button  doesn't cover the content */
 .query-alternatives-line:not(:empty):after {
   content: " ";
-  padding: 0 96px 0 0;
+  padding: 0 48px 0 0;
 }
 
 .query-alternatives .word {

@@ -44,7 +44,7 @@ const searchGoogleButton = document.querySelector(".control-search-google");
 const searchWiktionaryButton = document.querySelector(
   ".control-search-wiktionary"
 );
-const searchTydaButton = document.querySelector(".control-search-tyda");
+const toggleSoButton = document.querySelector(".control-toggle-so");
 
 const openExternal = (link) => {
   window.open(link, "_blank", "noopener,noreferrer");
@@ -97,7 +97,7 @@ export const updateDictionaryViews = async (
   if (!encodedText) {
     searchGoogleButton.onclick = undefined;
     searchWiktionaryButton.onclick = undefined;
-    searchTydaButton.onclick = undefined;
+    toggleSoButton.onclick = undefined;
     queryAlternativesLocal.innerHTML = "";
     queryAlternativesRemote.innerHTML = "";
     queryAlternativesEnglishTranslation.innerHTML = "";
@@ -114,8 +114,10 @@ export const updateDictionaryViews = async (
   searchWiktionaryButton.onclick = () => {
     openExternal(`https://sv.wiktionary.org/wiki/${encodedText}#Svenska`);
   };
-  searchTydaButton.onclick = () => {
-    openExternal(`https://tyda.se/search/${encodedText}`);
+  toggleSoButton.onclick = () => {
+    queryAlternativesContainer.classList.toggle(
+      "query-alternatives-so-expanded"
+    );
   };
   // {
   //   const next = `https://folkets-lexikon.csc.kth.se/folkets/service?lang=sv&interface=sv&word=${encodedText}`;
