@@ -236,11 +236,12 @@ export const updateDictionaryViews = async (
 
   const setEnglishTranslation = async () => {
     queryAlternativesEnglishTranslation.innerHTML = "";
+
     const translations = await queryEnglishTranslation(cleanedText);
 
     if (queryInput.value === cleanedText) {
       queryAlternativesEnglishTranslation.innerHTML = toWordSpans(
-        translations.join("; "),
+        translations.length ? translations.join("; ") : cleanedText,
         {
           className: "word-english",
         }
