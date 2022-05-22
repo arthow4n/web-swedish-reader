@@ -155,6 +155,8 @@ export const updateDictionaryViews = async (
   };
 
   const setLocal = async () => {
+    queryAlternativesLocal.innerHTML = "";
+
     const localEntry = await queryCompounds(cleanedText);
     if (queryInput.value === cleanedText) {
       queryAlternativesLocal.innerHTML = !localEntry
@@ -171,6 +173,10 @@ export const updateDictionaryViews = async (
 
   const setRemote = async () => {
     const remoteCompounds = await new Promise(async (resolve) => {
+      queryAlternativesRemote.innerHTML = "";
+      queryAlternativesSwedishDefinition.innerHTML = "";
+      queryAlternativesSwedishDefinition2.innerHTML = "";
+
       const resolveEmpty = () => {
         resolve([]);
       };
@@ -229,6 +235,7 @@ export const updateDictionaryViews = async (
   };
 
   const setEnglishTranslation = async () => {
+    queryAlternativesEnglishTranslation.innerHTML = "";
     const translations = await queryEnglishTranslation(cleanedText);
 
     if (queryInput.value === cleanedText) {
