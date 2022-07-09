@@ -41,12 +41,19 @@
       <main>
         <div class="leading-controls">
           <span>
-            <button class="control-clear edit-mode-hidden">Clear</button>
-            <button class="control-edit edit-mode-hidden">Edit</button>
-            <button class="control-finish-edit edit-mode-only">
+            <button type="button" class="control-clear edit-mode-hidden">
+              Clear
+            </button>
+            <button type="button" class="control-edit edit-mode-hidden">
+              Edit
+            </button>
+            <button type="button" class="control-finish-edit edit-mode-only">
               Finish edit
             </button>
-            <button class="control-import edit-mode-only">Import</button></span
+            <button type="button" class="control-import edit-mode-only">
+              Import
+            </button>
+            <button type="button" class="control-ocr">OCR</button></span
           >
           <span>
             <a href="bookmarklets.html" target="_blank">Bookmarklets</a> |
@@ -60,14 +67,15 @@
         </div>
         <article></article>
         <div class="ending-controls edit-mode-hidden">
-          <button class="control-clear">Clear</button>
-          <button class="control-import">Import</button>
+          <button type="button" class="control-clear">Clear</button>
+          <button type="button" class="control-import">Import</button>
         </div>
       </main>
       <aside class="dics">
         <div class="aside-row edit-mode-only">
-          <button class="control-finish-edit">Finish edit</button>
-          <button class="control-import">Import</button>
+          <button type="button" class="control-finish-edit">Finish edit</button>
+          <button type="button" class="control-import">Import</button>
+          <button type="button" class="control-ocr">OCR</button>
         </div>
         <div class="aside-row">
           <div class="query-alternatives">
@@ -88,9 +96,7 @@
             ></p>
           </div>
           <div class="query-alternatives-floating-button-row">
-            <!-- OCR button is temporarily hidden because it's too slow. It's better to use other OCR apps then import the plain text output. -->
-            <button hidden type="button" class="control-ocr">📸</button
-            ><button type="button" class="control-full-screen">🔳</button>
+            <button type="button" class="control-full-screen">🔳</button>
           </div>
         </div>
         <form class="form-dics-query">
