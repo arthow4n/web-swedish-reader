@@ -9,6 +9,7 @@ import {
   toWordSpans,
   debounce,
 } from "./utils.mjs";
+import { speakOnClick } from "./tts.mjs";
 
 const clearAndEditButtons = document.querySelectorAll(".control-clear");
 const editButton = document.querySelector(".control-edit");
@@ -31,7 +32,7 @@ const setMainScrollState = (num) => {
       url.searchParams.set(mainScrollQueryKey, storageId);
       history.replaceState(undefined, undefined, url);
       Object.keys(localStorage)
-        .concat()
+        .filter((k) => k.startsWith(`${mainScrollQueryKey}=`))
         .sort()
         .reverse()
         .slice(2048)
@@ -155,6 +156,7 @@ document.addEventListener("click", (event) => {
   const isInsideAlternatives = !!event.target.closest(".query-alternatives");
 
   if (event.target.classList.contains("word-english")) {
+    speakOnClick("en", event.target.innerText);
     showCambridgeDictionary(event.target.innerText);
     return;
   }
@@ -162,6 +164,8 @@ document.addEventListener("click", (event) => {
   if (!event.target.classList.contains("word")) {
     return;
   }
+
+  speakOnClick("sv", event.target.innerText);
 
   const isInsideArticle = event.target.closest("article");
   if (isInsideArticle) {

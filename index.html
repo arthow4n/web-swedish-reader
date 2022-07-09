@@ -96,7 +96,8 @@
             ></p>
           </div>
           <div class="query-alternatives-floating-button-row">
-            <button type="button" class="control-full-screen">🔳</button>
+            <button type="button" class="control-settings">⚙</button
+            ><button type="button" class="control-full-screen">🔳</button>
           </div>
         </div>
         <form class="form-dics-query">
@@ -141,6 +142,22 @@
         </div>
       </aside>
     </div>
+    <dialog class="settings-modal">
+      <section>
+        <h2>Settings</h2>
+        <div>
+          <button class="control-settings-close">Close</button>
+        </div>
+        <section>
+          <h3>Text-to-speech (TTS)</h3>
+          <label>
+            TTS on word click:
+            <input type="checkbox" class="settings-tts-on-click-checkbox" />
+          </label>
+        </section>
+        <div><button class="control-settings-close">Close</button></div>
+      </section>
+    </dialog>
     <script type="module" src="./js/index.mjs"></script>
   </body>
 </html>
