@@ -287,3 +287,8 @@ body:not(.is-edit-mode) .edit-mode-only {
   /* Adding more height at the end to hide the bottom bar */
   height: calc(100% + 655px);
 }
+
+.english-reader-mode
+  .query-alternatives-line:not(.query-alternatives-line-english-translation) {
+  display: none;
+}

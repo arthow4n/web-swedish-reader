@@ -3,6 +3,7 @@ import {
   queryInput,
   showCambridgeDictionary,
   updateDictionaryViews,
+  englishReaderModeCheckBox,
 } from "./dictionaryView.mjs";
 import {
   wordSelectedInAreaClassName,
@@ -153,9 +154,10 @@ document.addEventListener("click", (event) => {
     return;
   }
 
-  const isInsideAlternatives = !!event.target.closest(".query-alternatives");
-
-  if (event.target.classList.contains("word-english")) {
+  if (
+    event.target.classList.contains("word-english") ||
+    englishReaderModeCheckBox.checked
+  ) {
     speakOnClick("en", event.target.innerText);
     showCambridgeDictionary(event.target.innerText);
     return;
@@ -179,6 +181,7 @@ document.addEventListener("click", (event) => {
     hideDictionaryIfNotOpenedFromCheckBox();
   }
 
+  const isInsideAlternatives = !!event.target.closest(".query-alternatives");
   const shouldGoToDeeperAlternative =
     isInsideAlternatives &&
     lastSwedishWordClickEventTarget === event.target &&

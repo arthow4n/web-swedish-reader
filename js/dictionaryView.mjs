@@ -35,6 +35,9 @@ const queryAlternativesEnglishTranslation = document.querySelector(
 const deeperAlternativesButton = document.querySelector(
   ".control-deeper-alternatives"
 );
+export const englishReaderModeCheckBox = document.querySelector(
+  ".settings-english-reader-mode-checkbox"
+);
 
 // const folkets = document.querySelector(".dic-folkets");
 const saol = document.querySelector(".dic-saol");
@@ -305,7 +308,7 @@ deeperAlternativesButton.addEventListener("click", () => {
   });
 }
 
-let hasShownCambridgeDictionary = false;
+let hasShownCambridgeDictionaryDelayedPrompt = false;
 
 export const showCambridgeDictionary = (word) => {
   dicSubSingle.classList.add("active");
@@ -322,10 +325,10 @@ export const showCambridgeDictionary = (word) => {
     }
   };
 
-  if (hasShownCambridgeDictionary) {
+  if (hasShownCambridgeDictionaryDelayedPrompt) {
     show();
   } else {
-    hasShownCambridgeDictionary = true;
+    hasShownCambridgeDictionaryDelayedPrompt = true;
     setTimeout(show, 1000);
   }
 };
@@ -334,5 +337,15 @@ window.addEventListener("resize", () => {
   if (!isElementVisible(keepDictionaryVisibleCheckBox)) {
     keepDictionaryVisibleCheckBox.checked = true;
     setIsDictionaryVisible(keepDictionaryVisibleCheckBox.checked);
+  }
+});
+
+const englishReaderModeClassName = "english-reader-mode";
+englishReaderModeCheckBox.addEventListener("change", () => {
+  dicSubSingle.classList.add("active");
+  document.body.classList.remove(englishReaderModeClassName);
+  if (englishReaderModeCheckBox.checked) {
+    hasShownCambridgeDictionaryDelayedPrompt = true;
+    document.body.classList.add(englishReaderModeClassName);
   }
 });
