@@ -1,21 +1,19 @@
-import { settingKeys } from "./settings.mjs";
+import { readSetting, settingKeys, writeSetting } from "./settings.mjs";
 
 const ttsOnClickCheckbox = document.querySelector(
   ".settings-tts-on-click-checkbox"
 );
 
-ttsOnClickCheckbox.checked = !!localStorage.getItem(
-  settingKeys.__settings_ttsOnClickCheckbox_checked
+ttsOnClickCheckbox.checked = readSetting(
+  settingKeys.__settings_ttsOnClickCheckbox_checked,
+  true
 );
+
 ttsOnClickCheckbox.addEventListener("change", () => {
-  if (ttsOnClickCheckbox.checked) {
-    localStorage.setItem(
-      settingKeys.__settings_ttsOnClickCheckbox_checked,
-      true
-    );
-  } else {
-    localStorage.removeItem(settingKeys.__settings_ttsOnClickCheckbox_checked);
-  }
+  writeSetting(
+    settingKeys.__settings_ttsOnClickCheckbox_checked,
+    ttsOnClickCheckbox.checked
+  );
 });
 
 export const speakOnClick = (lang, text) => {
