@@ -8,6 +8,7 @@ import {
   queryCompounds,
   queryEnglishTranslation,
 } from "./dictionaryDatabase.mjs";
+import { readSetting, settingKeys, writeSetting } from "./settings.mjs";
 
 export const queryInput = document.querySelector(".dics-query-input");
 const keepDictionaryVisibleCheckBox = document.querySelector(
@@ -75,9 +76,17 @@ export const hideDictionaryIfNotOpenedFromCheckBox = () => {
 };
 
 keepDictionaryVisibleCheckBox.addEventListener("change", () => {
+  writeSetting(
+    settingKeys.__settings_keepDictionaryVisibleCheckBox_checked,
+    keepDictionaryVisibleCheckBox.checked
+  );
   setIsDictionaryVisible(keepDictionaryVisibleCheckBox.checked);
 });
 
+keepDictionaryVisibleCheckBox.checked = readSetting(
+  settingKeys.__settings_keepDictionaryVisibleCheckBox_checked,
+  true
+);
 setIsDictionaryVisible(keepDictionaryVisibleCheckBox.checked);
 
 export const updateDictionaryViews = async (
