@@ -154,8 +154,8 @@ article {
   overflow-x: hidden;
   overflow-y: scroll;
 
-  /* To make sure the flaoting button doesn't cover the content */
-  padding-right: 48px;
+  /* To make sure the floating button doesn't cover the content */
+  padding-right: 96px;
 
   padding-bottom: 8px;
   border-bottom: 1px solid gray;
@@ -170,8 +170,8 @@ article {
   overflow-x: hidden;
   overflow-y: scroll;
 
-  /* To make sure the flaoting button doesn't cover the content */
-  padding-right: 48px;
+  /* To make sure the floating button doesn't cover the content */
+  padding-right: 96px;
 }
 
 .query-alternatives-line {
@@ -182,10 +182,10 @@ article {
   content: "\200b";
 }
 
-/* To make sure the flaoting button  doesn't cover the content */
+/* To make sure the floating button  doesn't cover the content */
 .query-alternatives-line:not(:empty):after {
   content: " ";
-  padding: 0 48px 0 0;
+  padding: 0 96px 0 0;
 }
 
 .query-alternatives .word {
