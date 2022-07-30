@@ -154,6 +154,13 @@
             TTS on word click:
             <input type="checkbox" class="settings-tts-on-click-checkbox" />
           </label>
+          <label>
+            Keep speaker running (turn on if TTS doesn't speak the word fully):
+            <input
+              type="checkbox"
+              class="settings-keep-speaker-running-checkbox"
+            />
+          </label>
         </section>
         <section>
           <h3>Language</h3>
@@ -169,5 +176,10 @@
       </section>
     </dialog>
     <script type="module" src="./js/index.mjs"></script>
+    <audio
+      class="audio-keep-speaker-running"
+      loop
+      src="/web-swedish-reader-data/misc/keep-speaker-running.mp3"
+    ></audio>
   </body>
 </html>

@@ -28,3 +28,11 @@ export const debounce = (fn, ms = 300) => {
 export const isElementVisible = (x) => {
   return x.offsetWidth || x.offsetHeight || x.getClientRects().length;
 };
+
+export const sleep = async (ms) => {
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, ms);
+  });
+};
