@@ -199,10 +199,8 @@ export const updateDictionaryViews = async (
       }
 
       try {
-        // Server was on Fly.io because I thought I needed a bigger DB,
-        // moved to Heroku to sleep better on the free tier network bandwidth.
         const res = await fetch(
-          `https://nameless-sierra-00019.herokuapp.com/analyse?cacheBuster=3&word=${encodedText}`
+          `https://fetch-swe-compounds.deno.dev/analyse?cacheBuster=3&word=${encodedText}`
         );
         if (res.status !== 200) {
           return resolveEmpty();
