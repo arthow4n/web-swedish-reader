@@ -11,6 +11,7 @@ import {
   debounce,
 } from "./utils.mjs";
 import { speakOnClick } from "./tts.mjs";
+import { getCurrentSourceLanguage } from "./dictionaryDatabase.mjs";
 
 const clearAndEditButtons = document.querySelectorAll(".control-clear");
 const editButton = document.querySelector(".control-edit");
@@ -167,7 +168,7 @@ document.addEventListener("click", (event) => {
     return;
   }
 
-  speakOnClick("sv", event.target.innerText);
+  speakOnClick(getCurrentSourceLanguage(), event.target.innerText);
 
   const isInsideArticle = event.target.closest("article");
   if (isInsideArticle) {

@@ -121,6 +121,17 @@
             }
           },
         },
+        {
+          name: "(Experimental) WSR + Body Text / Italian",
+          description:
+            "Get all text in the web page (body.innerText) then open with WSR. Source language of the text is set to Italian.",
+          code: () => {
+            const link =
+              "https://arthow4n.github.io/web-swedish-reader/?sourceLanguage=it#text=" +
+              encodeURIComponent(document.body.innerText);
+            window.open(link, "_blank", "noopener,noreferrer");
+          },
+        },
       ];
 
       bookmarklets.forEach(({ name, code, description }) => {

@@ -3,6 +3,7 @@ import {
   get,
   createStore,
 } from "https://cdn.jsdelivr.net/npm/idb-keyval@6/+esm";
+import { uniq } from "./utils.mjs";
 
 const dictionaryStore = createStore("wsr-dictionary", "wsr-dictionary");
 
@@ -201,7 +202,29 @@ export const queryCompounds = async (word) => {
   };
 };
 
+export const getCurrentSourceLanguage = () => {
+  const sourceLanguage =
+    new URLSearchParams(location.search).get("sourceLanguage") || "sv";
+  return sourceLanguage;
+};
+
 export const queryEnglishTranslation = async (word) => {
+  const sourceLanguage = getCurrentSourceLanguage();
+  if (sourceLanguage !== "sv") {
+    try {
+      const res = await fetch(
+        `https://fetch-swe-compounds.deno.dev/analyse?cacheBuster=3&sourceLanguage=${sourceLanguage}&word=${encodeURIComponent(
+          word
+        )}`
+      ).then((x) => x.json());
+
+      return uniq(res.flatMap((r) => r.definitions));
+    } catch (err) {
+      console.error(err);
+      return [];
+    }
+  }
+
   const { folketsSven } = await installationPromise;
 
   return folketsSven[word] ?? [];

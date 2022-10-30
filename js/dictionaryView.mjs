@@ -7,6 +7,7 @@ import {
 import {
   queryCompounds,
   queryEnglishTranslation,
+  getCurrentSourceLanguage,
 } from "./dictionaryDatabase.mjs";
 import { readSetting, settingKeys, writeSetting } from "./settings.mjs";
 
@@ -139,7 +140,7 @@ export const updateDictionaryViews = async (
     const next = `https://svenska.se/tre/?sok=${encodedText}`;
     saol.dataset.src = next;
 
-    if (checkIsDictionaryVisible()) {
+    if (checkIsDictionaryVisible() && getCurrentSourceLanguage() === "sv") {
       if (saol.src !== next) {
         saol.src = next;
       }
@@ -169,6 +170,10 @@ export const updateDictionaryViews = async (
   const setLocal = async () => {
     queryAlternativesLocal.innerHTML = "";
 
+    if (getCurrentSourceLanguage() !== "sv") {
+      return;
+    }
+
     const localEntry = await queryCompounds(cleanedText);
     if (queryInput.value === cleanedText) {
       queryAlternativesLocal.innerHTML = !localEntry
@@ -194,6 +199,11 @@ export const updateDictionaryViews = async (
       };
 
       if (location.origin !== "https://arthow4n.github.io") {
+        resolveEmpty();
+        return;
+      }
+
+      if (getCurrentSourceLanguage() !== "sv") {
         resolveEmpty();
         return;
       }
