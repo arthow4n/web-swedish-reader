@@ -132,6 +132,39 @@
             window.open(link, "_blank", "noopener,noreferrer");
           },
         },
+        {
+          name: "(Experimental) WSR + Body Text / French",
+          description:
+            "Get all text in the web page (body.innerText) then open with WSR. Source language of the text is set to French.",
+          code: () => {
+            const link =
+              "https://arthow4n.github.io/web-swedish-reader/?sourceLanguage=fr#text=" +
+              encodeURIComponent(document.body.innerText);
+            window.open(link, "_blank", "noopener,noreferrer");
+          },
+        },
+        {
+          name: "(Experimental) WSR + Body Text / Spanish",
+          description:
+            "Get all text in the web page (body.innerText) then open with WSR. Source language of the text is set to Spanish.",
+          code: () => {
+            const link =
+              "https://arthow4n.github.io/web-swedish-reader/?sourceLanguage=es#text=" +
+              encodeURIComponent(document.body.innerText);
+            window.open(link, "_blank", "noopener,noreferrer");
+          },
+        },
+        {
+          name: "(Experimental) WSR + Body Text / German",
+          description:
+            "Get all text in the web page (body.innerText) then open with WSR. Source language of the text is set to German.",
+          code: () => {
+            const link =
+              "https://arthow4n.github.io/web-swedish-reader/?sourceLanguage=de#text=" +
+              encodeURIComponent(document.body.innerText);
+            window.open(link, "_blank", "noopener,noreferrer");
+          },
+        },
       ];
 
       bookmarklets.forEach(({ name, code, description }) => {
