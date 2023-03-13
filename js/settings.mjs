@@ -37,6 +37,8 @@ export const settingKeys = {
     "__settings_keepDictionaryVisibleCheckBox_checked",
   __settings_keepSpeakerRunning_checked:
     "__settings_keepSpeakerRunning_checked",
+  __settings_dic_cambridge_magic_number:
+    "__settings_dic_cambridge_magic_number",
 };
 
 export const bindCheckboxToSetting = (
@@ -46,9 +48,7 @@ export const bindCheckboxToSetting = (
   onChange
 ) => {
   const checkbox = document.querySelector(selector);
-
   checkbox.checked = readSetting(settingKey, defaultValue);
-
   checkbox.addEventListener("change", () => {
     writeSetting(settingKey, checkbox.checked);
     onChange(checkbox.checked);
@@ -56,5 +56,25 @@ export const bindCheckboxToSetting = (
 
   return {
     getSetting: () => checkbox.checked,
+    element: checkbox,
+  };
+};
+
+export const bindTextInputToSetting = (
+  selector,
+  settingKey,
+  defaultValue,
+  onChange
+) => {
+  const input = document.querySelector(selector);
+  input.value = readSetting(settingKey, defaultValue);
+  input.addEventListener("change", () => {
+    writeSetting(settingKey, input.value);
+    onChange(input.value);
+  });
+
+  return {
+    getSetting: () => input.value,
+    element: input,
   };
 };

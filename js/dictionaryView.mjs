@@ -9,7 +9,12 @@ import {
   queryEnglishTranslation,
   getCurrentSourceLanguage,
 } from "./dictionaryDatabase.mjs";
-import { readSetting, settingKeys, writeSetting } from "./settings.mjs";
+import {
+  bindTextInputToSetting,
+  readSetting,
+  settingKeys,
+  writeSetting,
+} from "./settings.mjs";
 
 export const queryInput = document.querySelector(".dics-query-input");
 const keepDictionaryVisibleCheckBox = document.querySelector(
@@ -39,6 +44,21 @@ const deeperAlternativesButton = document.querySelector(
 export const englishReaderModeCheckBox = document.querySelector(
   ".settings-english-reader-mode-checkbox"
 );
+
+{
+  const applySettingsDicCambridgeMagicNumber = (value) => {
+    document.body.style.setProperty("--dic-cambridge-magic-number", value);
+  };
+
+  const { element } = bindTextInputToSetting(
+    ".settings-dic-cambridge-magic-number-input",
+    settingKeys.__settings_dic_cambridge_magic_number,
+    555,
+    applySettingsDicCambridgeMagicNumber
+  );
+
+  applySettingsDicCambridgeMagicNumber(element.value);
+}
 
 // const folkets = document.querySelector(".dic-folkets");
 const saol = document.querySelector(".dic-saol");

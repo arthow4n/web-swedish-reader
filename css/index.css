@@ -283,9 +283,9 @@ body:not(.is-edit-mode) .edit-mode-only {
 
 .dic-cambridge {
   /* Magic number for skipping the website header */
-  margin-top: -555px;
+  margin-top: calc(-1px * var(--dic-cambridge-magic-number));
   /* Adding more height at the end to hide the bottom bar */
-  height: calc(100% + 655px);
+  height: calc(100% + calc(100px + 1px * var(--dic-cambridge-magic-number)));
 }
 
 .english-reader-mode
