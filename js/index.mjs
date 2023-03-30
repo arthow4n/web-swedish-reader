@@ -17,7 +17,7 @@ const clearAndEditButtons = document.querySelectorAll(".control-clear");
 const editButton = document.querySelector(".control-edit");
 const importButtons = document.querySelectorAll(".control-import");
 const finishEditButtons = document.querySelectorAll(".control-finish-edit");
-const ocrButtons = document.querySelectorAll(".control-ocr");
+const pasteButtons = document.querySelectorAll(".control-paste");
 const fullScreenButton = document.querySelector(".control-full-screen");
 const main = document.querySelector("main");
 const article = document.querySelector("article");
@@ -263,62 +263,9 @@ fullScreenButton.addEventListener("click", () => {
   document.documentElement.requestFullscreen();
 });
 
-ocrButtons.forEach((ocrButton) =>
-  ocrButton.addEventListener("click", () => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.multiple = true;
-    input.hidden = true;
-    input.onchange = (event) => {
-      (async () => {
-        const files = [...event.target.files];
-        const progressSlots = files.map(() => 0);
-        ocrButton.innerText = "Preparing...";
-        ocrButton.disabled = true;
-
-        const results = await Promise.all(
-          files.map(async (file, fileIndex) => {
-            await import(
-              "https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js"
-            );
-
-            const text = await Tesseract.recognize(file, "swe", {
-              logger: ({ status, progress }) => {
-                if (status === "recognizing text") {
-                  progressSlots[fileIndex] = progress;
-                  ocrButton.innerText =
-                    (
-                      progressSlots.reduce((prev, curr) => prev + curr, 0) * 100
-                    ).toFixed(2) + "%";
-                }
-              },
-            })
-              .then(({ data: { text } }) => text)
-              .catch(() => "");
-
-            return {
-              fileName: file.name,
-              text,
-            };
-          })
-        );
-        document.body.removeChild(input);
-        article.innerText = results
-          .map(
-            (r) => `==start: ${r.fileName}\n\n${r.text}\n\n==end: ${r.fileName}`
-          )
-          .join("\n\n");
-        setIsEditMode(false);
-      })()
-        .catch()
-        .finally(() => {
-          ocrButton.innerText = "📸";
-          ocrButton.disabled = false;
-        });
-    };
-
-    document.body.appendChild(input);
-    input.click();
+pasteButtons.forEach((pasteButton) =>
+  pasteButton.addEventListener("click", async () => {
+    article.innerText = await navigator.clipboard.readText();
+    setIsEditMode(false);
   })
 );
