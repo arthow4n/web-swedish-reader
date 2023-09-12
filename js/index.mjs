@@ -1,7 +1,7 @@
 import {
   hideDictionaryIfNotOpenedFromCheckBox,
   queryInput,
-  showCambridgeDictionary,
+  showEnglishDictionary,
   updateDictionaryViews,
   englishReaderModeCheckBox,
 } from "./dictionaryView.mjs";
@@ -160,7 +160,7 @@ document.addEventListener("click", (event) => {
     englishReaderModeCheckBox.checked
   ) {
     speakOnClick("en", event.target.innerText);
-    showCambridgeDictionary(event.target.innerText);
+    showEnglishDictionary(event.target.innerText);
     return;
   }
 

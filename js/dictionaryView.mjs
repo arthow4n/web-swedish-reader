@@ -45,25 +45,10 @@ export const englishReaderModeCheckBox = document.querySelector(
   ".settings-english-reader-mode-checkbox"
 );
 
-{
-  const applySettingsDicCambridgeMagicNumber = (value) => {
-    document.body.style.setProperty("--dic-cambridge-magic-number", value);
-  };
-
-  const { element } = bindTextInputToSetting(
-    ".settings-dic-cambridge-magic-number-input",
-    settingKeys.__settings_dic_cambridge_magic_number,
-    555,
-    applySettingsDicCambridgeMagicNumber
-  );
-
-  applySettingsDicCambridgeMagicNumber(element.value);
-}
-
 // const folkets = document.querySelector(".dic-folkets");
 const saol = document.querySelector(".dic-saol");
 const dicSubSingle = document.querySelector(".dic-sub-single");
-const cambridge = document.querySelector(".dic-cambridge");
+const englishDictionary = document.querySelector(".dic-english");
 
 const searchGoogleButton = document.querySelector(".control-search-google");
 const searchWiktionaryButton = document.querySelector(
@@ -136,7 +121,7 @@ export const updateDictionaryViews = async (
     queryAlternativesEnglishTranslation.innerHTML = "";
     // folkets.removeAttribute("src");
     saol.removeAttribute("src");
-    cambridge.removeAttribute("src");
+    englishDictionary.removeAttribute("src");
     return;
   }
 
@@ -336,27 +321,27 @@ deeperAlternativesButton.addEventListener("click", () => {
   });
 }
 
-let hasShownCambridgeDictionaryDelayedPrompt = false;
+let hasShownEnglishDictionaryDelayedPrompt = false;
 
-export const showCambridgeDictionary = (word) => {
+export const showEnglishDictionary = (word) => {
   dicSubSingle.classList.add("active");
   setIsDictionaryVisible(true);
 
   const show = () => {
-    const next = `https://dictionary.cambridge.org/dictionary/english/${encodeURIComponent(
+    const next = `https://www.thefreedictionary.com/${encodeURIComponent(
       word
-    )}`;
-    if (cambridge.src !== next) {
+    )}#Definition`;
+    if (englishDictionary.src !== next) {
       // There's a very aggressive cookie modal inside that doesn't stop showing even after accepting.
-      cambridge.sandbox = "";
-      cambridge.src = next;
+      englishDictionary.sandbox = "";
+      englishDictionary.src = next;
     }
   };
 
-  if (hasShownCambridgeDictionaryDelayedPrompt) {
+  if (hasShownEnglishDictionaryDelayedPrompt) {
     show();
   } else {
-    hasShownCambridgeDictionaryDelayedPrompt = true;
+    hasShownEnglishDictionaryDelayedPrompt = true;
     setTimeout(show, 1000);
   }
 };
@@ -373,7 +358,7 @@ englishReaderModeCheckBox.addEventListener("change", () => {
   dicSubSingle.classList.add("active");
   document.body.classList.remove(englishReaderModeClassName);
   if (englishReaderModeCheckBox.checked) {
-    hasShownCambridgeDictionaryDelayedPrompt = true;
+    hasShownEnglishDictionaryDelayedPrompt = true;
     document.body.classList.add(englishReaderModeClassName);
   }
 });

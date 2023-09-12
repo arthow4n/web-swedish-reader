@@ -37,8 +37,6 @@ export const settingKeys = {
     "__settings_keepDictionaryVisibleCheckBox_checked",
   __settings_keepSpeakerRunning_checked:
     "__settings_keepSpeakerRunning_checked",
-  __settings_dic_cambridge_magic_number:
-    "__settings_dic_cambridge_magic_number",
 };
 
 export const bindCheckboxToSetting = (

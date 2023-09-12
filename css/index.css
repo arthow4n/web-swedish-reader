@@ -281,13 +281,6 @@ body:not(.is-edit-mode) .edit-mode-only {
   height: calc(100% + 270px);
 }
 
-.dic-cambridge {
-  /* Magic number for skipping the website header */
-  margin-top: calc(-1px * var(--dic-cambridge-magic-number));
-  /* Adding more height at the end to hide the bottom bar */
-  height: calc(100% + calc(100px + 1px * var(--dic-cambridge-magic-number)));
-}
-
 .english-reader-mode
   .query-alternatives-line:not(.query-alternatives-line-english-translation) {
   display: none;
