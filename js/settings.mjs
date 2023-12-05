@@ -37,19 +37,23 @@ export const settingKeys = {
     "__settings_keepDictionaryVisibleCheckBox_checked",
   __settings_keepSpeakerRunning_checked:
     "__settings_keepSpeakerRunning_checked",
+  __settings_saveArticleToLocalStorageCheckbox_checked:
+    "__settings_saveArticleToLocalStorageCheckbox_checked",
 };
 
 export const bindCheckboxToSetting = (
   selector,
   settingKey,
   defaultValue,
-  onChange
+  onChange = null
 ) => {
   const checkbox = document.querySelector(selector);
   checkbox.checked = readSetting(settingKey, defaultValue);
   checkbox.addEventListener("change", () => {
     writeSetting(settingKey, checkbox.checked);
-    onChange(checkbox.checked);
+    if (onChange) {
+      onChange(checkbox.checked);
+    }
   });
 
   return {

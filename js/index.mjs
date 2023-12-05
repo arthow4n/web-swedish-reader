@@ -12,6 +12,7 @@ import {
 } from "./utils.mjs";
 import { speakOnClick } from "./tts.mjs";
 import { getCurrentSourceLanguage } from "./dictionaryDatabase.mjs";
+import { bindCheckboxToSetting, settingKeys } from "./settings.mjs";
 
 const clearAndEditButtons = document.querySelectorAll(".control-clear");
 const editButton = document.querySelector(".control-edit");
@@ -19,10 +20,15 @@ const importButtons = document.querySelectorAll(".control-import");
 const finishEditButtons = document.querySelectorAll(".control-finish-edit");
 const pasteButtons = document.querySelectorAll(".control-paste");
 const fullScreenButton = document.querySelector(".control-full-screen");
+const clearArticleStorageButtons = document.querySelectorAll(
+  ".control-settings-clear-article-storage-checkbox"
+);
 const main = document.querySelector("main");
 const article = document.querySelector("article");
 
+const articleFromLocalStorageKey = "articleFromLocalStorageKey";
 const mainScrollQueryKey = "mainScrollId";
+
 const setMainScrollState = (num) => {
   const url = new URL(location);
   let storageId = url.searchParams.get(mainScrollQueryKey);
@@ -57,8 +63,44 @@ const onMainScroll = debounce(() => {
   setMainScrollState(main.scrollTop);
 });
 
-const updateArticle = (input, init = false) => {
-  history.pushState(undefined, undefined, "#text=" + encodeURIComponent(input));
+const saveArticleToLocalStorage = bindCheckboxToSetting(
+  ".settings-save-article-to-local-storage-checkbox",
+  settingKeys.__settings_saveArticleToLocalStorageCheckbox_checked,
+  false
+);
+
+const updateArticle = (
+  input,
+  loadScrollPosition,
+  updateArticleFromLocalStorageKeyQuery
+) => {
+  if (saveArticleToLocalStorage.getSetting()) {
+    if (updateArticleFromLocalStorageKeyQuery) {
+      const newUrl = new URL(location);
+      const randomNumbers = new Uint16Array(16);
+      crypto.getRandomValues(randomNumbers);
+      const articleFromLocalStorageKeyQuery = randomNumbers.toString();
+
+      newUrl.searchParams.set(
+        `${articleFromLocalStorageKey}`,
+        articleFromLocalStorageKeyQuery
+      );
+      newUrl.hash = "";
+
+      localStorage.setItem(
+        `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}`,
+        input
+      );
+
+      history.pushState(undefined, undefined, newUrl);
+    }
+  } else {
+    const newUrl = new URL(location);
+    newUrl.searchParams.delete(`${articleFromLocalStorageKey}`);
+    newUrl.hash = "text=" + encodeURIComponent(input);
+
+    history.pushState(undefined, undefined, newUrl);
+  }
 
   const text = input.trim();
   if (!text) {
@@ -82,14 +124,14 @@ const updateArticle = (input, init = false) => {
     .join("");
 
   const url = new URL(location);
-  if (!init) {
+  if (!loadScrollPosition) {
     url.searchParams.delete(mainScrollQueryKey);
     history.replaceState(undefined, undefined, url);
   }
 
   main.scrollTo(
     0,
-    init
+    loadScrollPosition
       ? parseInt(
           localStorage.getItem(
             `${mainScrollQueryKey}=${url.searchParams.get(mainScrollQueryKey)}`
@@ -122,7 +164,7 @@ const setIsEditMode = (isEditable, init = false) => {
   }
 
   if (!init) {
-    updateArticle(article.innerText);
+    updateArticle(article.innerText, false);
   }
 
   article.contentEditable = false;
@@ -136,11 +178,22 @@ const setIsEditMode = (isEditable, init = false) => {
     updateDictionaryViews(dictionaryQuery);
   }
 
-  const hashQuery = new URLSearchParams(location.hash.slice(1));
-  const hashText = hashQuery.get("text");
+  const articleFromLocalStorageKeyQuery = new URL(location).searchParams.get(
+    articleFromLocalStorageKey
+  );
+  const textFromLocalStorage =
+    articleFromLocalStorageKeyQuery &&
+    localStorage.getItem(
+      `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}`
+    );
 
-  if (hashText) {
-    updateArticle(hashText, true);
+  const hashQuery = new URLSearchParams(location.hash.slice(1));
+  const textFromHash = hashQuery.get("text");
+
+  const articleText = textFromLocalStorage || textFromHash;
+
+  if (articleText) {
+    updateArticle(articleText, true, !articleFromLocalStorageKeyQuery);
   }
 
   setIsEditMode(!article.innerText.trim(), true);
@@ -269,3 +322,14 @@ pasteButtons.forEach((pasteButton) =>
     setIsEditMode(false);
   })
 );
+
+clearArticleStorageButtons.forEach((clearArticleStorageButton) => {
+  clearArticleStorageButton.addEventListener("click", () => {
+    for (let i = 0; i < localStorage.length; i++) {
+      const localStorageKeyName = localStorage.key(i);
+      if (localStorageKeyName.startsWith(`${articleFromLocalStorageKey}=`)) {
+        localStorage.removeItem(localStorageKeyName);
+      }
+    }
+  });
+});
