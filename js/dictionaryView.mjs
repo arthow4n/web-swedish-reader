@@ -38,8 +38,8 @@ const queryAlternativesSwedishDefinition2 = document.querySelector(
 const queryAlternativesEnglishTranslation = document.querySelector(
   ".query-alternatives-line-english-translation"
 );
-const deeperAlternativesButton = document.querySelector(
-  ".control-deeper-alternatives"
+const youglishSwedishButton = document.querySelector(
+  ".control-youglish-swedish"
 );
 export const englishReaderModeCheckBox = document.querySelector(
   ".settings-english-reader-mode-checkbox"
@@ -115,6 +115,7 @@ export const updateDictionaryViews = async (
   if (!encodedText) {
     searchGoogleButton.onclick = undefined;
     searchWiktionaryButton.onclick = undefined;
+    youglishSwedishButton.onclick = undefined;
     toggleSoButton.onclick = undefined;
     queryAlternativesLocal.innerHTML = "";
     queryAlternativesRemote.innerHTML = "";
@@ -131,6 +132,9 @@ export const updateDictionaryViews = async (
   };
   searchWiktionaryButton.onclick = () => {
     openExternal(`https://sv.wiktionary.org/wiki/${encodedText}#Svenska`);
+  };
+  youglishSwedishButton.onclick = () => {
+    openExternal(`https://youglish.com/pronounce/${encodedText}/swedish?`);
   };
   toggleSoButton.onclick = () => {
     queryAlternativesContainer.classList.toggle(
@@ -301,10 +305,6 @@ queryInput.addEventListener("paste", (event) => {
     // Cleaning pasted data makes it easier to paste from SAOL.
     updateDictionaryViews(text);
   }
-});
-
-deeperAlternativesButton.addEventListener("click", () => {
-  updateDictionaryViews(queryInput.value);
 });
 
 // Force blur away from SAOL iframe for once because SAOL steals focus to its input with its JS

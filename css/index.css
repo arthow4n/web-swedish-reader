@@ -229,10 +229,12 @@ body:not(.is-edit-mode) .edit-mode-only {
 
 .dics-query-input {
   width: 100%;
+  min-height: 30px;
+
   padding: 0 8px;
 }
 
-.dics-query-input:focus ~ *:not(:last-child) {
+.dics-query-input:focus ~ * {
   display: none;
 }
 
