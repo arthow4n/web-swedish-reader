@@ -38,7 +38,7 @@ const setMainScrollState = (num) => {
       // Not ideal but good enough.
       storageId = Date.now();
       url.searchParams.set(mainScrollQueryKey, storageId);
-      history.replaceState(undefined, undefined, url);
+      history.replaceState({}, undefined, url);
       Object.keys(localStorage)
         .filter((k) => k.startsWith(`${mainScrollQueryKey}=`))
         .sort()
@@ -56,7 +56,7 @@ const setMainScrollState = (num) => {
   }
 
   localStorage.removeItem(`${mainScrollQueryKey}=${storageId}`);
-  history.replaceState(undefined, undefined, url);
+  history.replaceState({}, undefined, url);
 };
 
 const onMainScroll = debounce(() => {
@@ -92,14 +92,14 @@ const updateArticle = (
         input
       );
 
-      history.pushState(undefined, undefined, newUrl);
+      history.pushState({}, undefined, newUrl);
     }
   } else {
     const newUrl = new URL(location);
     newUrl.searchParams.delete(`${articleFromLocalStorageKey}`);
     newUrl.hash = "text=" + encodeURIComponent(input);
 
-    history.pushState(undefined, undefined, newUrl);
+    history.pushState({}, undefined, newUrl);
   }
 
   const text = input.trim();
@@ -126,7 +126,7 @@ const updateArticle = (
   const url = new URL(location);
   if (!loadScrollPosition) {
     url.searchParams.delete(mainScrollQueryKey);
-    history.replaceState(undefined, undefined, url);
+    history.replaceState({}, undefined, url);
   }
 
   main.scrollTo(
