@@ -164,7 +164,7 @@ const setIsEditMode = (isEditable, init = false) => {
   }
 
   if (!init) {
-    updateArticle(article.innerText, false);
+    updateArticle(article.innerText, false, true);
   }
 
   article.contentEditable = false;
