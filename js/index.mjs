@@ -275,7 +275,7 @@ importButtons.forEach((x) =>
   x.addEventListener("click", () => {
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = "text/plain";
+    input.accept = "text/plain,text/html";
     input.multiple = true;
     input.hidden = true;
     input.onchange = async (event) => {
@@ -284,13 +284,23 @@ importButtons.forEach((x) =>
           (file) =>
             new Promise((resolve) => {
               const r = new FileReader();
+
+              const withFileStartEnd = (content) => `==start: ${file.name}\n\n${content}\n\n==end: ${file.name}`;
+
               r.onload = () => {
+                if (file.type === "text/html")
+                {
+                  const document = new DOMParser().parseFromString(r.result, "text/html");
+                  resolve(withFileStartEnd(document.body.innerText));
+                  return;
+                }
+
                 resolve(
-                  `==start: ${file.name}\n\n${r.result}\n\n==end: ${file.name}`
+                  withFileStartEnd(r.result)
                 );
               };
-              r.onerror = (r) => {
-                resolve("");
+              r.onerror = () => {
+                resolve(withFileStartEnd(""));
               };
 
               r.readAsText(file);
