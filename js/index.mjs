@@ -87,10 +87,19 @@ const updateArticle = (
       );
       newUrl.hash = "";
 
-      localStorage.setItem(
-        `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}`,
-        input
-      );
+      try {
+        localStorage.setItem(
+          `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}`,
+          input
+        );
+      } catch (err) {
+        console.error(err);
+        alert(`Failed to save article into storage (storage quota exceeded?), try opening the settings and clear article storage.
+
+${err.name}: ${err.message}
+`)
+      }
+      
 
       history.pushState({}, undefined, newUrl);
     }
