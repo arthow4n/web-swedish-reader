@@ -14,6 +14,11 @@ import { speakOnClick } from "./tts.mjs";
 import { getCurrentSourceLanguage } from "./dictionaryDatabase.mjs";
 import { bindCheckboxToSetting, settingKeys } from "./settings.mjs";
 
+navigator.serviceWorker.register("./serviceWorker.mjs", {
+  scope: ".",
+  type: "module",
+});
+
 const clearAndEditButtons = document.querySelectorAll(".control-clear");
 const editButton = document.querySelector(".control-edit");
 const importButtons = document.querySelectorAll(".control-import");
@@ -97,9 +102,8 @@ const updateArticle = (
         alert(`Failed to save article into storage (storage quota exceeded?), try opening the settings and clear article storage.
 
 ${err.name}: ${err.message}
-`)
+`);
       }
-      
 
       history.pushState({}, undefined, newUrl);
     }
@@ -294,19 +298,20 @@ importButtons.forEach((x) =>
             new Promise((resolve) => {
               const r = new FileReader();
 
-              const withFileStartEnd = (content) => `==start: ${file.name}\n\n${content}\n\n==end: ${file.name}`;
+              const withFileStartEnd = (content) =>
+                `==start: ${file.name}\n\n${content}\n\n==end: ${file.name}`;
 
               r.onload = () => {
-                if (file.type === "text/html")
-                {
-                  const document = new DOMParser().parseFromString(r.result, "text/html");
+                if (file.type === "text/html") {
+                  const document = new DOMParser().parseFromString(
+                    r.result,
+                    "text/html"
+                  );
                   resolve(withFileStartEnd(document.body.innerText));
                   return;
                 }
 
-                resolve(
-                  withFileStartEnd(r.result)
-                );
+                resolve(withFileStartEnd(r.result));
               };
               r.onerror = () => {
                 resolve(withFileStartEnd(""));
