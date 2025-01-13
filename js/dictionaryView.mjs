@@ -54,6 +54,9 @@ const searchGoogleButton = document.querySelector(".control-search-google");
 const searchWiktionaryButton = document.querySelector(
   ".control-search-wiktionary"
 );
+const searchSlangopediaButton = document.querySelector(
+  ".control-search-slangopedia"
+);
 const toggleSoButton = document.querySelector(".control-toggle-so");
 
 const openExternal = (link) => {
@@ -132,6 +135,11 @@ export const updateDictionaryViews = async (
   };
   searchWiktionaryButton.onclick = () => {
     openExternal(`https://sv.wiktionary.org/wiki/${encodedText}#Svenska`);
+  };
+  searchSlangopediaButton.onclick = () => {
+    openExternal(
+      `https://mobil.slangopedia.se/mobil/ordlista/?ord=${encodedText}`
+    );
   };
   youglishSwedishButton.onclick = () => {
     openExternal(`https://youglish.com/pronounce/${encodedText}/swedish?`);
