@@ -54,6 +54,7 @@ const searchGoogleButton = document.querySelector(".control-search-google");
 const searchWiktionaryButton = document.querySelector(
   ".control-search-wiktionary"
 );
+const searchKorpButton = document.querySelector(".control-search-korp");
 const searchSlangopediaButton = document.querySelector(
   ".control-search-slangopedia"
 );
@@ -135,6 +136,11 @@ export const updateDictionaryViews = async (
   };
   searchWiktionaryButton.onclick = () => {
     openExternal(`https://sv.wiktionary.org/wiki/${encodedText}#Svenska`);
+  };
+  searchKorpButton.onclick = () => {
+    openExternal(
+      `https://spraakbanken.gu.se/korp/#?cqp=%5B%5D&corpus=attasidor,da,svt-2004,svt-2005,svt-2006,svt-2007,svt-2008,svt-2009,svt-2010,svt-2011,svt-2012,svt-2013,svt-2014,svt-2015,svt-2016,svt-2017,svt-2018,svt-2019,svt-2020,svt-2021,svt-2022,svt-2023,svt-nodate&search=word%7C${encodedText}`
+    );
   };
   searchSlangopediaButton.onclick = () => {
     openExternal(
