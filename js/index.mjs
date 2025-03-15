@@ -337,7 +337,9 @@ fullScreenButton.addEventListener("click", () => {
     return;
   }
 
-  document.documentElement.requestFullscreen();
+  document.documentElement.requestFullscreen({
+    navigationUI: "hide",
+  });
 });
 
 pasteButtons.forEach((pasteButton) =>
