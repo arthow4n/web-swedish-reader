@@ -143,8 +143,11 @@ export const updateDictionaryViews = async (
     );
   };
   searchSlangopediaButton.onclick = () => {
+    // Slangopedia uses ISO-8859-1 encoding so åäö encode differently than UTF-8
     openExternal(
-      `https://mobil.slangopedia.se/mobil/ordlista/?ord=${encodedText}`
+      `https://mobil.slangopedia.se/mobil/ordlista/?ord=${encodeURIComponent(
+        escape(cleanedText)
+      ).replaceAll("%25", "%")}`
     );
   };
   youglishSwedishButton.onclick = () => {
