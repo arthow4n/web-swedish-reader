@@ -213,7 +213,7 @@ export const queryEnglishTranslation = async (word) => {
   if (sourceLanguage !== "sv") {
     try {
       const res = await fetch(
-        `https://fetch-swe-compounds.deno.dev/analyse?cacheBuster=3&sourceLanguage=${sourceLanguage}&word=${encodeURIComponent(
+        `https://fetch-swe-compounds.deno.dev/analyse?cacheBuster=4&sourceLanguage=${sourceLanguage}&word=${encodeURIComponent(
           word
         )}`
       ).then((x) => x.json());
