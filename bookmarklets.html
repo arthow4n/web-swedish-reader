@@ -61,12 +61,22 @@
           },
         },
         {
-          name: "WSR for Flashback",
-          description: "Simplify a Flashback thread's text and open with WSR.",
+          name: "WSR for Flashback/PressReader",
+          description:
+            "Simplify a Flashback thread's text, or pull the text out from PressReader desktop website's copy popover, then open with WSR.",
           code: () => {
             const url = new URL(location);
 
-            if (/flashback\.org$/.test(url.host)) {
+            if (url.host.endsWith("pressreader.com")) {
+              const link =
+                "https://arthow4n.github.io/web-swedish-reader/#text=" +
+                encodeURIComponent(
+                  document.querySelector(".copy-snippet").innerText
+                );
+              const w = window.open(link, "_blank", "noopener,noreferrer");
+            }
+
+            if (url.host.endsWith("flashback.org")) {
               const root = document.cloneNode(true);
               root
                 .querySelectorAll(".post-user")
