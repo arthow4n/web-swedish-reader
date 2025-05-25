@@ -82,9 +82,10 @@
                 .querySelectorAll(".post-user")
                 .forEach(
                   (x) =>
-                    (x.innerHTML = x
-                      .querySelector(".post-user-username")
-                      .innerText.trim())
+                    (x.innerHTML =
+                      x
+                        .querySelector(".post-user-username")
+                        ?.innerText.trim() ?? "")
                 );
 
               root.querySelectorAll(".post-bbcode-quote").forEach((x) => {
