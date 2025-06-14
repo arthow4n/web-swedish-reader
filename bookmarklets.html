@@ -71,7 +71,9 @@
               const link =
                 "https://arthow4n.github.io/web-swedish-reader/#text=" +
                 encodeURIComponent(
-                  document.querySelector(".copy-snippet").innerText
+                  document
+                    .querySelector(".copy-snippet")
+                    .innerText.replace(/\b(\w+)\b\s+\b\1\b/g, "$1")
                 );
               const w = window.open(link, "_blank", "noopener,noreferrer");
             }
