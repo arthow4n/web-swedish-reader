@@ -73,7 +73,7 @@
                 encodeURIComponent(
                   document
                     .querySelector(".copy-snippet")
-                    .innerText.replace(/\b(\w+)\b\s+\b\1\b/g, "$1")
+                    .innerText.replace(/\b([-\w]+)\b\s+\b\1\b/g, "$1")
                 );
               const w = window.open(link, "_blank", "noopener,noreferrer");
             }
