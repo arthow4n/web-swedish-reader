@@ -1,205 +1,146 @@
 <html>
-  <head>
-    <title>web-swedish-reader</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      rel="canonical"
-      href="https://arthow4n.github.io/web-swedish-reader/"
-    />
 
-    <link rel="modulepreload" href="./js/index.mjs" />
-    <link rel="modulepreload" href="./js/dictionaryDatabase.mjs" />
-    <link rel="modulepreload" href="./js/dictionaryView.mjs" />
-    <link rel="modulepreload" href="./js/utils.mjs" />
-    <link
-      rel="modulepreload"
-      href="https://cdn.jsdelivr.net/npm/idb-keyval@6/+esm"
-    />
-    <link
-      rel="modulepreload"
-      href="/web-swedish-reader-data/folkets-compound/folkets-compound.meta.mjs"
-    />
-    <link
-      rel="modulepreload"
-      href="/web-swedish-reader-data/folkets-sven/folkets-sven.meta.mjs"
-    />
+<head>
+  <title>web-swedish-reader</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="canonical" href="https://arthow4n.github.io/web-swedish-reader/" />
 
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://unpkg.com/normalize.css@8.0.1/normalize.css"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://unpkg.com/sakura.css@1.3.1/css/sakura.css"
-    />
-    <link rel="stylesheet" type="text/css" href="./css/index.css" />
-  </head>
-  <body class="is-dictionary-visible">
-    <div class="reader">
-      <main>
-        <div class="leading-controls">
-          <span>
-            <button type="button" class="control-clear edit-mode-hidden">
-              Clear
-            </button>
-            <button type="button" class="control-edit edit-mode-hidden">
-              Edit
-            </button>
-            <button type="button" class="control-finish-edit edit-mode-only">
-              Finish edit
-            </button>
-            <button type="button" class="control-import edit-mode-only">
-              Import
-            </button>
-            <button type="button" class="control-paste">Paste</button></span
-          >
-          <span>
-            <a href="bookmarklets.html" target="_blank">Bookmarklets</a> |
-            <a
-              href="https://github.com/arthow4n/web-swedish-reader"
-              target="_blank"
-              rel="noopener noreferrer"
-              >GitHub</a
-            >
-          </span>
+  <link rel="modulepreload" href="./js/index.mjs" />
+  <link rel="modulepreload" href="./js/dictionaryDatabase.mjs" />
+  <link rel="modulepreload" href="./js/dictionaryView.mjs" />
+  <link rel="modulepreload" href="./js/utils.mjs" />
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/idb-keyval@6/+esm" />
+  <link rel="modulepreload" href="/web-swedish-reader-data/folkets-compound/folkets-compound.meta.mjs" />
+  <link rel="modulepreload" href="/web-swedish-reader-data/folkets-sven/folkets-sven.meta.mjs" />
+
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/normalize.css@8.0.1/normalize.css" />
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/sakura.css@1.3.1/css/sakura.css" />
+  <link rel="stylesheet" type="text/css" href="./css/index.css" />
+</head>
+
+<body class="is-dictionary-visible">
+  <div class="reader">
+    <main>
+      <div class="leading-controls">
+        <span>
+          <button type="button" class="control-clear edit-mode-hidden">
+            Clear
+          </button>
+          <button type="button" class="control-edit edit-mode-hidden">
+            Edit
+          </button>
+          <button type="button" class="control-finish-edit edit-mode-only">
+            Finish edit
+          </button>
+          <button type="button" class="control-import edit-mode-only">
+            Import
+          </button>
+          <button type="button" class="control-paste">Paste</button></span>
+        <span>
+          <a href="bookmarklets.html" target="_blank">Bookmarklets</a> |
+          <a href="https://github.com/arthow4n/web-swedish-reader" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </span>
+      </div>
+      <article></article>
+      <div class="ending-controls edit-mode-hidden">
+        <button type="button" class="control-clear">Clear</button>
+        <button type="button" class="control-import">Import</button>
+      </div>
+    </main>
+    <aside class="dics">
+      <div class="aside-row edit-mode-only">
+        <button type="button" class="control-finish-edit">Finish edit</button>
+        <button type="button" class="control-import">Import</button>
+        <button type="button" class="control-paste">Paste</button>
+      </div>
+      <div class="aside-row">
+        <div class="query-alternatives">
+          <p class="query-alternatives-line query-alternatives-line-local"></p>
+          <p class="query-alternatives-line query-alternatives-line-remote"></p>
+          <p class="query-alternatives-line query-alternatives-line-swedish-definition"></p>
+          <p class="query-alternatives-line query-alternatives-line-swedish-definition-2"></p>
+          <p class="query-alternatives-line query-alternatives-line-english-translation"></p>
         </div>
-        <article></article>
-        <div class="ending-controls edit-mode-hidden">
-          <button type="button" class="control-clear">Clear</button>
-          <button type="button" class="control-import">Import</button>
+        <div class="query-alternatives-floating-button-row">
+          <button type="button" class="control-settings">⚙</button><button type="button"
+            class="control-full-screen">🔳</button>
         </div>
-      </main>
-      <aside class="dics">
-        <div class="aside-row edit-mode-only">
-          <button type="button" class="control-finish-edit">Finish edit</button>
-          <button type="button" class="control-import">Import</button>
-          <button type="button" class="control-paste">Paste</button>
+      </div>
+      <form class="form-dics-query">
+        <div class="flex">
+          <input class="dics-query-input" /><button type="button" class="control-search-google">
+            Go</button><button type="button" class="control-toggle-so">SO+</button><button type="button"
+            class="control-search-wiktionary">Wi</button><button type="button"
+            class="control-search-korp">Ko</button><button type="button" class="control-search-slangopedia">
+            Sla
+          </button>
+          <button type="button" class="control-youglish-swedish">Yo</button>
         </div>
-        <div class="aside-row">
-          <div class="query-alternatives">
-            <p
-              class="query-alternatives-line query-alternatives-line-local"
-            ></p>
-            <p
-              class="query-alternatives-line query-alternatives-line-remote"
-            ></p>
-            <p
-              class="query-alternatives-line query-alternatives-line-swedish-definition"
-            ></p>
-            <p
-              class="query-alternatives-line query-alternatives-line-swedish-definition-2"
-            ></p>
-            <p
-              class="query-alternatives-line query-alternatives-line-english-translation"
-            ></p>
-          </div>
-          <div class="query-alternatives-floating-button-row">
-            <button type="button" class="control-settings">⚙</button
-            ><button type="button" class="control-full-screen">🔳</button>
-          </div>
-        </div>
-        <form class="form-dics-query">
-          <div class="flex">
-            <input class="dics-query-input" /><button
-              type="button"
-              class="control-search-google"
-            >
-              Go</button
-            ><button type="button" class="control-toggle-so">SO+</button
-            ><button type="button" class="control-search-wiktionary">Wi</button
-            ><button type="button" class="control-search-korp">Ko</button
-            ><button type="button" class="control-search-slangopedia">
-              Sla
-            </button>
-            <button type="button" class="control-youglish-swedish">Yo</button>
-          </div>
-          <label class="control-label label-dics-expand"
-            ><span class="control-label-text">+ </span
-            ><span><input type="checkbox" checked /></span
-          ></label>
-        </form>
-        <div class="dic dic-sub-single">
-          <iframe
-            class="dic-iframe dic-english"
-            referrerpolicy="no-referrer"
-          ></iframe>
-          <p>The Free Dictionary</p>
-        </div>
-        <!-- Temporarily commented out to get a feeling of whether if this is really needed -->
-        <!-- <div class="dic">
+        <label class="control-label label-dics-expand"><span class="control-label-text">+ </span><span><input
+              type="checkbox" checked /></span></label>
+      </form>
+      <div class="dic dic-sub-single">
+        <iframe class="dic-iframe dic-english" referrerpolicy="no-referrer"></iframe>
+        <p>The Free Dictionary</p>
+      </div>
+      <!-- Temporarily commented out to get a feeling of whether if this is really needed -->
+      <!-- <div class="dic">
           <iframe
             class="dic-iframe dic-folkets"
             referrerpolicy="no-referrer"
           ></iframe>
           <p>Folkets lexikon</p>
         </div> -->
-        <div class="dic">
-          <iframe
-            class="dic-iframe dic-saol"
-            referrerpolicy="no-referrer"
-          ></iframe>
-          <p>SAOL/SO/SAOB</p>
-        </div>
-      </aside>
-    </div>
-    <dialog class="settings-modal">
+      <div class="dic">
+        <iframe class="dic-iframe dic-saol" referrerpolicy="no-referrer"></iframe>
+        <p>SAOL/SO/SAOB</p>
+      </div>
+    </aside>
+  </div>
+  <dialog class="settings-modal">
+    <section>
+      <h2>Settings</h2>
+      <div>
+        <button class="control-settings-close">Close</button>
+      </div>
       <section>
-        <h2>Settings</h2>
-        <div>
-          <button class="control-settings-close">Close</button>
-        </div>
-        <section>
-          <h3>Text-to-speech (TTS)</h3>
-          <label>
-            TTS on word click:
-            <input type="checkbox" class="settings-tts-on-click-checkbox" />
-          </label>
-          <label>
-            Keep speaker running (turn on if TTS doesn't speak the word fully):
-            <input
-              type="checkbox"
-              class="settings-keep-speaker-running-checkbox"
-            />
-          </label>
-        </section>
-        <section>
-          <h3>Article storage</h3>
-          <p>
-            <label>
-              Save article to local storage instead of URL bar (use this if the
-              browser tab can't resume for a long article):
-              <input
-                type="checkbox"
-                class="settings-save-article-to-local-storage-checkbox"
-              />
-            </label>
-          </p>
-          <p>
-            <button class="control-settings-clear-article-storage-checkbox">
-              Clear article storage
-            </button>
-          </p>
-        </section>
-        <section>
-          <h3>Language</h3>
-          <label>
-            English reader mode:
-            <input
-              type="checkbox"
-              class="settings-english-reader-mode-checkbox"
-            />
-          </label>
-        </section>
-        <div><button class="control-settings-close">Close</button></div>
+        <h3>Text-to-speech (TTS)</h3>
+        <label>
+          TTS on word click:
+          <input type="checkbox" class="settings-tts-on-click-checkbox" />
+        </label>
+        <label>
+          Keep speaker running (turn on if TTS doesn't speak the word fully):
+          <input type="checkbox" class="settings-keep-speaker-running-checkbox" />
+        </label>
       </section>
-    </dialog>
-    <script type="module" src="./js/index.mjs"></script>
-    <audio
-      class="audio-keep-speaker-running"
-      loop
-      src="/web-swedish-reader-data/misc/keep-speaker-running.mp3"
-    ></audio>
-  </body>
+      <section>
+        <h3>Article storage</h3>
+        <p>
+          <label>
+            Save article to local storage instead of URL bar (use this if the
+            browser tab can't resume for a long article):
+            <input type="checkbox" class="settings-save-article-to-local-storage-checkbox" />
+          </label>
+        </p>
+        <p>
+          <button class="control-settings-clear-article-storage-checkbox">
+            Clear article storage
+          </button>
+        </p>
+      </section>
+      <section>
+        <h3>Language</h3>
+        <label>
+          English reader mode:
+          <input type="checkbox" class="settings-english-reader-mode-checkbox" />
+        </label>
+      </section>
+      <div><button class="control-settings-close">Close</button></div>
+    </section>
+  </dialog>
+  <script type="module" src="./js/index.mjs"></script>
+
+</body>
+
 </html>

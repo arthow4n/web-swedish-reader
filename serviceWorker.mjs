@@ -35,9 +35,7 @@ self.addEventListener("install", (event) => {
         getCachePathName(
           "../web-swedish-reader-data/folkets-sven/folkets-sven.meta.mjs"
         ),
-        getCachePathName(
-          "../web-swedish-reader-data/misc/keep-speaker-running.mp3"
-        ),
+
       ]);
     })
   );
