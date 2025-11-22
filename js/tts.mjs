@@ -7,32 +7,17 @@ const ttsOnClick = bindCheckboxToSetting(
   true
 );
 
-let audioContext = null;
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+let oscillator = null;
+let gainNode = null;
 
 const keepSpeakerRunning = bindCheckboxToSetting(
   ".settings-keep-speaker-running-checkbox",
   settingKeys.__settings_keepSpeakerRunning_checked,
   false,
   (checked) => {
-    if (checked) {
-      if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-
-        oscillator.type = "sine";
-        oscillator.frequency.value = 20; // Low frequency
-        gainNode.gain.value = 0.0001; // Almost silent
-
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        oscillator.start();
-      }
-      if (audioContext.state === "suspended") {
-        audioContext.resume();
-      }
-    } else {
-      if (audioContext) {
+    if (!checked) {
+      if (audioContext.state === "running") {
         audioContext.suspend();
       }
     }
@@ -51,10 +36,22 @@ export const speakOnClick = async (lang, text) => {
     // this will cause the first few milliseconds of sound being cut when playing.
     // Therefore here's a setting to keep the speaker warm and ready.
 
-    if (audioContext && audioContext.state === "suspended") {
+    if (!oscillator) {
+      oscillator = audioContext.createOscillator();
+      gainNode = audioContext.createGain();
+
+      oscillator.type = "sine";
+      oscillator.frequency.value = 20; // Low frequency
+      gainNode.gain.value = 0.001; // Almost silent
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      oscillator.start();
+    }
+
+    if (audioContext.state === "suspended") {
       await audioContext.resume();
     }
-    // No need to sleep here as the oscillator is already running or resuming instantly
   }
 
   const u = new SpeechSynthesisUtterance(
