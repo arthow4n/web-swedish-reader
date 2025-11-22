@@ -63,7 +63,7 @@
         {
           name: "WSR for Flashback/PressReader",
           description:
-            "Simplify a Flashback thread's text, or pull the text out from PressReader desktop website's copy popover, then open with WSR.",
+            "Simplify a Flashback thread's text, or pull the text out from PressReader desktop website's copy popover, or get deep research content from Gemini, then open with WSR.",
           code: () => {
             const url = new URL(location);
 
@@ -76,6 +76,17 @@
                     .innerText.replace(/\b([-\w]+)\b\s+\b\1\b/g, "$1")
                 );
               const w = window.open(link, "_blank", "noopener,noreferrer");
+            }
+
+            if (url.host === "gemini.google.com") {
+              const deepResearchContent = document.querySelector('deep-research-immersive-panel response-container')?.innerText;
+              if (deepResearchContent)
+              {
+                const link =
+                  "https://arthow4n.github.io/web-swedish-reader/#text=" +
+                  encodeURIComponent(deepResearchContent);
+                const w = window.open(link, "_blank", "noopener,noreferrer");
+              }
             }
 
             if (url.host.endsWith("flashback.org")) {
