@@ -35,6 +35,8 @@ export const speakOnClick = async (lang, text) => {
     // If there isn't already another sound that's keeping the speaker awake,
     // this will cause the first few milliseconds of sound being cut when playing.
     // Therefore here's a setting to keep the speaker warm and ready.
+    // After the sound is started programmatically,
+    // we still need to wait a bit so the speaker is really started.
 
     if (!oscillator) {
       oscillator = audioContext.createOscillator();
@@ -47,10 +49,12 @@ export const speakOnClick = async (lang, text) => {
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
       oscillator.start();
+      await sleep(200); 
     }
 
     if (audioContext.state === "suspended") {
       await audioContext.resume();
+      await sleep(200);
     }
   }
 
