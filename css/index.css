@@ -287,3 +287,8 @@ body:not(.is-edit-mode) .edit-mode-only {
   .query-alternatives-line:not(.query-alternatives-line-english-translation) {
   display: none;
 }
+
+.settings-tts-volume {
+  width: 300px;
+  max-width: 100%;
+}

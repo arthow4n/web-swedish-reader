@@ -1,4 +1,8 @@
-import { bindCheckboxToSetting, settingKeys } from "./settings.mjs";
+import {
+  bindCheckboxToSetting,
+  bindTextInputToSetting,
+  settingKeys,
+} from "./settings.mjs";
 import { sleep } from "./utils.mjs";
 
 const ttsOnClick = bindCheckboxToSetting(
@@ -6,6 +10,24 @@ const ttsOnClick = bindCheckboxToSetting(
   settingKeys.__settings_ttsOnClickCheckbox_checked,
   true
 );
+
+const updateVolumeLabel = (val) => {
+  const label = document.querySelector(".settings-tts-volume-label");
+  if (label) {
+    label.textContent = `(${Math.round(parseFloat(val) * 100)}%)`;
+  }
+};
+
+const ttsVolume = bindTextInputToSetting(
+  ".settings-tts-volume",
+  settingKeys.__settings_ttsVolume,
+  "1",
+  updateVolumeLabel
+);
+ttsVolume.element.addEventListener("input", (e) => {
+  updateVolumeLabel(e.target.value);
+});
+updateVolumeLabel(ttsVolume.getSetting());
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let oscillator = null;
@@ -49,7 +71,7 @@ export const speakOnClick = async (lang, text) => {
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
       oscillator.start();
-      await sleep(200); 
+      await sleep(200);
     }
 
     if (audioContext.state === "suspended") {
@@ -63,6 +85,7 @@ export const speakOnClick = async (lang, text) => {
     text.toLocaleLowerCase(lang)
   );
   u.lang = lang;
+  u.volume = parseFloat(ttsVolume.getSetting());
   speechSynthesis.cancel();
   speechSynthesis.speak(u);
 };

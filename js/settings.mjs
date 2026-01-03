@@ -39,6 +39,7 @@ export const settingKeys = {
     "__settings_keepSpeakerRunning_checked",
   __settings_saveArticleToLocalStorageCheckbox_checked:
     "__settings_saveArticleToLocalStorageCheckbox_checked",
+  __settings_ttsVolume: "__settings_ttsVolume",
 };
 
 export const bindCheckboxToSetting = (
@@ -66,13 +67,15 @@ export const bindTextInputToSetting = (
   selector,
   settingKey,
   defaultValue,
-  onChange
+  onChange = null
 ) => {
   const input = document.querySelector(selector);
   input.value = readSetting(settingKey, defaultValue);
   input.addEventListener("change", () => {
     writeSetting(settingKey, input.value);
-    onChange(input.value);
+    if (onChange) {
+      onChange(input.value);
+    }
   });
 
   return {
