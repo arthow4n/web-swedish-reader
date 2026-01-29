@@ -278,9 +278,22 @@ body:not(.is-edit-mode) .edit-mode-only {
 /* Known issue: These magic numbers don't work well when the page is zoomed in. */
 .dic-saol {
   /* Magic number for skipping the website header */
-  /* 270 is better than 285 when there are multiple entries */
-  margin-top: -270px;
-  height: calc(100% + 270px);
+  margin-top: -515px;
+  height: calc(100% + 515px);
+}
+
+@media screen and (min-width: 473px) {
+  .dic-saol {
+    margin-top: -470px;
+    height: calc(100% + 470px);
+  }
+}
+
+@media screen and (min-width: 943px) {
+  .dic-saol {
+    margin-top: -420px;
+    height: calc(100% + 420px);
+  }
 }
 
 .english-reader-mode
