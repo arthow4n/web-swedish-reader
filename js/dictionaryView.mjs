@@ -236,7 +236,7 @@ export const updateDictionaryViews = async (
 
       try {
         const res = await fetch(
-          `https://fetch-swe-compounds.deno.dev/analyse?cacheBuster=4&word=${encodedText}`
+          `https://fetch-swe-compounds.deno.dev/analyse?cacheBuster=5&word=${encodedText}`
         );
         if (res.status !== 200) {
           return resolveEmpty();
