@@ -254,9 +254,9 @@ export const updateDictionaryViews = async (
       const soCompounds = remoteCompounds.filter((r) => r.upstream === "so");
 
       const wordParts = uniq([
-        saolCompounds.map((r) => r.baseform).join("+"),
-        saolCompounds.flatMap((r) => r.compoundsLemma).join("+"),
-        saolCompounds.flatMap((r) => r.compounds).join("+"),
+        ...saolCompounds.map((r) => r.baseform),
+        ...saolCompounds.map((r) => r.compoundsLemma.join("+")),
+        ...saolCompounds.map((r) => r.compounds.join("+")),
       ])
         .filter((x) => x)
         .join(", ");
