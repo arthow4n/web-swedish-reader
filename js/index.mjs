@@ -24,6 +24,7 @@ const editButton = document.querySelector(".control-edit");
 const importButtons = document.querySelectorAll(".control-import");
 const finishEditButtons = document.querySelectorAll(".control-finish-edit");
 const pasteButtons = document.querySelectorAll(".control-paste");
+const pasteMarkdownButtons = document.querySelectorAll(".control-paste-markdown");
 const fullScreenButton = document.querySelector(".control-full-screen");
 const clearArticleStorageButtons = document.querySelectorAll(
   ".control-settings-clear-article-storage-checkbox"
@@ -74,10 +75,11 @@ const saveArticleToLocalStorage = bindCheckboxToSetting(
   false
 );
 
-const updateArticle = (
+const updateArticle = async (
   input,
   loadScrollPosition,
-  updateArticleFromLocalStorageKeyQuery
+  updateArticleFromLocalStorageKeyQuery,
+  isMarkdown = false
 ) => {
   if (saveArticleToLocalStorage.getSetting()) {
     if (updateArticleFromLocalStorageKeyQuery) {
@@ -97,6 +99,10 @@ const updateArticle = (
           `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}`,
           input
         );
+        localStorage.setItem(
+          `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}.isMarkdown`,
+          isMarkdown
+        );
       } catch (err) {
         console.error(err);
         alert(`Failed to save article into storage (storage quota exceeded?), try opening the settings and clear article storage.
@@ -110,7 +116,7 @@ ${err.name}: ${err.message}
   } else {
     const newUrl = new URL(location);
     newUrl.searchParams.delete(`${articleFromLocalStorageKey}`);
-    newUrl.hash = "text=" + encodeURIComponent(input);
+    newUrl.hash = "text=" + encodeURIComponent(input) + (isMarkdown ? "&isMarkdown=true" : "");
 
     history.pushState({}, undefined, newUrl);
   }
@@ -118,23 +124,65 @@ ${err.name}: ${err.message}
   const text = input.trim();
   if (!text) {
     article.innerHTML = "";
+    article.dataset.rawHtml = "";
+    article.dataset.isMarkdown = "";
     return;
   }
 
-  article.innerHTML = text
-    .split("\n")
-    .map((line) => {
-      return (
-        "<p>" +
-        line
-          .split(/\s+/)
-          .filter((x) => x.trim())
-          .map((x) => toWordSpans(x))
-          .join(" ") +
-        "</p>"
-      );
-    })
-    .join("");
+  article.dataset.rawHtml = text;
+  article.dataset.isMarkdown = isMarkdown ? "true" : "";
+
+  if (isMarkdown) {
+    const { marked } = await import("https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js");
+    const html = marked.parse(text);
+    const template = document.createElement("template");
+    template.innerHTML = html;
+
+    const processNodeBottomUp = (node) => {
+      if (node.childNodes && node.childNodes.length > 0) {
+        Array.from(node.childNodes).forEach(processNodeBottomUp);
+      }
+      
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        if (node.tagName === 'A') {
+          const fragment = document.createDocumentFragment();
+          while (node.firstChild) {
+            fragment.appendChild(node.firstChild);
+          }
+          node.parentNode.replaceChild(fragment, node);
+        } else if (node.tagName === 'IMG') {
+          const t = document.createTextNode(node.alt || "");
+          node.parentNode.replaceChild(t, node);
+        }
+      } else if (node.nodeType === Node.TEXT_NODE) {
+         const nodeText = node.nodeValue;
+         if (!nodeText.trim()) return;
+         const tmp = document.createElement("template");
+         tmp.innerHTML = toWordSpans(nodeText);
+         node.parentNode.replaceChild(tmp.content, node);
+      }
+    };
+    
+    Array.from(template.content.childNodes).forEach(processNodeBottomUp);
+    
+    article.innerHTML = "";
+    article.appendChild(template.content);
+  } else {
+    article.innerHTML = text
+      .split("\n")
+      .map((line) => {
+        return (
+          "<p>" +
+          line
+            .split(/\s+/)
+            .filter((x) => x.trim())
+            .map((x) => toWordSpans(x))
+            .join(" ") +
+          "</p>"
+        );
+      })
+      .join("");
+  }
 
   const url = new URL(location);
   if (!loadScrollPosition) {
@@ -158,7 +206,7 @@ ${err.name}: ${err.message}
 
 let currentSelectedWordElementInArticle = null;
 
-const setIsEditMode = (isEditable, init = false) => {
+const setIsEditMode = (isEditable, init = false, forceIsMarkdown = null) => {
   document.body.classList.remove("is-edit-mode");
 
   if (isEditable) {
@@ -170,6 +218,10 @@ const setIsEditMode = (isEditable, init = false) => {
       wordSelectedInAreaClassName
     );
 
+    if (article.dataset.rawHtml !== undefined) {
+       article.innerText = article.dataset.rawHtml;
+    }
+
     article.contentEditable = "plaintext-only";
     article.focus();
 
@@ -177,7 +229,8 @@ const setIsEditMode = (isEditable, init = false) => {
   }
 
   if (!init) {
-    updateArticle(article.innerText, false, true);
+    const isMarkdown = forceIsMarkdown !== null ? forceIsMarkdown : (article.dataset.isMarkdown === "true");
+    updateArticle(article.innerText, false, true, isMarkdown);
   }
 
   article.contentEditable = false;
@@ -199,17 +252,24 @@ const setIsEditMode = (isEditable, init = false) => {
     localStorage.getItem(
       `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}`
     );
+  const isMarkdownFromLocalStorage = 
+    articleFromLocalStorageKeyQuery &&
+    localStorage.getItem(
+      `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}.isMarkdown`
+    ) === "true";
 
   const hashQuery = new URLSearchParams(location.hash.slice(1));
   const textFromHash = hashQuery.get("text");
+  const isMarkdownFromHash = hashQuery.get("isMarkdown") === "true";
 
   const articleText = textFromLocalStorage || textFromHash;
+  const isMarkdown = textFromLocalStorage ? isMarkdownFromLocalStorage : isMarkdownFromHash;
 
   if (articleText) {
-    updateArticle(articleText, true, !articleFromLocalStorageKeyQuery);
+    updateArticle(articleText, true, !articleFromLocalStorageKeyQuery, isMarkdown);
   }
 
-  setIsEditMode(!article.innerText.trim(), true);
+  setIsEditMode(!articleText?.trim(), true);
 }
 
 let lastSwedishWordClickEventTarget = null;
@@ -272,6 +332,8 @@ document.addEventListener("click", (event) => {
 clearAndEditButtons.forEach((x) =>
   x.addEventListener("click", () => {
     article.innerHTML = "";
+    article.dataset.rawHtml = "";
+    article.dataset.isMarkdown = "";
     setIsEditMode(true);
   })
 );
@@ -345,7 +407,14 @@ fullScreenButton.addEventListener("click", () => {
 pasteButtons.forEach((pasteButton) =>
   pasteButton.addEventListener("click", async () => {
     article.innerText = await navigator.clipboard.readText();
-    setIsEditMode(false);
+    setIsEditMode(false, false, false);
+  })
+);
+
+pasteMarkdownButtons.forEach((pasteButton) =>
+  pasteButton.addEventListener("click", async () => {
+    article.innerText = await navigator.clipboard.readText();
+    setIsEditMode(false, false, true);
   })
 );
 
