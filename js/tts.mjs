@@ -8,7 +8,7 @@ import { sleep } from "./utils.mjs";
 const ttsOnClick = bindCheckboxToSetting(
   ".settings-tts-on-click-checkbox",
   settingKeys.__settings_ttsOnClickCheckbox_checked,
-  true
+  true,
 );
 
 const updateVolumeLabel = (val) => {
@@ -22,7 +22,7 @@ const ttsVolume = bindTextInputToSetting(
   ".settings-tts-volume",
   settingKeys.__settings_ttsVolume,
   "1",
-  updateVolumeLabel
+  updateVolumeLabel,
 );
 ttsVolume.element.addEventListener("input", (e) => {
   updateVolumeLabel(e.target.value);
@@ -43,7 +43,7 @@ const keepSpeakerRunning = bindCheckboxToSetting(
         audioContext.suspend();
       }
     }
-  }
+  },
 );
 
 export const speakOnClick = async (lang, text) => {
@@ -82,7 +82,7 @@ export const speakOnClick = async (lang, text) => {
 
   const u = new SpeechSynthesisUtterance(
     // Cast to lower case as upper case characters might be read separately.
-    text.toLocaleLowerCase(lang)
+    text.toLocaleLowerCase(lang),
   );
   u.lang = lang;
   u.volume = parseFloat(ttsVolume.getSetting());

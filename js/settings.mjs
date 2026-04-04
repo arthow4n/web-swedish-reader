@@ -46,7 +46,7 @@ export const bindCheckboxToSetting = (
   selector,
   settingKey,
   defaultValue,
-  onChange = null
+  onChange = null,
 ) => {
   const checkbox = document.querySelector(selector);
   checkbox.checked = readSetting(settingKey, defaultValue);
@@ -67,7 +67,7 @@ export const bindTextInputToSetting = (
   selector,
   settingKey,
   defaultValue,
-  onChange = null
+  onChange = null,
 ) => {
   const input = document.querySelector(selector);
   input.value = readSetting(settingKey, defaultValue);

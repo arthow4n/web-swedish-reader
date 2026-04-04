@@ -73,15 +73,16 @@
                 encodeURIComponent(
                   document
                     .querySelector(".copy-snippet")
-                    .innerText.replace(/\b([-\w]+)\b\s+\b\1\b/g, "$1")
+                    .innerText.replace(/\b([-\w]+)\b\s+\b\1\b/g, "$1"),
                 );
               const w = window.open(link, "_blank", "noopener,noreferrer");
             }
 
             if (url.host === "gemini.google.com") {
-              const lastMessageContent = [...document.querySelectorAll("message-content")].at(-1)?.innerHTML;
-              if (lastMessageContent)
-              {
+              const lastMessageContent = [
+                ...document.querySelectorAll("message-content"),
+              ].at(-1)?.innerHTML;
+              if (lastMessageContent) {
                 const link =
                   "https://arthow4n.github.io/web-swedish-reader/#html=" +
                   encodeURIComponent(lastMessageContent);
@@ -98,7 +99,7 @@
                     (x.innerHTML =
                       x
                         .querySelector(".post-user-username")
-                        ?.innerText.trim() ?? "")
+                        ?.innerText.trim() ?? ""),
                 );
 
               root.querySelectorAll(".post-bbcode-quote").forEach((x) => {
@@ -120,7 +121,7 @@
                     .split("\n")
                     .reverse()
                     .filter((x) => x.trim())
-                    .join(", "))
+                    .join(", ")),
               );
 
               root.querySelectorAll(".post").forEach((x) => {
@@ -129,7 +130,7 @@
 
               root
                 .querySelectorAll(
-                  "script,noscript,#site-message-donation,.modal,.offcanvas,footer,.post-icons,.adcontainer,.row-forum-toolbar,.navbar,.hidden-xs,.holidAds"
+                  "script,noscript,#site-message-donation,.modal,.offcanvas,footer,.post-icons,.adcontainer,.row-forum-toolbar,.navbar,.hidden-xs,.holidAds",
                 )
                 .forEach((x) => x.remove());
 

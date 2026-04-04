@@ -30,7 +30,7 @@ const installDictionary = async (dictionaryName, moduleDataAccessor) => {
     const { version: fetchedVersion } = dictionaryModule;
     if (fetchedVersion !== expectedVersion) {
       throw new Error(
-        `Remote version mistmatch: fetchedVersion=${fetchedVersion}, expectedVersion=${expectedVersion}`
+        `Remote version mistmatch: fetchedVersion=${fetchedVersion}, expectedVersion=${expectedVersion}`,
       );
     }
 
@@ -41,7 +41,7 @@ const installDictionary = async (dictionaryName, moduleDataAccessor) => {
         version: fetchedVersion,
         data,
       },
-      dictionaryStore
+      dictionaryStore,
     );
     return data;
   } catch (err) {
@@ -174,7 +174,7 @@ export const queryCompounds = async (word) => {
         (match, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11) =>
           [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11]
             .filter((x) => x)
-            .join("")
+            .join(""),
       );
 
     console.log(`Compound tree for ${word}: ${joined} => ${JSON.stringify(x)}`);
@@ -214,8 +214,8 @@ export const queryEnglishTranslation = async (word) => {
     try {
       const res = await fetch(
         `https://fetch-swe-compounds.deno.dev/analyse?cacheBuster=5&sourceLanguage=${sourceLanguage}&word=${encodeURIComponent(
-          word
-        )}`
+          word,
+        )}`,
       ).then((x) => x.json());
 
       return uniq(res.flatMap((r) => r.definitions));
