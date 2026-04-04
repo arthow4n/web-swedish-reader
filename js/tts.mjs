@@ -9,6 +9,7 @@ const ttsOnClick = bindCheckboxToSetting({
   selector: ".settings-tts-on-click-checkbox",
   settingKey: settingKeys.__settings_ttsOnClickCheckbox_checked,
   defaultValue: true,
+  onChange: null,
 });
 
 const updateVolumeLabel = (val) => {

@@ -70,19 +70,20 @@ const setMainScrollState = (num) => {
 
 const onMainScroll = debounce(() => {
   setMainScrollState(main.scrollTop);
-});
+}, 300);
 
 const saveArticleToLocalStorage = bindCheckboxToSetting({
   selector: ".settings-save-article-to-local-storage-checkbox",
   settingKey: settingKeys.__settings_saveArticleToLocalStorageCheckbox_checked,
   defaultValue: false,
+  onChange: null,
 });
 
 const updateArticle = async ({
   input,
   loadScrollPosition,
   updateArticleFromLocalStorageKeyQuery,
-  isMarkdown = false,
+  isMarkdown,
 }) => {
   if (saveArticleToLocalStorage.getSetting()) {
     if (updateArticleFromLocalStorageKeyQuery) {
@@ -170,7 +171,7 @@ ${err.name}: ${err.message}
         const nodeText = node.nodeValue;
         if (!nodeText.trim()) return;
         const tmp = document.createElement("template");
-        tmp.innerHTML = toWordSpans(nodeText);
+        tmp.innerHTML = toWordSpans(nodeText, { className: "" });
         node.parentNode.replaceChild(tmp.content, node);
       }
     };
@@ -188,7 +189,7 @@ ${err.name}: ${err.message}
           line
             .split(/\s+/)
             .filter((x) => x.trim())
-            .map((x) => toWordSpans(x))
+            .map((x) => toWordSpans(x, { className: "" }))
             .join(" ") +
           "</p>"
         );
@@ -218,11 +219,7 @@ ${err.name}: ${err.message}
 
 let currentSelectedWordElementInArticle = null;
 
-const setIsEditMode = ({
-  isEditable,
-  init = false,
-  forceIsMarkdown = null,
-}) => {
+const setIsEditMode = ({ isEditable, init, forceIsMarkdown }) => {
   document.body.classList.remove("is-edit-mode");
 
   if (isEditable) {
@@ -306,7 +303,12 @@ const convertHtmlToMarkdown = async (htmlContent) => {
   // when loading web-swedish-reader from browser custom search engine.
   const dictionaryQuery = new URL(location).searchParams.get("dictionaryQuery");
   if (dictionaryQuery) {
-    updateDictionaryViews({ text: dictionaryQuery });
+    updateDictionaryViews({
+      text: dictionaryQuery,
+      cleanup: true,
+      keepQueryAlternatives: false,
+      shouldSetDictionaryToVisible: true,
+    });
   }
 
   const articleFromLocalStorageKeyQuery = new URL(location).searchParams.get(
@@ -347,7 +349,11 @@ const convertHtmlToMarkdown = async (htmlContent) => {
     });
   }
 
-  setIsEditMode({ isEditable: !articleText?.trim(), init: true });
+  setIsEditMode({
+    isEditable: !articleText?.trim(),
+    init: true,
+    forceIsMarkdown: null,
+  });
 })();
 
 let lastSwedishWordClickEventTarget = null;
@@ -393,10 +399,16 @@ document.addEventListener("click", (event) => {
     event.target.innerText === queryInput.value;
 
   if (shouldGoToDeeperAlternative) {
-    updateDictionaryViews({ text: event.target.innerText });
+    updateDictionaryViews({
+      text: event.target.innerText,
+      cleanup: true,
+      keepQueryAlternatives: false,
+      shouldSetDictionaryToVisible: true,
+    });
   } else {
     updateDictionaryViews({
       text: event.target.innerText,
+      cleanup: true,
       keepQueryAlternatives: isInsideAlternatives,
       shouldSetDictionaryToVisible:
         isInsideAlternatives &&
@@ -412,15 +424,15 @@ clearAndEditButtons.forEach((x) =>
     article.innerHTML = "";
     article.dataset.rawHtml = "";
     article.dataset.isMarkdown = "";
-    setIsEditMode({ isEditable: true });
+    setIsEditMode({ isEditable: true, init: false, forceIsMarkdown: null });
   }),
 );
 editButton.addEventListener("click", () => {
-  setIsEditMode({ isEditable: true });
+  setIsEditMode({ isEditable: true, init: false, forceIsMarkdown: null });
 });
 finishEditButtons.forEach((x) => {
   x.addEventListener("click", () => {
-    setIsEditMode({ isEditable: false });
+    setIsEditMode({ isEditable: false, init: false, forceIsMarkdown: null });
   });
 });
 
@@ -485,7 +497,11 @@ importButtons.forEach((x) =>
           forceIsMarkdown: true,
         });
       } else {
-        setIsEditMode({ isEditable: false });
+        setIsEditMode({
+          isEditable: false,
+          init: false,
+          forceIsMarkdown: false,
+        });
       }
     };
 

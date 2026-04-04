@@ -69,7 +69,7 @@ export const queryCompounds = async (word) => {
 
   const compoundsSet = new Set();
 
-  const sliceDownForward = ({ word, init = false, power = 0 }) => {
+  const sliceDownForward = ({ word, init, power }) => {
     if (!word) {
       return [];
     }
@@ -131,7 +131,7 @@ export const queryCompounds = async (word) => {
       : [word];
   };
 
-  const sliceDownBackward = ({ word, init = false, power = 0 }) => {
+  const sliceDownBackward = ({ word, init, power }) => {
     if (!word) {
       return [];
     }
@@ -211,12 +211,12 @@ export const queryCompounds = async (word) => {
     return joined;
   };
 
-  const f0 = join(sliceDownForward({ word, init: true }));
+  const f0 = join(sliceDownForward({ word, init: true, power: 0 }));
   const f1 = join(sliceDownForward({ word, init: true, power: 1 }));
   compoundsSet.add(f0);
   compoundsSet.add(f1);
 
-  const b0 = join(sliceDownBackward({ word, init: true }));
+  const b0 = join(sliceDownBackward({ word, init: true, power: 0 }));
   const b1 = join(sliceDownBackward({ word, init: true, power: 1 }));
   compoundsSet.add(b0);
   compoundsSet.add(b1);

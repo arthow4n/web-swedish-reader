@@ -104,9 +104,9 @@ setIsDictionaryVisible(keepDictionaryVisibleCheckBox.checked);
 
 export const updateDictionaryViews = async ({
   text,
-  cleanup = true,
-  keepQueryAlternatives = false,
-  shouldSetDictionaryToVisible = true,
+  cleanup,
+  keepQueryAlternatives,
+  shouldSetDictionaryToVisible,
 }) => {
   const cleanedText = (
     cleanup ? text.replace(/(^[^\p{L}]+|[^\p{L}]+$)/gu, "") : text
@@ -206,6 +206,7 @@ export const updateDictionaryViews = async ({
             uniq([...localEntry.compounds, ...localEntry.baseforms])
               .filter((x) => x)
               .join(", "),
+            { className: "" },
           );
 
       markAvailableEnglishTranslationsInDescendants(queryAlternativesLocal);
@@ -259,11 +260,14 @@ export const updateDictionaryViews = async ({
         .filter((x) => x)
         .join(", ");
 
-      queryAlternativesRemote.innerHTML = toWordSpans(wordParts);
+      queryAlternativesRemote.innerHTML = toWordSpans(wordParts, {
+        className: "",
+      });
       markAvailableEnglishTranslationsInDescendants(queryAlternativesRemote);
 
       queryAlternativesSwedishDefinition.innerHTML = toWordSpans(
         saolCompounds.flatMap((r) => r.definitions).join("; "),
+        { className: "" },
       );
       markAvailableEnglishTranslationsInDescendants(
         queryAlternativesSwedishDefinition,
@@ -271,6 +275,7 @@ export const updateDictionaryViews = async ({
 
       queryAlternativesSwedishDefinition2.innerHTML = toWordSpans(
         soCompounds.flatMap((r) => r.definitions).join("; "),
+        { className: "" },
       );
       markAvailableEnglishTranslationsInDescendants(
         queryAlternativesSwedishDefinition2,
@@ -306,7 +311,12 @@ export const updateDictionaryViews = async ({
 
 queryInput.closest("form").addEventListener("submit", (event) => {
   event.preventDefault();
-  updateDictionaryViews({ text: queryInput.value, cleanup: false });
+  updateDictionaryViews({
+    text: queryInput.value,
+    cleanup: false,
+    keepQueryAlternatives: false,
+    shouldSetDictionaryToVisible: true,
+  });
 });
 
 queryInput.addEventListener("focus", (event) => {
@@ -318,7 +328,12 @@ queryInput.addEventListener("paste", (event) => {
   if (text) {
     event.preventDefault();
     // Cleaning pasted data makes it easier to paste from SAOL.
-    updateDictionaryViews({ text });
+    updateDictionaryViews({
+      text,
+      cleanup: true,
+      keepQueryAlternatives: false,
+      shouldSetDictionaryToVisible: true,
+    });
   }
 });
 
