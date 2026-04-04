@@ -24,11 +24,13 @@ const editButton = document.querySelector(".control-edit");
 const importButtons = document.querySelectorAll(".control-import");
 const finishEditButtons = document.querySelectorAll(".control-finish-edit");
 const pasteButtons = document.querySelectorAll(".control-paste");
-const pasteMarkdownButtons = document.querySelectorAll(".control-paste-markdown");
+const pasteMarkdownButtons = document.querySelectorAll(
+  ".control-paste-markdown",
+);
 const pasteHtmlButtons = document.querySelectorAll(".control-paste-html");
 const fullScreenButton = document.querySelector(".control-full-screen");
 const clearArticleStorageButtons = document.querySelectorAll(
-  ".control-settings-clear-article-storage-checkbox"
+  ".control-settings-clear-article-storage-checkbox",
 );
 const main = document.querySelector("main");
 const article = document.querySelector("article");
@@ -73,14 +75,14 @@ const onMainScroll = debounce(() => {
 const saveArticleToLocalStorage = bindCheckboxToSetting(
   ".settings-save-article-to-local-storage-checkbox",
   settingKeys.__settings_saveArticleToLocalStorageCheckbox_checked,
-  false
+  false,
 );
 
 const updateArticle = async (
   input,
   loadScrollPosition,
   updateArticleFromLocalStorageKeyQuery,
-  isMarkdown = false
+  isMarkdown = false,
 ) => {
   if (saveArticleToLocalStorage.getSetting()) {
     if (updateArticleFromLocalStorageKeyQuery) {
@@ -91,18 +93,18 @@ const updateArticle = async (
 
       newUrl.searchParams.set(
         `${articleFromLocalStorageKey}`,
-        articleFromLocalStorageKeyQuery
+        articleFromLocalStorageKeyQuery,
       );
       newUrl.hash = "";
 
       try {
         localStorage.setItem(
           `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}`,
-          input
+          input,
         );
         localStorage.setItem(
           `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}.isMarkdown`,
-          isMarkdown
+          isMarkdown,
         );
       } catch (err) {
         console.error(err);
@@ -117,7 +119,10 @@ ${err.name}: ${err.message}
   } else {
     const newUrl = new URL(location);
     newUrl.searchParams.delete(`${articleFromLocalStorageKey}`);
-    newUrl.hash = "text=" + encodeURIComponent(input) + (isMarkdown ? "&isMarkdown=true" : "");
+    newUrl.hash =
+      "text=" +
+      encodeURIComponent(input) +
+      (isMarkdown ? "&isMarkdown=true" : "");
 
     history.pushState({}, undefined, newUrl);
   }
@@ -134,7 +139,8 @@ ${err.name}: ${err.message}
   article.dataset.isMarkdown = isMarkdown ? "true" : "";
 
   if (isMarkdown) {
-    const { marked } = await import("https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js");
+    const { marked } =
+      await import("https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js");
     const html = marked.parse(text);
     const template = document.createElement("template");
     template.innerHTML = html;
@@ -143,34 +149,34 @@ ${err.name}: ${err.message}
       if (node.childNodes && node.childNodes.length > 0) {
         Array.from(node.childNodes).forEach(processNodeBottomUp);
       }
-      
+
       if (node.nodeType === Node.ELEMENT_NODE) {
-        if (node.tagName === 'TABLE') {
+        if (node.tagName === "TABLE") {
           const wrapper = document.createElement("div");
           wrapper.className = "table-scroll-wrapper";
           node.parentNode.replaceChild(wrapper, node);
           wrapper.appendChild(node);
-        } else if (node.tagName === 'A') {
+        } else if (node.tagName === "A") {
           const fragment = document.createDocumentFragment();
           while (node.firstChild) {
             fragment.appendChild(node.firstChild);
           }
           node.parentNode.replaceChild(fragment, node);
-        } else if (node.tagName === 'IMG') {
+        } else if (node.tagName === "IMG") {
           const t = document.createTextNode(node.alt || "");
           node.parentNode.replaceChild(t, node);
         }
       } else if (node.nodeType === Node.TEXT_NODE) {
-         const nodeText = node.nodeValue;
-         if (!nodeText.trim()) return;
-         const tmp = document.createElement("template");
-         tmp.innerHTML = toWordSpans(nodeText);
-         node.parentNode.replaceChild(tmp.content, node);
+        const nodeText = node.nodeValue;
+        if (!nodeText.trim()) return;
+        const tmp = document.createElement("template");
+        tmp.innerHTML = toWordSpans(nodeText);
+        node.parentNode.replaceChild(tmp.content, node);
       }
     };
-    
+
     Array.from(template.content.childNodes).forEach(processNodeBottomUp);
-    
+
     article.innerHTML = "";
     article.appendChild(template.content);
   } else {
@@ -201,11 +207,11 @@ ${err.name}: ${err.message}
     loadScrollPosition
       ? parseInt(
           localStorage.getItem(
-            `${mainScrollQueryKey}=${url.searchParams.get(mainScrollQueryKey)}`
+            `${mainScrollQueryKey}=${url.searchParams.get(mainScrollQueryKey)}`,
           ),
-          10
+          10,
         ) || 0
-      : 0
+      : 0,
   );
   main.addEventListener("scroll", onMainScroll);
 };
@@ -221,11 +227,11 @@ const setIsEditMode = (isEditable, init = false, forceIsMarkdown = null) => {
 
     document.body.classList.add("is-edit-mode");
     currentSelectedWordElementInArticle?.classList.remove(
-      wordSelectedInAreaClassName
+      wordSelectedInAreaClassName,
     );
 
     if (article.dataset.rawHtml !== undefined) {
-       article.innerText = article.dataset.rawHtml;
+      article.innerText = article.dataset.rawHtml;
     }
 
     article.contentEditable = "plaintext-only";
@@ -235,7 +241,10 @@ const setIsEditMode = (isEditable, init = false, forceIsMarkdown = null) => {
   }
 
   if (!init) {
-    const isMarkdown = forceIsMarkdown !== null ? forceIsMarkdown : (article.dataset.isMarkdown === "true");
+    const isMarkdown =
+      forceIsMarkdown !== null
+        ? forceIsMarkdown
+        : article.dataset.isMarkdown === "true";
     updateArticle(article.innerText, false, true, isMarkdown);
   }
 
@@ -243,9 +252,12 @@ const setIsEditMode = (isEditable, init = false, forceIsMarkdown = null) => {
 };
 
 const convertHtmlToMarkdown = async (htmlContent) => {
-  const DOMPurifyModule = import("https://cdn.jsdelivr.net/npm/dompurify@3.0.6/+esm");
-  const TurndownServiceModule = import("https://cdn.jsdelivr.net/npm/turndown@7.1.3/+esm");
-  const TurndownPluginGfmModule = import("https://cdn.jsdelivr.net/npm/turndown-plugin-gfm@1.0.2/+esm");
+  const DOMPurifyModule =
+    import("https://cdn.jsdelivr.net/npm/dompurify@3.0.6/+esm");
+  const TurndownServiceModule =
+    import("https://cdn.jsdelivr.net/npm/turndown@7.1.3/+esm");
+  const TurndownPluginGfmModule =
+    import("https://cdn.jsdelivr.net/npm/turndown-plugin-gfm@1.0.2/+esm");
   const { default: DOMPurify } = await DOMPurifyModule;
   const { default: TurndownService } = await TurndownServiceModule;
   const { gfm } = await TurndownPluginGfmModule;
@@ -254,21 +266,27 @@ const convertHtmlToMarkdown = async (htmlContent) => {
 
   const turndownService = new TurndownService({
     headingStyle: "atx",
-    codeBlockStyle: "fenced"
+    codeBlockStyle: "fenced",
   });
 
   turndownService.use(gfm);
 
-  turndownService.addRule('tableCell', {
-    filter: ['th', 'td'],
+  turndownService.addRule("tableCell", {
+    filter: ["th", "td"],
     replacement: function (content, node) {
-      const index = Array.prototype.indexOf.call(node.parentNode.childNodes, node);
-      let prefix = ' ';
-      if (index === 0) prefix = '| ';
-      
-      let safeContent = content.trim().replace(/\n+/g, '<br>').replace(/\|/g, '\\|');
-      return prefix + safeContent + ' |';
-    }
+      const index = Array.prototype.indexOf.call(
+        node.parentNode.childNodes,
+        node,
+      );
+      let prefix = " ";
+      if (index === 0) prefix = "| ";
+
+      let safeContent = content
+        .trim()
+        .replace(/\n+/g, "<br>")
+        .replace(/\|/g, "\\|");
+      return prefix + safeContent + " |";
+    },
   });
 
   return turndownService.turndown(cleanHtml);
@@ -283,17 +301,17 @@ const convertHtmlToMarkdown = async (htmlContent) => {
   }
 
   const articleFromLocalStorageKeyQuery = new URL(location).searchParams.get(
-    articleFromLocalStorageKey
+    articleFromLocalStorageKey,
   );
   const textFromLocalStorage =
     articleFromLocalStorageKeyQuery &&
     localStorage.getItem(
-      `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}`
+      `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}`,
     );
-  const isMarkdownFromLocalStorage = 
+  const isMarkdownFromLocalStorage =
     articleFromLocalStorageKeyQuery &&
     localStorage.getItem(
-      `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}.isMarkdown`
+      `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}.isMarkdown`,
     ) === "true";
 
   const hashQuery = new URLSearchParams(location.hash.slice(1));
@@ -307,10 +325,17 @@ const convertHtmlToMarkdown = async (htmlContent) => {
   }
 
   const articleText = textFromLocalStorage || textFromHash;
-  const isMarkdown = textFromLocalStorage ? isMarkdownFromLocalStorage : isMarkdownFromHash;
+  const isMarkdown = textFromLocalStorage
+    ? isMarkdownFromLocalStorage
+    : isMarkdownFromHash;
 
   if (articleText) {
-    updateArticle(articleText, true, !articleFromLocalStorageKeyQuery, isMarkdown);
+    updateArticle(
+      articleText,
+      true,
+      !articleFromLocalStorageKeyQuery,
+      isMarkdown,
+    );
   }
 
   setIsEditMode(!articleText?.trim(), true);
@@ -343,11 +368,11 @@ document.addEventListener("click", (event) => {
   const isInsideArticle = event.target.closest("article");
   if (isInsideArticle) {
     currentSelectedWordElementInArticle?.classList.remove(
-      wordSelectedInAreaClassName
+      wordSelectedInAreaClassName,
     );
     currentSelectedWordElementInArticle = event.target;
     currentSelectedWordElementInArticle.classList.add(
-      wordSelectedInAreaClassName
+      wordSelectedInAreaClassName,
     );
     hideDictionaryIfNotOpenedFromCheckBox();
   }
@@ -367,7 +392,7 @@ document.addEventListener("click", (event) => {
           shouldSetDictionaryToVisible:
             isInsideAlternatives &&
             lastSwedishWordClickEventTarget === event.target,
-        }
+        },
   );
 
   lastSwedishWordClickEventTarget = event.target;
@@ -379,7 +404,7 @@ clearAndEditButtons.forEach((x) =>
     article.dataset.rawHtml = "";
     article.dataset.isMarkdown = "";
     setIsEditMode(true);
-  })
+  }),
 );
 editButton.addEventListener("click", () => {
   setIsEditMode(true);
@@ -411,7 +436,7 @@ importButtons.forEach((x) =>
                 if (file.type === "text/html") {
                   const document = new DOMParser().parseFromString(
                     r.result,
-                    "text/html"
+                    "text/html",
                   );
                   resolve(withFileStartEnd(document.body.innerText));
                   return;
@@ -424,8 +449,8 @@ importButtons.forEach((x) =>
               };
 
               r.readAsText(file);
-            })
-        )
+            }),
+        ),
       );
       document.body.removeChild(input);
       article.innerText = allFiles.join("\n\n");
@@ -434,7 +459,7 @@ importButtons.forEach((x) =>
 
     document.body.appendChild(input);
     input.click();
-  })
+  }),
 );
 
 fullScreenButton.addEventListener("click", () => {
@@ -452,14 +477,14 @@ pasteButtons.forEach((pasteButton) =>
   pasteButton.addEventListener("click", async () => {
     article.innerText = await navigator.clipboard.readText();
     setIsEditMode(false, false, false);
-  })
+  }),
 );
 
 pasteMarkdownButtons.forEach((pasteButton) =>
   pasteButton.addEventListener("click", async () => {
     article.innerText = await navigator.clipboard.readText();
     setIsEditMode(false, false, true);
-  })
+  }),
 );
 
 pasteHtmlButtons.forEach((pasteButton) =>
@@ -491,7 +516,7 @@ pasteHtmlButtons.forEach((pasteButton) =>
     const markdown = await convertHtmlToMarkdown(htmlContent);
     article.innerText = markdown;
     setIsEditMode(false, false, true);
-  })
+  }),
 );
 
 clearArticleStorageButtons.forEach((clearArticleStorageButton) => {

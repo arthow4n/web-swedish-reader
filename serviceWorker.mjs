@@ -24,20 +24,19 @@ self.addEventListener("install", (event) => {
         getCachePathName("./js/tts.mjs"),
         getCachePathName("./js/utils.mjs"),
         getCachePathName(
-          "../web-swedish-reader-data/folkets-compound/folkets-compound.chunk.001.mjs"
+          "../web-swedish-reader-data/folkets-compound/folkets-compound.chunk.001.mjs",
         ),
         getCachePathName(
-          "../web-swedish-reader-data/folkets-compound/folkets-compound.meta.mjs"
+          "../web-swedish-reader-data/folkets-compound/folkets-compound.meta.mjs",
         ),
         getCachePathName(
-          "../web-swedish-reader-data/folkets-sven/folkets-sven.chunk.001.mjs"
+          "../web-swedish-reader-data/folkets-sven/folkets-sven.chunk.001.mjs",
         ),
         getCachePathName(
-          "../web-swedish-reader-data/folkets-sven/folkets-sven.meta.mjs"
+          "../web-swedish-reader-data/folkets-sven/folkets-sven.meta.mjs",
         ),
-
       ]);
-    })
+    }),
   );
 });
 
@@ -65,6 +64,6 @@ self.addEventListener("fetch", (event) => {
       })
       .catch(() => {
         return caches.match(event.request);
-      })
+      }),
   );
 });

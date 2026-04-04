@@ -5,7 +5,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "test": "playwright test"
+    "test": "playwright test",
+    "format": "prettier --write ."
   },
   "repository": {
     "type": "git",
@@ -14,6 +15,7 @@
   "type": "commonjs",
   "devDependencies": {
     "@playwright/test": "^1.59.1",
-    "http-server": "^14.1.1"
+    "http-server": "^14.1.1",
+    "prettier": "^3.8.1"
   }
 }

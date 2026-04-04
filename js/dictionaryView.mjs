@@ -18,31 +18,31 @@ import {
 
 export const queryInput = document.querySelector(".dics-query-input");
 const keepDictionaryVisibleCheckBox = document.querySelector(
-  ".label-dics-expand input"
+  ".label-dics-expand input",
 );
 const queryAlternativesContainer = document.querySelector(
-  ".query-alternatives"
+  ".query-alternatives",
 );
 const queryAlternativesLocal = document.querySelector(
-  ".query-alternatives-line-local"
+  ".query-alternatives-line-local",
 );
 const queryAlternativesRemote = document.querySelector(
-  ".query-alternatives-line-remote"
+  ".query-alternatives-line-remote",
 );
 const queryAlternativesSwedishDefinition = document.querySelector(
-  ".query-alternatives-line-swedish-definition"
+  ".query-alternatives-line-swedish-definition",
 );
 const queryAlternativesSwedishDefinition2 = document.querySelector(
-  ".query-alternatives-line-swedish-definition-2"
+  ".query-alternatives-line-swedish-definition-2",
 );
 const queryAlternativesEnglishTranslation = document.querySelector(
-  ".query-alternatives-line-english-translation"
+  ".query-alternatives-line-english-translation",
 );
 const youglishSwedishButton = document.querySelector(
-  ".control-youglish-swedish"
+  ".control-youglish-swedish",
 );
 export const englishReaderModeCheckBox = document.querySelector(
-  ".settings-english-reader-mode-checkbox"
+  ".settings-english-reader-mode-checkbox",
 );
 
 // const folkets = document.querySelector(".dic-folkets");
@@ -52,11 +52,11 @@ const englishDictionary = document.querySelector(".dic-english");
 
 const searchGoogleButton = document.querySelector(".control-search-google");
 const searchWiktionaryButton = document.querySelector(
-  ".control-search-wiktionary"
+  ".control-search-wiktionary",
 );
 const searchKorpButton = document.querySelector(".control-search-korp");
 const searchSlangopediaButton = document.querySelector(
-  ".control-search-slangopedia"
+  ".control-search-slangopedia",
 );
 const toggleSoButton = document.querySelector(".control-toggle-so");
 
@@ -91,14 +91,14 @@ export const hideDictionaryIfNotOpenedFromCheckBox = () => {
 keepDictionaryVisibleCheckBox.addEventListener("change", () => {
   writeSetting(
     settingKeys.__settings_keepDictionaryVisibleCheckBox_checked,
-    keepDictionaryVisibleCheckBox.checked
+    keepDictionaryVisibleCheckBox.checked,
   );
   setIsDictionaryVisible(keepDictionaryVisibleCheckBox.checked);
 });
 
 keepDictionaryVisibleCheckBox.checked = readSetting(
   settingKeys.__settings_keepDictionaryVisibleCheckBox_checked,
-  true
+  true,
 );
 setIsDictionaryVisible(keepDictionaryVisibleCheckBox.checked);
 
@@ -108,7 +108,7 @@ export const updateDictionaryViews = async (
     cleanup = true,
     keepQueryAlternatives = false,
     shouldSetDictionaryToVisible = true,
-  } = {}
+  } = {},
 ) => {
   const cleanedText = (
     cleanup ? text.replace(/(^[^\p{L}]+|[^\p{L}]+$)/gu, "") : text
@@ -139,15 +139,15 @@ export const updateDictionaryViews = async (
   };
   searchKorpButton.onclick = () => {
     openExternal(
-      `https://spraakbanken.gu.se/korp/#?cqp=%5B%5D&corpus=attasidor,da,svt-2004,svt-2005,svt-2006,svt-2007,svt-2008,svt-2009,svt-2010,svt-2011,svt-2012,svt-2013,svt-2014,svt-2015,svt-2016,svt-2017,svt-2018,svt-2019,svt-2020,svt-2021,svt-2022,svt-2023,svt-nodate&search=word%7C${encodedText}`
+      `https://spraakbanken.gu.se/korp/#?cqp=%5B%5D&corpus=attasidor,da,svt-2004,svt-2005,svt-2006,svt-2007,svt-2008,svt-2009,svt-2010,svt-2011,svt-2012,svt-2013,svt-2014,svt-2015,svt-2016,svt-2017,svt-2018,svt-2019,svt-2020,svt-2021,svt-2022,svt-2023,svt-nodate&search=word%7C${encodedText}`,
     );
   };
   searchSlangopediaButton.onclick = () => {
     // Slangopedia uses ISO-8859-1 encoding so åäö encode differently than UTF-8
     openExternal(
       `https://mobil.slangopedia.se/mobil/ordlista/?ord=${encodeURIComponent(
-        escape(cleanedText)
-      ).replaceAll("%25", "%")}`
+        escape(cleanedText),
+      ).replaceAll("%25", "%")}`,
     );
   };
   youglishSwedishButton.onclick = () => {
@@ -155,7 +155,7 @@ export const updateDictionaryViews = async (
   };
   toggleSoButton.onclick = () => {
     queryAlternativesContainer.classList.toggle(
-      "query-alternatives-so-expanded"
+      "query-alternatives-so-expanded",
     );
   };
   // {
@@ -188,8 +188,8 @@ export const updateDictionaryViews = async (
           if (translations.length) {
             wordElement.classList.add("word-has-english-translation");
           }
-        }
-      )
+        },
+      ),
     );
   };
 
@@ -207,7 +207,7 @@ export const updateDictionaryViews = async (
         : toWordSpans(
             uniq([...localEntry.compounds, ...localEntry.baseforms])
               .filter((x) => x)
-              .join(", ")
+              .join(", "),
           );
 
       markAvailableEnglishTranslationsInDescendants(queryAlternativesLocal);
@@ -236,7 +236,7 @@ export const updateDictionaryViews = async (
 
       try {
         const res = await fetch(
-          `https://fetch-swe-compounds.deno.dev/analyse?cacheBuster=5&word=${encodedText}`
+          `https://fetch-swe-compounds.deno.dev/analyse?cacheBuster=5&word=${encodedText}`,
         );
         if (res.status !== 200) {
           return resolveEmpty();
@@ -249,7 +249,7 @@ export const updateDictionaryViews = async (
 
     if (queryInput.value === cleanedText) {
       const saolCompounds = remoteCompounds.filter(
-        (r) => r.upstream === "saol"
+        (r) => r.upstream === "saol",
       );
       const soCompounds = remoteCompounds.filter((r) => r.upstream === "so");
 
@@ -265,17 +265,17 @@ export const updateDictionaryViews = async (
       markAvailableEnglishTranslationsInDescendants(queryAlternativesRemote);
 
       queryAlternativesSwedishDefinition.innerHTML = toWordSpans(
-        saolCompounds.flatMap((r) => r.definitions).join("; ")
+        saolCompounds.flatMap((r) => r.definitions).join("; "),
       );
       markAvailableEnglishTranslationsInDescendants(
-        queryAlternativesSwedishDefinition
+        queryAlternativesSwedishDefinition,
       );
 
       queryAlternativesSwedishDefinition2.innerHTML = toWordSpans(
-        soCompounds.flatMap((r) => r.definitions).join("; ")
+        soCompounds.flatMap((r) => r.definitions).join("; "),
       );
       markAvailableEnglishTranslationsInDescendants(
-        queryAlternativesSwedishDefinition2
+        queryAlternativesSwedishDefinition2,
       );
     }
   };
@@ -290,7 +290,7 @@ export const updateDictionaryViews = async (
         translations.length ? translations.join("; ") : cleanedText,
         {
           className: "word-english",
-        }
+        },
       );
     }
   };
@@ -346,7 +346,7 @@ export const showEnglishDictionary = (word) => {
 
   const show = () => {
     const next = `https://www.thefreedictionary.com/${encodeURIComponent(
-      word
+      word,
     )}#Definition`;
     if (englishDictionary.src !== next) {
       // There's a very aggressive cookie modal inside that doesn't stop showing even after accepting.
