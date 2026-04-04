@@ -2,3 +2,5 @@ web-swedish-reader-data
 node_modules/
 playwright-report/
 test-results/
+dist/
+dev.log

@@ -1,8 +1,4 @@
-import {
-  set,
-  get,
-  createStore,
-} from "https://cdn.jsdelivr.net/npm/idb-keyval@6/+esm";
+import { set, get, createStore } from "idb-keyval";
 import { uniq } from "./utils.mjs";
 
 const dictionaryStore = createStore("wsr-dictionary", "wsr-dictionary");
