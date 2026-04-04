@@ -17,18 +17,17 @@
   },
   "type": "commonjs",
   "devDependencies": {
-    "@playwright/test": "^1.59.1",
-    "@rsbuild/core": "^1.7.5",
-    "http-server": "^14.1.1",
-    "prettier": "^3.8.1"
+    "@playwright/test": "1.59.1",
+    "@rsbuild/core": "1.7.5",
+    "prettier": "3.8.1"
   },
   "dependencies": {
-    "dompurify": "^3.3.3",
-    "idb-keyval": "^6.2.2",
-    "marked": "^17.0.5",
-    "normalize.css": "^8.0.1",
-    "sakura.css": "^1.5.1",
-    "turndown": "^7.2.4",
-    "turndown-plugin-gfm": "^1.0.2"
+    "dompurify": "3.3.3",
+    "idb-keyval": "6.2.2",
+    "marked": "17.0.5",
+    "normalize.css": "8.0.1",
+    "sakura.css": "1.5.1",
+    "turndown": "7.2.4",
+    "turndown-plugin-gfm": "1.0.2"
   }
 }
