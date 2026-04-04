@@ -140,8 +140,7 @@ ${err.name}: ${err.message}
   article.dataset.isMarkdown = isMarkdown ? "true" : "";
 
   if (isMarkdown) {
-    const { marked } =
-      await import("https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js");
+    const { marked } = await import("marked");
     const html = marked.parse(text);
     const template = document.createElement("template");
     template.innerHTML = html;
@@ -258,12 +257,9 @@ const setIsEditMode = ({ isEditable, init, forceIsMarkdown }) => {
 };
 
 const convertHtmlToMarkdown = async (htmlContent) => {
-  const DOMPurifyModule =
-    import("https://cdn.jsdelivr.net/npm/dompurify@3.0.6/+esm");
-  const TurndownServiceModule =
-    import("https://cdn.jsdelivr.net/npm/turndown@7.1.3/+esm");
-  const TurndownPluginGfmModule =
-    import("https://cdn.jsdelivr.net/npm/turndown-plugin-gfm@1.0.2/+esm");
+  const DOMPurifyModule = import("dompurify");
+  const TurndownServiceModule = import("turndown");
+  const TurndownPluginGfmModule = import("turndown-plugin-gfm");
   const { default: DOMPurify } = await DOMPurifyModule;
   const { default: TurndownService } = await TurndownServiceModule;
   const { gfm } = await TurndownPluginGfmModule;

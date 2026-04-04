@@ -18,7 +18,7 @@ module.exports = defineConfig({
     },
   ],
   webServer: {
-    command: "npx http-server . -p 8080",
+    command: "npm run build && npm run preview -- --port 8080",
     url: "http://localhost:8080",
     reuseExistingServer: !process.env.CI,
   },
