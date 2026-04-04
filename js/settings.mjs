@@ -42,12 +42,12 @@ export const settingKeys = {
   __settings_ttsVolume: "__settings_ttsVolume",
 };
 
-export const bindCheckboxToSetting = (
+export const bindCheckboxToSetting = ({
   selector,
   settingKey,
   defaultValue,
   onChange = null,
-) => {
+}) => {
   const checkbox = document.querySelector(selector);
   checkbox.checked = readSetting(settingKey, defaultValue);
   checkbox.addEventListener("change", () => {
@@ -63,12 +63,12 @@ export const bindCheckboxToSetting = (
   };
 };
 
-export const bindTextInputToSetting = (
+export const bindTextInputToSetting = ({
   selector,
   settingKey,
   defaultValue,
   onChange = null,
-) => {
+}) => {
   const input = document.querySelector(selector);
   input.value = readSetting(settingKey, defaultValue);
   input.addEventListener("change", () => {

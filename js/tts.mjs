@@ -5,11 +5,11 @@ import {
 } from "./settings.mjs";
 import { sleep } from "./utils.mjs";
 
-const ttsOnClick = bindCheckboxToSetting(
-  ".settings-tts-on-click-checkbox",
-  settingKeys.__settings_ttsOnClickCheckbox_checked,
-  true,
-);
+const ttsOnClick = bindCheckboxToSetting({
+  selector: ".settings-tts-on-click-checkbox",
+  settingKey: settingKeys.__settings_ttsOnClickCheckbox_checked,
+  defaultValue: true,
+});
 
 const updateVolumeLabel = (val) => {
   const label = document.querySelector(".settings-tts-volume-label");
@@ -18,12 +18,12 @@ const updateVolumeLabel = (val) => {
   }
 };
 
-const ttsVolume = bindTextInputToSetting(
-  ".settings-tts-volume",
-  settingKeys.__settings_ttsVolume,
-  "1",
-  updateVolumeLabel,
-);
+const ttsVolume = bindTextInputToSetting({
+  selector: ".settings-tts-volume",
+  settingKey: settingKeys.__settings_ttsVolume,
+  defaultValue: "1",
+  onChange: updateVolumeLabel,
+});
 ttsVolume.element.addEventListener("input", (e) => {
   updateVolumeLabel(e.target.value);
 });
@@ -33,18 +33,18 @@ const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let oscillator = null;
 let gainNode = null;
 
-const keepSpeakerRunning = bindCheckboxToSetting(
-  ".settings-keep-speaker-running-checkbox",
-  settingKeys.__settings_keepSpeakerRunning_checked,
-  false,
-  (checked) => {
+const keepSpeakerRunning = bindCheckboxToSetting({
+  selector: ".settings-keep-speaker-running-checkbox",
+  settingKey: settingKeys.__settings_keepSpeakerRunning_checked,
+  defaultValue: false,
+  onChange: (checked) => {
     if (!checked) {
       if (audioContext.state === "running") {
         audioContext.suspend();
       }
     }
   },
-);
+});
 
 export const speakOnClick = async (lang, text) => {
   if (!ttsOnClick.getSetting()) {

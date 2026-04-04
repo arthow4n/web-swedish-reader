@@ -72,18 +72,18 @@ const onMainScroll = debounce(() => {
   setMainScrollState(main.scrollTop);
 });
 
-const saveArticleToLocalStorage = bindCheckboxToSetting(
-  ".settings-save-article-to-local-storage-checkbox",
-  settingKeys.__settings_saveArticleToLocalStorageCheckbox_checked,
-  false,
-);
+const saveArticleToLocalStorage = bindCheckboxToSetting({
+  selector: ".settings-save-article-to-local-storage-checkbox",
+  settingKey: settingKeys.__settings_saveArticleToLocalStorageCheckbox_checked,
+  defaultValue: false,
+});
 
-const updateArticle = async (
+const updateArticle = async ({
   input,
   loadScrollPosition,
   updateArticleFromLocalStorageKeyQuery,
   isMarkdown = false,
-) => {
+}) => {
   if (saveArticleToLocalStorage.getSetting()) {
     if (updateArticleFromLocalStorageKeyQuery) {
       const newUrl = new URL(location);
@@ -218,7 +218,11 @@ ${err.name}: ${err.message}
 
 let currentSelectedWordElementInArticle = null;
 
-const setIsEditMode = (isEditable, init = false, forceIsMarkdown = null) => {
+const setIsEditMode = ({
+  isEditable,
+  init = false,
+  forceIsMarkdown = null,
+}) => {
   document.body.classList.remove("is-edit-mode");
 
   if (isEditable) {
@@ -245,7 +249,12 @@ const setIsEditMode = (isEditable, init = false, forceIsMarkdown = null) => {
       forceIsMarkdown !== null
         ? forceIsMarkdown
         : article.dataset.isMarkdown === "true";
-    updateArticle(article.innerText, false, true, isMarkdown);
+    updateArticle({
+      input: article.innerText,
+      loadScrollPosition: false,
+      updateArticleFromLocalStorageKeyQuery: true,
+      isMarkdown,
+    });
   }
 
   article.contentEditable = false;
@@ -297,7 +306,7 @@ const convertHtmlToMarkdown = async (htmlContent) => {
   // when loading web-swedish-reader from browser custom search engine.
   const dictionaryQuery = new URL(location).searchParams.get("dictionaryQuery");
   if (dictionaryQuery) {
-    updateDictionaryViews(dictionaryQuery);
+    updateDictionaryViews({ text: dictionaryQuery });
   }
 
   const articleFromLocalStorageKeyQuery = new URL(location).searchParams.get(
@@ -330,15 +339,15 @@ const convertHtmlToMarkdown = async (htmlContent) => {
     : isMarkdownFromHash;
 
   if (articleText) {
-    updateArticle(
-      articleText,
-      true,
-      !articleFromLocalStorageKeyQuery,
+    updateArticle({
+      input: articleText,
+      loadScrollPosition: true,
+      updateArticleFromLocalStorageKeyQuery: !articleFromLocalStorageKeyQuery,
       isMarkdown,
-    );
+    });
   }
 
-  setIsEditMode(!articleText?.trim(), true);
+  setIsEditMode({ isEditable: !articleText?.trim(), init: true });
 })();
 
 let lastSwedishWordClickEventTarget = null;
@@ -383,17 +392,17 @@ document.addEventListener("click", (event) => {
     lastSwedishWordClickEventTarget === event.target &&
     event.target.innerText === queryInput.value;
 
-  updateDictionaryViews(
-    event.target.innerText,
-    shouldGoToDeeperAlternative
-      ? undefined
-      : {
-          keepQueryAlternatives: isInsideAlternatives,
-          shouldSetDictionaryToVisible:
-            isInsideAlternatives &&
-            lastSwedishWordClickEventTarget === event.target,
-        },
-  );
+  if (shouldGoToDeeperAlternative) {
+    updateDictionaryViews({ text: event.target.innerText });
+  } else {
+    updateDictionaryViews({
+      text: event.target.innerText,
+      keepQueryAlternatives: isInsideAlternatives,
+      shouldSetDictionaryToVisible:
+        isInsideAlternatives &&
+        lastSwedishWordClickEventTarget === event.target,
+    });
+  }
 
   lastSwedishWordClickEventTarget = event.target;
 });
@@ -403,15 +412,15 @@ clearAndEditButtons.forEach((x) =>
     article.innerHTML = "";
     article.dataset.rawHtml = "";
     article.dataset.isMarkdown = "";
-    setIsEditMode(true);
+    setIsEditMode({ isEditable: true });
   }),
 );
 editButton.addEventListener("click", () => {
-  setIsEditMode(true);
+  setIsEditMode({ isEditable: true });
 });
 finishEditButtons.forEach((x) => {
   x.addEventListener("click", () => {
-    setIsEditMode(false);
+    setIsEditMode({ isEditable: false });
   });
 });
 
@@ -470,9 +479,13 @@ importButtons.forEach((x) =>
       document.body.removeChild(input);
       article.innerText = allFiles.join("\n\n");
       if (isAnyMarkdownOrHtml) {
-        setIsEditMode(false, false, true);
+        setIsEditMode({
+          isEditable: false,
+          init: false,
+          forceIsMarkdown: true,
+        });
       } else {
-        setIsEditMode(false);
+        setIsEditMode({ isEditable: false });
       }
     };
 
@@ -495,14 +508,14 @@ fullScreenButton.addEventListener("click", () => {
 pasteButtons.forEach((pasteButton) =>
   pasteButton.addEventListener("click", async () => {
     article.innerText = await navigator.clipboard.readText();
-    setIsEditMode(false, false, false);
+    setIsEditMode({ isEditable: false, init: false, forceIsMarkdown: false });
   }),
 );
 
 pasteMarkdownButtons.forEach((pasteButton) =>
   pasteButton.addEventListener("click", async () => {
     article.innerText = await navigator.clipboard.readText();
-    setIsEditMode(false, false, true);
+    setIsEditMode({ isEditable: false, init: false, forceIsMarkdown: true });
   }),
 );
 
@@ -534,7 +547,7 @@ pasteHtmlButtons.forEach((pasteButton) =>
 
     const markdown = await convertHtmlToMarkdown(htmlContent);
     article.innerText = markdown;
-    setIsEditMode(false, false, true);
+    setIsEditMode({ isEditable: false, init: false, forceIsMarkdown: true });
   }),
 );
 

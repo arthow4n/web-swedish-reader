@@ -102,14 +102,12 @@ keepDictionaryVisibleCheckBox.checked = readSetting(
 );
 setIsDictionaryVisible(keepDictionaryVisibleCheckBox.checked);
 
-export const updateDictionaryViews = async (
+export const updateDictionaryViews = async ({
   text,
-  {
-    cleanup = true,
-    keepQueryAlternatives = false,
-    shouldSetDictionaryToVisible = true,
-  } = {},
-) => {
+  cleanup = true,
+  keepQueryAlternatives = false,
+  shouldSetDictionaryToVisible = true,
+}) => {
   const cleanedText = (
     cleanup ? text.replace(/(^[^\p{L}]+|[^\p{L}]+$)/gu, "") : text
   ).toLocaleLowerCase();
@@ -308,7 +306,7 @@ export const updateDictionaryViews = async (
 
 queryInput.closest("form").addEventListener("submit", (event) => {
   event.preventDefault();
-  updateDictionaryViews(queryInput.value, { cleanup: false });
+  updateDictionaryViews({ text: queryInput.value, cleanup: false });
 });
 
 queryInput.addEventListener("focus", (event) => {
@@ -320,7 +318,7 @@ queryInput.addEventListener("paste", (event) => {
   if (text) {
     event.preventDefault();
     // Cleaning pasted data makes it easier to paste from SAOL.
-    updateDictionaryViews(text);
+    updateDictionaryViews({ text });
   }
 });
 
