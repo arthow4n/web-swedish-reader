@@ -3,7 +3,9 @@
 ## How to work in this repo
 
 - This web app is very small and everything fits into the context window. Prefer aggressively read everything and build a full understanding of the repo before you make any plan or edit.
+- If you are updating any contents related to the instructions in this `AGENTS.md`, or you updated anything in the `package.json`, build/test config or pipeline actions, make sure you double check all of these and update if needed to make sure the contents in these files are all in sync.
 - Prioritize using the available tools you are given access to, instead of writing scripts or running arbitrary commands, even if the action might be slower to do with the tools. This is mainly to ensure your actions such as read/write files will be approved by the user.
+- If you are about to run any `npx`/`npm exec` or similar commands, prioritise to `npm run` the scripts already listed in `package.json` instead.
 - Prefer object parameters (named arguments) to positional arguments for functions to improve readability.
 - Disallow optional arguments with default values. All arguments should be explicitly declared and passed to functions.
 - The project uses Prettier for code formatting. You MUST run `npm run format` before pushing or merging any code changes.
