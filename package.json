@@ -1,8 +1,9 @@
 {
-  "name": "app",
-  "version": "1.0.0",
+  "name": "web-swedish-reader",
   "description": "https://arthow4n.github.io/web-swedish-reader/",
-  "main": "index.js",
+  "version": "1.0.0",
+  "license": "MIT",
+  "private": true,
   "scripts": {
     "test": "playwright test"
   },
@@ -10,14 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/arthow4n/web-swedish-reader.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/arthow4n/web-swedish-reader/issues"
-  },
-  "homepage": "https://github.com/arthow4n/web-swedish-reader#readme",
   "devDependencies": {
     "@playwright/test": "^1.59.1",
     "http-server": "^14.1.1"
