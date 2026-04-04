@@ -7,6 +7,7 @@
 - Prefer object parameters (named arguments) to positional arguments for functions to improve readability.
 - Disallow optional arguments with default values. All arguments should be explicitly declared and passed to functions.
 - The project uses Prettier for code formatting. You MUST run `npm run format` before pushing or merging any code changes.
+- The project is bundled using Rsbuild. You can start the dev server using `npm run dev` and build the project using `npm run build`.
 - Integration tests are located in the `tests/` directory and implemented using Playwright. These tests act as living documents of the expected features. You MUST run them using `npm run test` and ensure they pass before pushing any code changes.
 - Tests should be updated as the coding agent go. TDD is recommended.
 

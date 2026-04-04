@@ -14,10 +14,6 @@ import { speakOnClick } from "./tts.mjs";
 import { getCurrentSourceLanguage } from "./dictionaryDatabase.mjs";
 import { bindCheckboxToSetting, settingKeys } from "./settings.mjs";
 
-import "normalize.css";
-import "sakura.css/css/sakura.css";
-import "../css/index.css";
-
 navigator.serviceWorker.register("./serviceWorker.mjs", {
   scope: ".",
   type: "module",
