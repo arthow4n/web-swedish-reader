@@ -242,7 +242,39 @@ const setIsEditMode = (isEditable, init = false, forceIsMarkdown = null) => {
   article.contentEditable = false;
 };
 
-{
+const convertHtmlToMarkdown = async (htmlContent) => {
+  const DOMPurifyModule = import("https://cdn.jsdelivr.net/npm/dompurify@3.0.6/+esm");
+  const TurndownServiceModule = import("https://cdn.jsdelivr.net/npm/turndown@7.1.3/+esm");
+  const TurndownPluginGfmModule = import("https://cdn.jsdelivr.net/npm/turndown-plugin-gfm@1.0.2/+esm");
+  const { default: DOMPurify } = await DOMPurifyModule;
+  const { default: TurndownService } = await TurndownServiceModule;
+  const { gfm } = await TurndownPluginGfmModule;
+
+  const cleanHtml = DOMPurify.sanitize(htmlContent);
+
+  const turndownService = new TurndownService({
+    headingStyle: "atx",
+    codeBlockStyle: "fenced"
+  });
+
+  turndownService.use(gfm);
+
+  turndownService.addRule('tableCell', {
+    filter: ['th', 'td'],
+    replacement: function (content, node) {
+      const index = Array.prototype.indexOf.call(node.parentNode.childNodes, node);
+      let prefix = ' ';
+      if (index === 0) prefix = '| ';
+      
+      let safeContent = content.trim().replace(/\n+/g, '<br>').replace(/\|/g, '\\|');
+      return prefix + safeContent + ' |';
+    }
+  });
+
+  return turndownService.turndown(cleanHtml);
+};
+
+(async () => {
   // dictionaryQuery=... is mainly for jumping directly to the dictionary view
   // when loading web-swedish-reader from browser custom search engine.
   const dictionaryQuery = new URL(location).searchParams.get("dictionaryQuery");
@@ -265,8 +297,14 @@ const setIsEditMode = (isEditable, init = false, forceIsMarkdown = null) => {
     ) === "true";
 
   const hashQuery = new URLSearchParams(location.hash.slice(1));
-  const textFromHash = hashQuery.get("text");
-  const isMarkdownFromHash = hashQuery.get("isMarkdown") === "true";
+  let textFromHash = hashQuery.get("text");
+  let isMarkdownFromHash = hashQuery.get("isMarkdown") === "true";
+
+  const htmlFromHash = hashQuery.get("html");
+  if (htmlFromHash) {
+    textFromHash = await convertHtmlToMarkdown(htmlFromHash);
+    isMarkdownFromHash = true;
+  }
 
   const articleText = textFromLocalStorage || textFromHash;
   const isMarkdown = textFromLocalStorage ? isMarkdownFromLocalStorage : isMarkdownFromHash;
@@ -276,7 +314,7 @@ const setIsEditMode = (isEditable, init = false, forceIsMarkdown = null) => {
   }
 
   setIsEditMode(!articleText?.trim(), true);
-}
+})();
 
 let lastSwedishWordClickEventTarget = null;
 document.addEventListener("click", (event) => {
@@ -450,39 +488,7 @@ pasteHtmlButtons.forEach((pasteButton) =>
 
     if (!htmlContent) return;
 
-    const DOMPurifyModule = import("https://cdn.jsdelivr.net/npm/dompurify@3.0.6/+esm");
-    const TurndownServiceModule = import("https://cdn.jsdelivr.net/npm/turndown@7.1.3/+esm");
-    const TurndownPluginGfmModule = import("https://cdn.jsdelivr.net/npm/turndown-plugin-gfm@1.0.2/+esm");
-    const { default: DOMPurify } = await DOMPurifyModule;
-    const { default: TurndownService } = await TurndownServiceModule;
-    const { gfm } = await TurndownPluginGfmModule;
-
-    const cleanHtml = DOMPurify.sanitize(htmlContent);
-
-    const turndownService = new TurndownService({
-      headingStyle: "atx",
-      codeBlockStyle: "fenced"
-    });
-
-    turndownService.use(gfm);
-
-    turndownService.addRule('tableCell', {
-      filter: ['th', 'td'],
-      replacement: function (content, node) {
-        const index = Array.prototype.indexOf.call(node.parentNode.childNodes, node);
-        let prefix = ' ';
-        if (index === 0) prefix = '| ';
-        
-        let safeContent = content.trim().replace(/\n+/g, '<br>').replace(/\|/g, '\\|');
-        return prefix + safeContent + ' |';
-      }
-    });
-
-    turndownService.keep((node) => {
-      return node.nodeName.includes("-");
-    });
-
-    const markdown = turndownService.turndown(cleanHtml);
+    const markdown = await convertHtmlToMarkdown(htmlContent);
     article.innerText = markdown;
     setIsEditMode(false, false, true);
   })
