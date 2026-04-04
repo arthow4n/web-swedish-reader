@@ -6,6 +6,8 @@
 # 5. Under "Rules", check the box for "Require status checks to pass".
 # 6. Click the "Add checks" button.
 # 7. Search for the job name "test" (the name of the job defined below) and select it.
+#    Note: If it says "No results", the workflow must run at least once before it appears in the search.
+#    To make it appear, push a commit to the repository or create a Pull Request to trigger the workflow.
 # 8. Ensure the "Enforcement status" at the top is set to "Active" and click "Create" or "Save changes".
 
 name: Playwright Tests
