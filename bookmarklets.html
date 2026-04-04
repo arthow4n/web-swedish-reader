@@ -61,9 +61,9 @@
           },
         },
         {
-          name: "WSR for Flashback/PressReader",
+          name: "WSR for Flashback/PressReader/Gemini",
           description:
-            "Simplify a Flashback thread's text, or pull the text out from PressReader desktop website's copy popover, or get deep research content from Gemini, then open with WSR.",
+            "Simplify a Flashback thread's text, or pull the text out from PressReader desktop website's copy popover, or get the last message's or the deep research's content from Gemini, then open with WSR.",
           code: () => {
             const url = new URL(location);
 
@@ -79,12 +79,12 @@
             }
 
             if (url.host === "gemini.google.com") {
-              const deepResearchContent = document.querySelector('deep-research-immersive-panel response-container')?.innerText;
-              if (deepResearchContent)
+              const lastMessageContent = [...document.querySelectorAll("message-content")].at(-1)?.innerHTML;
+              if (lastMessageContent)
               {
                 const link =
                   "https://arthow4n.github.io/web-swedish-reader/#text=" +
-                  encodeURIComponent(deepResearchContent);
+                  encodeURIComponent(lastMessageContent);
                 const w = window.open(link, "_blank", "noopener,noreferrer");
               }
             }
