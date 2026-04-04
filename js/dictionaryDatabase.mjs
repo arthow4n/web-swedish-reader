@@ -69,7 +69,7 @@ export const queryCompounds = async (word) => {
 
   const compoundsSet = new Set();
 
-  const sliceDownForward = (word, init = false, power = 0) => {
+  const sliceDownForward = ({ word, init, power }) => {
     if (!word) {
       return [];
     }
@@ -101,21 +101,37 @@ export const queryCompounds = async (word) => {
           return [
             "s",
             withoutLeadingS,
-            sliceDownForward(word.slice(i), false, power - 1),
+            sliceDownForward({
+              word: word.slice(i),
+              init: false,
+              power: power - 1,
+            }),
           ];
         }
       }
 
       if (folketsCompound.has(slice)) {
-        return [slice, sliceDownForward(word.slice(i), false, power - 1)];
+        return [
+          slice,
+          sliceDownForward({
+            word: word.slice(i),
+            init: false,
+            power: power - 1,
+          }),
+        ];
       }
     }
 
     const drop = word.slice(1);
-    return drop ? [word[0], sliceDownForward(drop, false, power - 1)] : [word];
+    return drop
+      ? [
+          word[0],
+          sliceDownForward({ word: drop, init: false, power: power - 1 }),
+        ]
+      : [word];
   };
 
-  const sliceDownBackward = (word, init = false, power = 0) => {
+  const sliceDownBackward = ({ word, init, power }) => {
     if (!word) {
       return [];
     }
@@ -144,7 +160,11 @@ export const queryCompounds = async (word) => {
 
         if (folketsCompound.has(withoutEndingS)) {
           return [
-            sliceDownBackward(word.slice(0, i), false, power - 1),
+            sliceDownBackward({
+              word: word.slice(0, i),
+              init: false,
+              power: power - 1,
+            }),
             withoutEndingS,
             "s",
           ];
@@ -152,13 +172,23 @@ export const queryCompounds = async (word) => {
       }
 
       if (folketsCompound.has(slice)) {
-        return [sliceDownBackward(word.slice(0, i), false, power - 1), slice];
+        return [
+          sliceDownBackward({
+            word: word.slice(0, i),
+            init: false,
+            power: power - 1,
+          }),
+          slice,
+        ];
       }
     }
 
     const drop = word.slice(0, word.length - 1);
     return drop
-      ? [sliceDownBackward(drop, false, power - 1), word.slice(-1)]
+      ? [
+          sliceDownBackward({ word: drop, init: false, power: power - 1 }),
+          word.slice(-1),
+        ]
       : [word];
   };
 
@@ -181,13 +211,13 @@ export const queryCompounds = async (word) => {
     return joined;
   };
 
-  const f0 = join(sliceDownForward(word, true));
-  const f1 = join(sliceDownForward(word, true, 1));
+  const f0 = join(sliceDownForward({ word, init: true, power: 0 }));
+  const f1 = join(sliceDownForward({ word, init: true, power: 1 }));
   compoundsSet.add(f0);
   compoundsSet.add(f1);
 
-  const b0 = join(sliceDownBackward(word, true));
-  const b1 = join(sliceDownBackward(word, true, 1));
+  const b0 = join(sliceDownBackward({ word, init: true, power: 0 }));
+  const b1 = join(sliceDownBackward({ word, init: true, power: 1 }));
   compoundsSet.add(b0);
   compoundsSet.add(b1);
 

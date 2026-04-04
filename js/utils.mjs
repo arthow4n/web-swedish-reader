@@ -1,7 +1,7 @@
 export const wordClassName = "word";
 export const wordSelectedInAreaClassName = "word-selected-in-area";
 
-export const toWordSpans = (text, { className = "" } = {}) =>
+export const toWordSpans = (text, { className }) =>
   text
     // Drop format characters e.g. soft hyphen (\u00AD) because it breaks a word into multiple parts which is often not desirable for searching dictionary,
     // although it could be useful for compoud guessing in some cases
@@ -17,7 +17,7 @@ export const toWordSpans = (text, { className = "" } = {}) =>
 
 export const uniq = (x) => Array.from(new Set(x));
 
-export const debounce = (fn, ms = 300) => {
+export const debounce = (fn, ms) => {
   let timeout;
   return (...args) => {
     clearTimeout(timeout);
