@@ -25,6 +25,7 @@ const importButtons = document.querySelectorAll(".control-import");
 const finishEditButtons = document.querySelectorAll(".control-finish-edit");
 const pasteButtons = document.querySelectorAll(".control-paste");
 const pasteMarkdownButtons = document.querySelectorAll(".control-paste-markdown");
+const pasteHtmlButtons = document.querySelectorAll(".control-paste-html");
 const fullScreenButton = document.querySelector(".control-full-screen");
 const clearArticleStorageButtons = document.querySelectorAll(
   ".control-settings-clear-article-storage-checkbox"
@@ -414,6 +415,70 @@ pasteButtons.forEach((pasteButton) =>
 pasteMarkdownButtons.forEach((pasteButton) =>
   pasteButton.addEventListener("click", async () => {
     article.innerText = await navigator.clipboard.readText();
+    setIsEditMode(false, false, true);
+  })
+);
+
+pasteHtmlButtons.forEach((pasteButton) =>
+  pasteButton.addEventListener("click", async () => {
+    let htmlContent = "";
+    try {
+      const clipboardItems = await navigator.clipboard.read();
+      for (const item of clipboardItems) {
+        if (item.types.includes("text/html")) {
+          const blob = await item.getType("text/html");
+          htmlContent = await blob.text();
+          break;
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to read HTML from clipboard", e);
+    }
+
+    if (!htmlContent) {
+      try {
+        htmlContent = await navigator.clipboard.readText();
+      } catch (e) {
+        console.warn("Failed to read text from clipboard", e);
+      }
+    }
+
+    if (!htmlContent) return;
+
+    const DOMPurifyModule = import("https://cdn.jsdelivr.net/npm/dompurify@3.0.6/+esm");
+    const TurndownServiceModule = import("https://cdn.jsdelivr.net/npm/turndown@7.1.3/+esm");
+    const TurndownPluginGfmModule = import("https://cdn.jsdelivr.net/npm/turndown-plugin-gfm@1.0.2/+esm");
+    const { default: DOMPurify } = await DOMPurifyModule;
+    const { default: TurndownService } = await TurndownServiceModule;
+    const { gfm } = await TurndownPluginGfmModule;
+
+    const cleanHtml = DOMPurify.sanitize(htmlContent);
+
+    const turndownService = new TurndownService({
+      headingStyle: "atx",
+      codeBlockStyle: "fenced"
+    });
+
+    turndownService.use(gfm);
+
+    turndownService.addRule('tableCell', {
+      filter: ['th', 'td'],
+      replacement: function (content, node) {
+        const index = Array.prototype.indexOf.call(node.parentNode.childNodes, node);
+        let prefix = ' ';
+        if (index === 0) prefix = '| ';
+        
+        let safeContent = content.trim().replace(/\n+/g, '<br>').replace(/\|/g, '\\|');
+        return prefix + safeContent + ' |';
+      }
+    });
+
+    turndownService.keep((node) => {
+      return node.nodeName.includes("-");
+    });
+
+    const markdown = turndownService.turndown(cleanHtml);
+    article.innerText = markdown;
     setIsEditMode(false, false, true);
   })
 );
