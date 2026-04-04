@@ -145,7 +145,12 @@ ${err.name}: ${err.message}
       }
       
       if (node.nodeType === Node.ELEMENT_NODE) {
-        if (node.tagName === 'A') {
+        if (node.tagName === 'TABLE') {
+          const wrapper = document.createElement("div");
+          wrapper.className = "table-scroll-wrapper";
+          node.parentNode.replaceChild(wrapper, node);
+          wrapper.appendChild(node);
+        } else if (node.tagName === 'A') {
           const fragment = document.createDocumentFragment();
           while (node.firstChild) {
             fragment.appendChild(node.firstChild);
