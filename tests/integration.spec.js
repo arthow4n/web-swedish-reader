@@ -124,4 +124,76 @@ test.describe("Web Swedish Reader Core Flows", () => {
     const article = page.locator("article");
     await expect(article).toHaveText("");
   });
+
+  test("import txt file", async ({ page }) => {
+    const fileChooserPromise = page.waitForEvent("filechooser");
+    await page.click(".control-import:visible");
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles({
+      name: "test.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from("En enkel text."),
+    });
+
+    await expect(page.locator("body")).not.toHaveClass(/is-edit-mode/);
+
+    const article = page.locator("article");
+    await expect(article).toHaveAttribute("data-is-markdown", ""); // not markdown
+    await expect(article).toContainText("==start: test.txt");
+    await expect(article).toContainText("En enkel text.");
+    await expect(article).toContainText("==end: test.txt");
+  });
+
+  test("import markdown file", async ({ page }) => {
+    const fileChooserPromise = page.waitForEvent("filechooser");
+    await page.click(".control-import:visible");
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles({
+      name: "test.md",
+      mimeType: "text/markdown",
+      buffer: Buffer.from("# Rubrik\n\nLite **fet** text."),
+    });
+
+    await expect(page.locator("body")).not.toHaveClass(/is-edit-mode/);
+
+    const article = page.locator("article");
+    await expect(article).toHaveAttribute("data-is-markdown", "true");
+
+    // Markdown should be parsed to h1 and strong
+    const h1s = page.locator("article h1");
+    await expect(h1s).toHaveCount(1); // Wait for the h1 to appear, note: "start: test.md" is h3
+
+    const h3s = page.locator("article h3");
+    await expect(h3s).toHaveCount(2); // start and end
+
+    const strong = page.locator("article strong");
+    await expect(strong).toHaveText("fet");
+  });
+
+  test("import html file", async ({ page }) => {
+    const fileChooserPromise = page.waitForEvent("filechooser");
+    await page.click(".control-import:visible");
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles({
+      name: "test.html",
+      mimeType: "text/html",
+      buffer: Buffer.from(
+        "<html><body><h1>Rubrik</h1><p>En text med <b>fet</b> stil.</p></body></html>",
+      ),
+    });
+
+    await expect(page.locator("body")).not.toHaveClass(/is-edit-mode/);
+
+    const article = page.locator("article");
+    await expect(article).toHaveAttribute("data-is-markdown", "true"); // parsed as markdown
+
+    const h1s = page.locator("article h1");
+    await expect(h1s).toHaveCount(1); // Wait for the h1 to appear
+
+    const h3s = page.locator("article h3");
+    await expect(h3s).toHaveCount(2); // start and end
+
+    const strong = page.locator("article strong");
+    await expect(strong).toHaveText("fet");
+  });
 });

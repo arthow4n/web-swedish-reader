@@ -419,26 +419,41 @@ importButtons.forEach((x) =>
   x.addEventListener("click", () => {
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = "text/plain,text/html";
+    input.accept = "text/plain,text/html,text/markdown,.md,.html,.htm,.txt";
     input.multiple = true;
     input.hidden = true;
     input.onchange = async (event) => {
+      const files = [...event.target.files];
+      const isAnyMarkdownOrHtml = files.some(
+        (file) =>
+          file.type === "text/html" ||
+          file.name.endsWith(".html") ||
+          file.name.endsWith(".htm") ||
+          file.type === "text/markdown" ||
+          file.name.endsWith(".md"),
+      );
+
       const allFiles = await Promise.all(
-        [...event.target.files].map(
+        files.map(
           (file) =>
             new Promise((resolve) => {
               const r = new FileReader();
 
-              const withFileStartEnd = (content) =>
-                `==start: ${file.name}\n\n${content}\n\n==end: ${file.name}`;
+              const withFileStartEnd = (content) => {
+                if (isAnyMarkdownOrHtml) {
+                  return `### start: ${file.name}\n\n${content}\n\n### end: ${file.name}`;
+                }
+                return `==start: ${file.name}\n\n${content}\n\n==end: ${file.name}`;
+              };
 
-              r.onload = () => {
-                if (file.type === "text/html") {
-                  const document = new DOMParser().parseFromString(
-                    r.result,
-                    "text/html",
-                  );
-                  resolve(withFileStartEnd(document.body.innerText));
+              r.onload = async () => {
+                if (
+                  file.type === "text/html" ||
+                  file.name.endsWith(".html") ||
+                  file.name.endsWith(".htm")
+                ) {
+                  const markdown = await convertHtmlToMarkdown(r.result);
+                  resolve(withFileStartEnd(markdown));
                   return;
                 }
 
@@ -454,7 +469,11 @@ importButtons.forEach((x) =>
       );
       document.body.removeChild(input);
       article.innerText = allFiles.join("\n\n");
-      setIsEditMode(false);
+      if (isAnyMarkdownOrHtml) {
+        setIsEditMode(false, false, true);
+      } else {
+        setIsEditMode(false);
+      }
     };
 
     document.body.appendChild(input);
