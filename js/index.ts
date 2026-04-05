@@ -11,10 +11,9 @@ import { getCurrentSourceLanguage } from "./dictionaryDatabase";
 import { bindCheckboxToSetting, settingKeys } from "./settings";
 
 navigator.serviceWorker.register(
-  new URL("../serviceWorker.ts", import.meta.url),
+  "./serviceWorker.js",
   {
-    scope: ".",
-    type: "module",
+    scope: "./",
   },
 );
 

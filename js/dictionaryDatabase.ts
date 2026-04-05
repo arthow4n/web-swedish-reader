@@ -11,7 +11,7 @@ const installDictionary = async <T>(
   const dir = `${location.origin}/web-swedish-reader-data/${dictionaryName}`;
 
   try {
-    const { getInfo } = await import(`${dir}/${dictionaryName}.meta.mjs`);
+    const { getInfo } = await import(/* webpackIgnore: true */ `${dir}/${dictionaryName}.meta.mjs`);
     const { chunks } = getInfo();
 
     if (chunks.length !== 1) {
@@ -25,7 +25,7 @@ const installDictionary = async <T>(
       return stored.data;
     }
 
-    const dictionaryModule = await import(`${dir}/${name}`);
+    const dictionaryModule = await import(/* webpackIgnore: true */ `${dir}/${name}`);
     const { version: fetchedVersion } = dictionaryModule;
     if (fetchedVersion !== expectedVersion) {
       throw new Error(
