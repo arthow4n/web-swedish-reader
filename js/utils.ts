@@ -6,6 +6,8 @@ export const toWordSpans = (
   { className }: { className: string },
 ) => {
   const fragment = document.createDocumentFragment();
+  // Drop format characters e.g. soft hyphen (\u00AD) because it breaks a word into multiple parts which is often not desirable for searching dictionary,
+  // although it could be useful for compoud guessing in some cases
   const cleanedText = text.replace(/\p{Cf}/gu, "");
 
   const regex = /([\p{L}&<>"']+)/gu;
