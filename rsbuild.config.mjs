@@ -6,7 +6,11 @@ export default defineConfig({
   environments: {
     web: {
       source: {
-        preEntry: ["normalize.css", "sakura.css/css/sakura.css", "./css/index.css"],
+        preEntry: [
+          "normalize.css",
+          "sakura.css/css/sakura.css",
+          "./css/index.css",
+        ],
         entry: {
           index: "./js/index.ts",
         },
@@ -19,8 +23,8 @@ export default defineConfig({
         filenameHash: false,
         copy: [{ from: "./bookmarklets.html" }],
         distPath: {
-            root: "dist"
-        }
+          root: "dist",
+        },
       },
     },
     worker: {
@@ -33,23 +37,23 @@ export default defineConfig({
         target: "web-worker",
         filenameHash: false,
         distPath: {
-            root: "dist",
-            worker: "./"
-        }
+          root: "dist",
+          worker: "./",
+        },
       },
       tools: {
         rspack: {
           output: {
             filename: (pathData) => {
-              if (pathData.chunk.name === 'serviceWorker') {
-                return 'serviceWorker.js';
+              if (pathData.chunk.name === "serviceWorker") {
+                return "serviceWorker.js";
               }
-              return 'static/js/[name].js';
-            }
-          }
-        }
-      }
-    }
+              return "static/js/[name].js";
+            },
+          },
+        },
+      },
+    },
   },
   server: {
     publicDir: {

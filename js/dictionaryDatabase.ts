@@ -11,7 +11,9 @@ const installDictionary = async <T>(
   const dir = `${location.origin}/web-swedish-reader-data/${dictionaryName}`;
 
   try {
-    const { getInfo } = await import(/* webpackIgnore: true */ `${dir}/${dictionaryName}.meta.mjs`);
+    const { getInfo } = await import(
+      /* webpackIgnore: true */ `${dir}/${dictionaryName}.meta.mjs`
+    );
     const { chunks } = getInfo();
 
     if (chunks.length !== 1) {
@@ -21,11 +23,13 @@ const installDictionary = async <T>(
 
     const stored = await get(storageKey, dictionaryStore);
 
-    if (stored?.version === expectedVersion) {
+    if (stored && stored.version === expectedVersion) {
       return stored.data;
     }
 
-    const dictionaryModule = await import(/* webpackIgnore: true */ `${dir}/${name}`);
+    const dictionaryModule = await import(
+      /* webpackIgnore: true */ `${dir}/${name}`
+    );
     const { version: fetchedVersion } = dictionaryModule;
     if (fetchedVersion !== expectedVersion) {
       throw new Error(
@@ -47,9 +51,10 @@ const installDictionary = async <T>(
     const queryAlternativesLocal = document.querySelector(
       ".query-alternatives-line-local",
     );
-    if (queryAlternativesLocal) {
-      queryAlternativesLocal.innerHTML = `Error! ${queryAlternativesLocal.innerHTML}`;
+    if (!(queryAlternativesLocal instanceof HTMLElement)) {
+      throw new Error("Query alternatives local not found");
     }
+    queryAlternativesLocal.innerHTML = `Error! ${queryAlternativesLocal.innerHTML}`;
     throw err;
   }
 };

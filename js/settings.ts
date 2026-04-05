@@ -1,17 +1,23 @@
 const settingsButton = document.querySelector(".control-settings");
+if (!(settingsButton instanceof HTMLElement)) {
+  throw new Error("Settings button not found");
+}
+
 const closeButtons = document.querySelectorAll(".control-settings-close");
-const modal = document.querySelector(
-  ".settings-modal",
-) as HTMLDialogElement | null;
+
+const modal = document.querySelector(".settings-modal");
+if (!(modal instanceof HTMLDialogElement)) {
+  throw new Error("Settings modal not found");
+}
 
 closeButtons.forEach((b) => {
   b.addEventListener("click", () => {
-    modal?.close();
+    modal.close();
   });
 });
 
-settingsButton?.addEventListener("click", () => {
-  modal?.showModal();
+settingsButton.addEventListener("click", () => {
+  modal.showModal();
 });
 
 export const writeSetting = (key: string, value: any) => {
@@ -55,8 +61,10 @@ export const bindCheckboxToSetting = ({
   defaultValue: boolean;
   onChange?: ((checked: boolean) => void) | null;
 }) => {
-  const checkbox = document.querySelector(selector) as HTMLInputElement | null;
-  if (!checkbox) throw new Error(`Checkbox not found: ${selector}`);
+  const checkbox = document.querySelector(selector);
+  if (!(checkbox instanceof HTMLInputElement)) {
+    throw new Error(`Checkbox not found: ${selector}`);
+  }
 
   checkbox.checked = readSetting(settingKey, defaultValue);
   checkbox.addEventListener("change", () => {
@@ -83,8 +91,10 @@ export const bindTextInputToSetting = ({
   defaultValue: string;
   onChange?: ((value: string) => void) | null;
 }) => {
-  const input = document.querySelector(selector) as HTMLInputElement | null;
-  if (!input) throw new Error(`Input not found: ${selector}`);
+  const input = document.querySelector(selector);
+  if (!(input instanceof HTMLInputElement)) {
+    throw new Error(`Input not found: ${selector}`);
+  }
 
   input.value = readSetting(settingKey, defaultValue);
   input.addEventListener("change", () => {

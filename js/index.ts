@@ -10,15 +10,16 @@ import { speakOnClick } from "./tts";
 import { getCurrentSourceLanguage } from "./dictionaryDatabase";
 import { bindCheckboxToSetting, settingKeys } from "./settings";
 
-navigator.serviceWorker.register(
-  "./serviceWorker.js",
-  {
-    scope: "./",
-  },
-);
+navigator.serviceWorker.register("./serviceWorker.js", {
+  scope: "./",
+});
 
 const clearAndEditButtons = document.querySelectorAll(".control-clear");
 const editButton = document.querySelector(".control-edit");
+if (!(editButton instanceof HTMLElement)) {
+  throw new Error("Edit button not found");
+}
+
 const importButtons = document.querySelectorAll(".control-import");
 const finishEditButtons = document.querySelectorAll(".control-finish-edit");
 const pasteButtons = document.querySelectorAll(".control-paste");
@@ -27,11 +28,23 @@ const pasteMarkdownButtons = document.querySelectorAll(
 );
 const pasteHtmlButtons = document.querySelectorAll(".control-paste-html");
 const fullScreenButton = document.querySelector(".control-full-screen");
+if (!(fullScreenButton instanceof HTMLElement)) {
+  throw new Error("Full screen button not found");
+}
+
 const clearArticleStorageButtons = document.querySelectorAll(
   ".control-settings-clear-article-storage-checkbox",
 );
-const main = document.querySelector("main") as HTMLElement;
-const article = document.querySelector("article") as HTMLElement;
+
+const main = document.querySelector("main");
+if (!(main instanceof HTMLElement)) {
+  throw new Error("Main element not found");
+}
+
+const article = document.querySelector("article");
+if (!(article instanceof HTMLElement)) {
+  throw new Error("Article element not found");
+}
 
 const articleFromLocalStorageKey = "articleFromLocalStorageKey";
 const mainScrollQueryKey = "mainScrollId";
@@ -158,24 +171,29 @@ ${err?.name}: ${err?.message}
         if (el.tagName === "TABLE") {
           const wrapper = document.createElement("div");
           wrapper.className = "table-scroll-wrapper";
-          el.parentNode?.replaceChild(wrapper, el);
+          if (!el.parentNode) throw new Error("Table parent node not found");
+          el.parentNode.replaceChild(wrapper, el);
           wrapper.appendChild(el);
         } else if (el.tagName === "A") {
           const fragment = document.createDocumentFragment();
           while (el.firstChild) {
             fragment.appendChild(el.firstChild);
           }
-          el.parentNode?.replaceChild(fragment, el);
+          if (!el.parentNode) throw new Error("Anchor parent node not found");
+          el.parentNode.replaceChild(fragment, el);
         } else if (el.tagName === "IMG") {
           const t = document.createTextNode((el as HTMLImageElement).alt || "");
-          el.parentNode?.replaceChild(t, el);
+          if (!el.parentNode) throw new Error("Image parent node not found");
+          el.parentNode.replaceChild(t, el);
         }
       } else if (node.nodeType === Node.TEXT_NODE) {
         const nodeText = node.nodeValue || "";
         if (!nodeText.trim()) return;
         const tmp = document.createElement("template");
         tmp.innerHTML = toWordSpans(nodeText, { className: "" });
-        node.parentNode?.replaceChild(tmp.content, node);
+        if (!node.parentNode)
+          throw new Error("Text node parent node not found");
+        node.parentNode.replaceChild(tmp.content, node);
       }
     };
 
@@ -368,8 +386,8 @@ const convertHtmlToMarkdown = async (htmlContent: string): Promise<string> => {
 
 let lastSwedishWordClickEventTarget: HTMLElement | null = null;
 document.addEventListener("click", (event) => {
-  const target = event.target as HTMLElement | null;
-  if (!target) return;
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
 
   if (
     (article.isContentEditable && target.closest("article")) ||
@@ -439,7 +457,7 @@ clearAndEditButtons.forEach((x) =>
     setIsEditMode({ isEditable: true, init: false, forceIsMarkdown: null });
   }),
 );
-editButton?.addEventListener("click", () => {
+editButton.addEventListener("click", () => {
   setIsEditMode({ isEditable: true, init: false, forceIsMarkdown: null });
 });
 finishEditButtons.forEach((x) => {
@@ -456,7 +474,8 @@ importButtons.forEach((x) =>
     input.multiple = true;
     input.hidden = true;
     input.onchange = async (event) => {
-      const target = event.target as HTMLInputElement;
+      const target = event.target;
+      if (!(target instanceof HTMLInputElement)) return;
       if (!target.files) return;
       const files = Array.from(target.files);
       const isAnyMarkdownOrHtml = files.some(
@@ -525,7 +544,7 @@ importButtons.forEach((x) =>
   }),
 );
 
-fullScreenButton?.addEventListener("click", () => {
+fullScreenButton.addEventListener("click", () => {
   if (document.fullscreenElement) {
     document.exitFullscreen();
     return;
