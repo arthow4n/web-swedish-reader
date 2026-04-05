@@ -185,6 +185,108 @@ test.describe("Web Swedish Reader Core Flows", () => {
     await expect(strong).toHaveText("fet");
   });
 
+  test("particle verb lookup via native selection", async ({
+    page,
+    context,
+  }: {
+    page: Page;
+    context: BrowserContext;
+  }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.evaluate(() =>
+      navigator.clipboard.writeText("Jag tycker mycket om dig."),
+    );
+    await page.click(".control-paste");
+
+    await expect(page.locator("body")).not.toHaveClass(/is-edit-mode/);
+
+    const article = page.locator("article");
+    await article.evaluate((node) => {
+      const words = Array.from(node.querySelectorAll(".word"));
+      const tycker = words.find((w) => w.textContent === "tycker");
+      const mycket = words.find((w) => w.textContent === "mycket");
+      if (!tycker || !mycket) return;
+
+      const range = document.createRange();
+      range.setStartBefore(tycker);
+      range.setEndAfter(mycket);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    });
+
+    // Fire mouseup to trigger the selection handler
+    const targetNode = await page
+      .locator(".word", { hasText: "tycker" })
+      .first();
+    await targetNode.dispatchEvent("mouseup", { bubbles: true });
+
+    const dictInput = page.locator(".dics-query-input");
+    await expect(dictInput).toHaveValue("tycker mycket");
+  });
+
+  test("particle verb lookup via append mode toggle", async ({
+    page,
+    context,
+  }: {
+    page: Page;
+    context: BrowserContext;
+  }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    // Clear out article via evaluate and then paste to ensure isolated state
+    await page.evaluate(() => {
+      const article = document.querySelector("article");
+      if (article) article.innerHTML = "";
+      navigator.clipboard.writeText("Jag tycker mycket om dig.");
+    });
+    await page.click(".control-paste");
+
+    const words = page.locator("article .word");
+    await words.nth(1).click(); // 'tycker'
+
+    const dictInput = page.locator(".dics-query-input");
+    await expect(dictInput).toHaveValue("tycker");
+
+    // Enable append mode
+    await page.click(".control-append-mode");
+    await expect(page.locator(".control-append-mode")).toHaveClass(/active/);
+
+    await words.nth(3).click(); // 'om'
+    await expect(dictInput).toHaveValue("tycker om");
+  });
+
+  test("particle verb lookup via shift click", async ({
+    page,
+    context,
+  }: {
+    page: Page;
+    context: BrowserContext;
+  }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    // Clear out article via evaluate and then paste to ensure isolated state
+    await page.evaluate(() => {
+      const article = document.querySelector("article");
+      if (article) article.innerHTML = "";
+      navigator.clipboard.writeText("Jag tycker mycket om dig.");
+    });
+    await page.click(".control-paste");
+
+    const words = page.locator("article .word");
+
+    // We explicitly clear the dictionary input value to start fresh
+    const dictInput = page.locator(".dics-query-input");
+    await dictInput.fill("");
+
+    // Playwright click seems to cause unexpected drag events here. Let's dispatch a manual click.
+    const tyckerLocator = words.nth(1);
+    await tyckerLocator.dispatchEvent("click");
+    await expect(dictInput).toHaveValue("tycker");
+
+    const omLocator = words.nth(3);
+    await omLocator.dispatchEvent("click", { shiftKey: true });
+    await expect(dictInput).toHaveValue("tycker om");
+  });
+
   test("import html file", async ({ page }: { page: Page }) => {
     const fileChooserPromise = page.waitForEvent("filechooser");
     await page.click(".control-import:visible");

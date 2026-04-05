@@ -24,6 +24,14 @@ if (!(keepDictionaryVisibleCheckBox instanceof HTMLInputElement)) {
   throw new Error("Keep dictionary visible checkbox not found");
 }
 
+const appendModeButton = document.querySelector(".control-append-mode");
+if (!(appendModeButton instanceof HTMLButtonElement)) {
+  throw new Error("Append mode button not found");
+}
+appendModeButton.addEventListener("click", () => {
+  appendModeButton.classList.toggle("active");
+});
+
 const queryAlternativesContainer = document.querySelector(
   ".query-alternatives",
 );
@@ -277,7 +285,7 @@ export const updateDictionaryViews = async ({
               .filter((x) => x)
               .join(", "),
             { className: "" },
-          )
+          ),
         );
       }
 
@@ -335,7 +343,7 @@ export const updateDictionaryViews = async ({
         .join(", ");
 
       queryAlternativesRemote.replaceChildren(
-        toWordSpans(wordParts, { className: "" })
+        toWordSpans(wordParts, { className: "" }),
       );
       markAvailableEnglishTranslationsInDescendants(queryAlternativesRemote);
 
@@ -343,17 +351,16 @@ export const updateDictionaryViews = async ({
         toWordSpans(
           saolCompounds.flatMap((r: any) => r.definitions).join("; "),
           { className: "" },
-        )
+        ),
       );
       markAvailableEnglishTranslationsInDescendants(
         queryAlternativesSwedishDefinition,
       );
 
       queryAlternativesSwedishDefinition2.replaceChildren(
-        toWordSpans(
-          soCompounds.flatMap((r: any) => r.definitions).join("; "),
-          { className: "" },
-        )
+        toWordSpans(soCompounds.flatMap((r: any) => r.definitions).join("; "), {
+          className: "",
+        }),
       );
       markAvailableEnglishTranslationsInDescendants(
         queryAlternativesSwedishDefinition2,
@@ -373,7 +380,7 @@ export const updateDictionaryViews = async ({
           {
             className: "word-english",
           },
-        )
+        ),
       );
     }
   };
