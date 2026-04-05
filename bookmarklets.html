@@ -50,6 +50,17 @@
     <script>
       const bookmarklets = [
         {
+          name: "WSR + Body HTML",
+          description:
+            "Get all text in the web page (body.innerHTML) then open with WSR.",
+          code: () => {
+            const link =
+              "https://arthow4n.github.io/web-swedish-reader/#html=" +
+              encodeURIComponent(document.body.innerHTML);
+            window.open(link, "_blank", "noopener,noreferrer");
+          },
+        },
+        {
           name: "WSR + Body Text",
           description:
             "Get all text in the web page (body.innerText) then open with WSR.",
