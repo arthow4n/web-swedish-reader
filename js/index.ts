@@ -147,7 +147,7 @@ ${name}: ${message}
 
   const text = input.trim();
   if (!text) {
-    article.innerHTML = "";
+    article.replaceChildren();
     article.dataset.rawHtml = "";
     article.dataset.isMarkdown = "";
     return;
@@ -163,7 +163,8 @@ ${name}: ${message}
     );
     const html = await marked.parse(text);
     const template = document.createElement("template");
-    template.innerHTML = DOMPurify.sanitize(html);
+    const sanitizedFrag = DOMPurify.sanitize(html, { RETURN_DOM_FRAGMENT: true });
+    template.content.appendChild(sanitizedFrag);
 
     const processNodeBottomUp = (node: Node) => {
       if (node.childNodes && node.childNodes.length > 0) {
@@ -193,33 +194,32 @@ ${name}: ${message}
       } else if (node.nodeType === Node.TEXT_NODE) {
         const nodeText = node.nodeValue || "";
         if (!nodeText.trim()) return;
-        const tmp = document.createElement("template");
-        tmp.innerHTML = toWordSpans(nodeText, { className: "" });
+        const fragment = toWordSpans(nodeText, { className: "" });
         if (!node.parentNode)
           throw new Error("Text node parent node not found");
-        node.parentNode.replaceChild(tmp.content, node);
+        node.parentNode.replaceChild(fragment, node);
       }
     };
 
     Array.from(template.content.childNodes).forEach(processNodeBottomUp);
 
-    article.innerHTML = "";
+    article.replaceChildren();
     article.appendChild(template.content);
   } else {
-    article.innerHTML = text
-      .split("\n")
-      .map((line) => {
-        return (
-          "<p>" +
-          line
-            .split(/\s+/)
-            .filter((x) => x.trim())
-            .map((x) => toWordSpans(x, { className: "" }))
-            .join(" ") +
-          "</p>"
-        );
-      })
-      .join("");
+    article.replaceChildren();
+    text.split("\n").forEach((line) => {
+      const p = document.createElement("p");
+      line
+        .split(/\s+/)
+        .filter((x) => x.trim())
+        .forEach((x, index) => {
+          if (index > 0) {
+            p.appendChild(document.createTextNode(" "));
+          }
+          p.appendChild(toWordSpans(x, { className: "" }));
+        });
+      article.appendChild(p);
+    });
   }
 
   const url = new URL(location.href);
@@ -460,7 +460,7 @@ document.addEventListener("click", (event) => {
 
 clearAndEditButtons.forEach((x) =>
   x.addEventListener("click", () => {
-    article.innerHTML = "";
+    article.replaceChildren();
     article.dataset.rawHtml = "";
     article.dataset.isMarkdown = "";
     setIsEditMode({ isEditable: true, init: false, forceIsMarkdown: null });
