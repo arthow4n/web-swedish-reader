@@ -17,7 +17,7 @@ export const toWordSpans = (
   while ((match = regex.exec(cleanedText)) !== null) {
     if (match.index > lastIndex) {
       fragment.appendChild(
-        document.createTextNode(cleanedText.slice(lastIndex, match.index))
+        document.createTextNode(cleanedText.slice(lastIndex, match.index)),
       );
     }
 
@@ -32,9 +32,7 @@ export const toWordSpans = (
   }
 
   if (lastIndex < cleanedText.length) {
-    fragment.appendChild(
-      document.createTextNode(cleanedText.slice(lastIndex))
-    );
+    fragment.appendChild(document.createTextNode(cleanedText.slice(lastIndex)));
   }
 
   return fragment;

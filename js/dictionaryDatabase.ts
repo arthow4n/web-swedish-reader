@@ -276,9 +276,15 @@ export const queryCompounds = async (word: string) => {
 };
 
 export const getCurrentSourceLanguage = () => {
-  const sourceLanguage =
-    new URLSearchParams(location.search).get("sourceLanguage") || "sv";
-  return sourceLanguage;
+  const sourceLanguage = new URLSearchParams(location.search).get(
+    "sourceLanguage",
+  );
+
+  if (sourceLanguage && /^[a-zA-Z0-9-]+$/.test(sourceLanguage)) {
+    return sourceLanguage;
+  }
+
+  return "sv";
 };
 
 export const queryEnglishTranslation = async (
