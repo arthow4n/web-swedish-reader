@@ -55,8 +55,7 @@ const setMainScrollState = (num: number) => {
 
   if (num > 0) {
     if (!storageId) {
-      // Not ideal but good enough.
-      storageId = Date.now().toString();
+      storageId = crypto.randomUUID();
       url.searchParams.set(mainScrollQueryKey, storageId);
       history.replaceState({}, "", url.href);
       Object.keys(localStorage)
