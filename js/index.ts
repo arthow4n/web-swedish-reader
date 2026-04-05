@@ -156,7 +156,7 @@ ${err?.name}: ${err?.message}
   article.dataset.isMarkdown = isMarkdown ? "true" : "false";
 
   if (isMarkdown) {
-    const { marked } = await import("marked");
+    const { marked } = await import(/* webpackChunkName: "marked" */ "marked");
     const html = await marked.parse(text);
     const template = document.createElement("template");
     template.innerHTML = html;
@@ -287,10 +287,16 @@ const setIsEditMode = ({
 };
 
 const convertHtmlToMarkdown = async (htmlContent: string): Promise<string> => {
-  const DOMPurifyModule = import("dompurify");
-  const TurndownServiceModule = import("turndown");
-  // @ts-ignore
-  const TurndownPluginGfmModule = import("turndown-plugin-gfm") as any;
+  const DOMPurifyModule = import(
+    /* webpackChunkName: "dompurify" */ "dompurify"
+  );
+  const TurndownServiceModule = import(
+    /* webpackChunkName: "turndown" */ "turndown"
+  );
+  const TurndownPluginGfmModule = import(
+    // @ts-ignore
+    /* webpackChunkName: "turndown-plugin-gfm" */ "turndown-plugin-gfm"
+  ) as any;
   const { default: DOMPurify } = await DOMPurifyModule;
   const { default: TurndownService } = await TurndownServiceModule;
   const { gfm } = await TurndownPluginGfmModule;

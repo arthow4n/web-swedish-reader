@@ -18,6 +18,10 @@ sw.addEventListener("install", (event: ExtendableEvent) => {
         getCachePathName("./bookmarklets.html"),
         getCachePathName("./index.html"),
         getCachePathName("./static/js/index.js"),
+        getCachePathName("./static/js/async/marked.js"),
+        getCachePathName("./static/js/async/dompurify.js"),
+        getCachePathName("./static/js/async/turndown.js"),
+        getCachePathName("./static/js/async/turndown-plugin-gfm.js"),
         getCachePathName("./static/css/index.css"),
         getCachePathName(
           "../web-swedish-reader-data/folkets-compound/folkets-compound.chunk.001.mjs",
