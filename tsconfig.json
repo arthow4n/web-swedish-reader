@@ -16,6 +16,7 @@
     "types": ["node"],
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noEmit": true
   }
 }
