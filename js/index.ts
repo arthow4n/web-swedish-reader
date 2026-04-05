@@ -123,11 +123,13 @@ const updateArticle = async ({
           `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}.isMarkdown`,
           isMarkdown.toString(),
         );
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error(err);
+        const name = err instanceof Error ? err.name : "Error";
+        const message = err instanceof Error ? err.message : String(err);
         alert(`Failed to save article into storage (storage quota exceeded?), try opening the settings and clear article storage.
 
-${err?.name}: ${err?.message}
+${name}: ${message}
 `);
       }
 
