@@ -1,22 +1,24 @@
 const settingsButton = document.querySelector(".control-settings");
 const closeButtons = document.querySelectorAll(".control-settings-close");
-const modal = document.querySelector(".settings-modal");
+const modal = document.querySelector(
+  ".settings-modal",
+) as HTMLDialogElement | null;
 
 closeButtons.forEach((b) => {
   b.addEventListener("click", () => {
-    modal.close();
+    modal?.close();
   });
 });
 
-settingsButton.addEventListener("click", () => {
-  modal.showModal();
+settingsButton?.addEventListener("click", () => {
+  modal?.showModal();
 });
 
-export const writeSetting = (key, value) => {
+export const writeSetting = (key: string, value: any) => {
   localStorage.setItem(key, JSON.stringify(value));
 };
 
-export const readSetting = (key, defaultValue) => {
+export const readSetting = <T>(key: string, defaultValue: T): T => {
   const existing = localStorage.getItem(key);
 
   if (existing === null) {
@@ -47,8 +49,15 @@ export const bindCheckboxToSetting = ({
   settingKey,
   defaultValue,
   onChange,
+}: {
+  selector: string;
+  settingKey: string;
+  defaultValue: boolean;
+  onChange?: ((checked: boolean) => void) | null;
 }) => {
-  const checkbox = document.querySelector(selector);
+  const checkbox = document.querySelector(selector) as HTMLInputElement | null;
+  if (!checkbox) throw new Error(`Checkbox not found: ${selector}`);
+
   checkbox.checked = readSetting(settingKey, defaultValue);
   checkbox.addEventListener("change", () => {
     writeSetting(settingKey, checkbox.checked);
@@ -68,8 +77,15 @@ export const bindTextInputToSetting = ({
   settingKey,
   defaultValue,
   onChange,
+}: {
+  selector: string;
+  settingKey: string;
+  defaultValue: string;
+  onChange?: ((value: string) => void) | null;
 }) => {
-  const input = document.querySelector(selector);
+  const input = document.querySelector(selector) as HTMLInputElement | null;
+  if (!input) throw new Error(`Input not found: ${selector}`);
+
   input.value = readSetting(settingKey, defaultValue);
   input.addEventListener("change", () => {
     writeSetting(settingKey, input.value);
