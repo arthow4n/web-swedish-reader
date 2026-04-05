@@ -81,7 +81,6 @@ if (!(_englishReaderModeCheckBox instanceof HTMLInputElement)) {
 }
 export const englishReaderModeCheckBox = _englishReaderModeCheckBox;
 
-// const folkets = document.querySelector(".dic-folkets");
 const saol = document.querySelector(".dic-saol");
 if (!(saol instanceof HTMLIFrameElement)) {
   throw new Error("SAOL iframe not found");
@@ -193,7 +192,6 @@ export const updateDictionaryViews = async ({
     queryAlternativesLocal.innerHTML = "";
     queryAlternativesRemote.innerHTML = "";
     queryAlternativesEnglishTranslation.innerHTML = "";
-    // folkets.removeAttribute("src");
     saol.removeAttribute("src");
     englishDictionary.removeAttribute("src");
     return;
@@ -227,10 +225,6 @@ export const updateDictionaryViews = async ({
       "query-alternatives-so-expanded",
     );
   };
-  // {
-  //   const next = `https://folkets-lexikon.csc.kth.se/folkets/service?lang=sv&interface=sv&word=${encodedText}`;
-  //   if (folkets.src !== next) folkets.src = next;
-  // }
   {
     const next = `https://svenska.se/tre/?sok=${encodedText}`;
     saol.dataset.src = next;
