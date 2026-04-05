@@ -230,7 +230,7 @@ body:not(.is-edit-mode) .edit-mode-only {
 .dics-query-input {
   width: 100%;
   min-height: 30px;
-
+  margin: 0;
   padding: 0 8px;
 }
 
