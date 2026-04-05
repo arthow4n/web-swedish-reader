@@ -297,9 +297,8 @@ const convertHtmlToMarkdown = async (htmlContent: string): Promise<string> => {
     /* webpackChunkName: "turndown" */ "turndown"
   );
   const TurndownPluginGfmModule = import(
-    // @ts-ignore
     /* webpackChunkName: "turndown-plugin-gfm" */ "turndown-plugin-gfm"
-  ) as any;
+  );
   const { default: DOMPurify } = await DOMPurifyModule;
   const { default: TurndownService } = await TurndownServiceModule;
   const { gfm } = await TurndownPluginGfmModule;
