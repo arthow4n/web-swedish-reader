@@ -44,11 +44,9 @@ const installDictionary = async <T>(
     );
     return data;
   } catch (err) {
-    const queryAlternativesLocal = document.querySelector(
-      ".query-alternatives-line-local",
-    );
-    if (queryAlternativesLocal) {
-      queryAlternativesLocal.innerHTML = `Error! ${queryAlternativesLocal.innerHTML}`;
+    const stored = await get(storageKey, dictionaryStore);
+    if (stored?.data) {
+      return stored.data;
     }
     throw err;
   }
@@ -73,6 +71,7 @@ const installDictionaries = async () => {
 };
 
 const installationPromise = installDictionaries();
+installationPromise.catch(() => {});
 
 export const queryCompounds = async (word: string) => {
   const { folketsCompound } = await installationPromise;
