@@ -11,59 +11,120 @@ import {
   writeSetting,
 } from "./settings";
 
-export const queryInput = document.querySelector(
-  ".dics-query-input",
-) as HTMLInputElement;
+const _queryInput = document.querySelector(".dics-query-input");
+if (!(_queryInput instanceof HTMLInputElement)) {
+  throw new Error("Query input not found");
+}
+export const queryInput = _queryInput;
+
 const keepDictionaryVisibleCheckBox = document.querySelector(
   ".label-dics-expand input",
-) as HTMLInputElement;
+);
+if (!(keepDictionaryVisibleCheckBox instanceof HTMLInputElement)) {
+  throw new Error("Keep dictionary visible checkbox not found");
+}
+
 const queryAlternativesContainer = document.querySelector(
   ".query-alternatives",
-) as HTMLElement;
+);
+if (!(queryAlternativesContainer instanceof HTMLElement)) {
+  throw new Error("Query alternatives container not found");
+}
+
 export const queryAlternativesLocal = document.querySelector(
   ".query-alternatives-line-local",
-) as HTMLElement;
+);
+if (!(queryAlternativesLocal instanceof HTMLElement)) {
+  throw new Error("Query alternatives local not found");
+}
+
 const queryAlternativesRemote = document.querySelector(
   ".query-alternatives-line-remote",
-) as HTMLElement;
+);
+if (!(queryAlternativesRemote instanceof HTMLElement)) {
+  throw new Error("Query alternatives remote not found");
+}
+
 const queryAlternativesSwedishDefinition = document.querySelector(
   ".query-alternatives-line-swedish-definition",
-) as HTMLElement;
+);
+if (!(queryAlternativesSwedishDefinition instanceof HTMLElement)) {
+  throw new Error("Query alternatives Swedish definition not found");
+}
+
 const queryAlternativesSwedishDefinition2 = document.querySelector(
   ".query-alternatives-line-swedish-definition-2",
-) as HTMLElement;
+);
+if (!(queryAlternativesSwedishDefinition2 instanceof HTMLElement)) {
+  throw new Error("Query alternatives Swedish definition 2 not found");
+}
+
 const queryAlternativesEnglishTranslation = document.querySelector(
   ".query-alternatives-line-english-translation",
-) as HTMLElement;
+);
+if (!(queryAlternativesEnglishTranslation instanceof HTMLElement)) {
+  throw new Error("Query alternatives English translation not found");
+}
+
 const youglishSwedishButton = document.querySelector(
   ".control-youglish-swedish",
-) as HTMLButtonElement;
-export const englishReaderModeCheckBox = document.querySelector(
+);
+if (!(youglishSwedishButton instanceof HTMLButtonElement)) {
+  throw new Error("Youglish Swedish button not found");
+}
+
+const _englishReaderModeCheckBox = document.querySelector(
   ".settings-english-reader-mode-checkbox",
-) as HTMLInputElement;
+);
+if (!(_englishReaderModeCheckBox instanceof HTMLInputElement)) {
+  throw new Error("English reader mode checkbox not found");
+}
+export const englishReaderModeCheckBox = _englishReaderModeCheckBox;
 
 // const folkets = document.querySelector(".dic-folkets");
-const saol = document.querySelector(".dic-saol") as HTMLIFrameElement;
-const dicSubSingle = document.querySelector(".dic-sub-single") as HTMLElement;
-const englishDictionary = document.querySelector(
-  ".dic-english",
-) as HTMLIFrameElement;
+const saol = document.querySelector(".dic-saol");
+if (!(saol instanceof HTMLIFrameElement)) {
+  throw new Error("SAOL iframe not found");
+}
 
-const searchGoogleButton = document.querySelector(
-  ".control-search-google",
-) as HTMLButtonElement;
+const dicSubSingle = document.querySelector(".dic-sub-single");
+if (!(dicSubSingle instanceof HTMLElement)) {
+  throw new Error("Dic sub single not found");
+}
+
+const englishDictionary = document.querySelector(".dic-english");
+if (!(englishDictionary instanceof HTMLIFrameElement)) {
+  throw new Error("English dictionary iframe not found");
+}
+
+const searchGoogleButton = document.querySelector(".control-search-google");
+if (!(searchGoogleButton instanceof HTMLButtonElement)) {
+  throw new Error("Search Google button not found");
+}
+
 const searchWiktionaryButton = document.querySelector(
   ".control-search-wiktionary",
-) as HTMLButtonElement;
-const searchKorpButton = document.querySelector(
-  ".control-search-korp",
-) as HTMLButtonElement;
+);
+if (!(searchWiktionaryButton instanceof HTMLButtonElement)) {
+  throw new Error("Search Wiktionary button not found");
+}
+
+const searchKorpButton = document.querySelector(".control-search-korp");
+if (!(searchKorpButton instanceof HTMLButtonElement)) {
+  throw new Error("Search Korp button not found");
+}
+
 const searchSlangopediaButton = document.querySelector(
   ".control-search-slangopedia",
-) as HTMLButtonElement;
-const toggleSoButton = document.querySelector(
-  ".control-toggle-so",
-) as HTMLButtonElement;
+);
+if (!(searchSlangopediaButton instanceof HTMLButtonElement)) {
+  throw new Error("Search Slangopedia button not found");
+}
+
+const toggleSoButton = document.querySelector(".control-toggle-so");
+if (!(toggleSoButton instanceof HTMLButtonElement)) {
+  throw new Error("Toggle SO button not found");
+}
 
 const openExternal = (link: string) => {
   window.open(link, "_blank", "noopener,noreferrer");
@@ -193,7 +254,8 @@ export const updateDictionaryViews = async ({
     await Promise.all(
       Array.from(element.querySelectorAll("." + wordClassName)).map(
         async (wordElement) => {
-          const word = (wordElement as HTMLElement).innerText;
+          if (!(wordElement instanceof HTMLElement)) return;
+          const word = wordElement.innerText;
           const translations = await queryEnglishTranslation(word);
           if (translations.length) {
             wordElement.classList.add("word-has-english-translation");
@@ -323,7 +385,11 @@ export const updateDictionaryViews = async ({
   });
 };
 
-queryInput.closest("form")?.addEventListener("submit", (event) => {
+const form = queryInput.closest("form");
+if (!(form instanceof HTMLFormElement)) {
+  throw new Error("Form not found for query input");
+}
+form.addEventListener("submit", (event) => {
   event.preventDefault();
   updateDictionaryViews({
     text: queryInput.value,
@@ -338,7 +404,8 @@ queryInput.addEventListener("focus", (event) => {
 });
 
 queryInput.addEventListener("paste", (event: ClipboardEvent) => {
-  const text = event.clipboardData?.getData("Text");
+  if (!event.clipboardData) return;
+  const text = event.clipboardData.getData("Text");
   if (text) {
     event.preventDefault();
     // Cleaning pasted data makes it easier to paste from SAOL.

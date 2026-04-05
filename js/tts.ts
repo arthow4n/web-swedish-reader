@@ -14,9 +14,10 @@ const ttsOnClick = bindCheckboxToSetting({
 
 const updateVolumeLabel = (val: string) => {
   const label = document.querySelector(".settings-tts-volume-label");
-  if (label) {
-    label.textContent = `(${Math.round(parseFloat(val) * 100)}%)`;
+  if (!(label instanceof HTMLElement)) {
+    throw new Error("Settings TTS volume label not found");
   }
+  label.textContent = `(${Math.round(parseFloat(val) * 100)}%)`;
 };
 
 const ttsVolume = bindTextInputToSetting({
@@ -26,7 +27,8 @@ const ttsVolume = bindTextInputToSetting({
   onChange: updateVolumeLabel,
 });
 ttsVolume.element.addEventListener("input", (e) => {
-  updateVolumeLabel((e.target as HTMLInputElement).value);
+  if (!(e.target instanceof HTMLInputElement)) return;
+  updateVolumeLabel(e.target.value);
 });
 updateVolumeLabel(ttsVolume.getSetting());
 
