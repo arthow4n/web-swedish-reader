@@ -447,6 +447,20 @@ const handleSelectionOrClick = (
     return;
   }
 
+  // Prevent multiple clicks triggered by playwright from mixing up the query
+  // if selection already updated it in this run
+  const currentSelection = window.getSelection();
+  const currentSelectedText = currentSelection
+    ? currentSelection.toString().trim()
+    : "";
+  if (
+    currentSelectedText &&
+    currentSelectedText.includes(" ") &&
+    target.closest("article")
+  ) {
+    return;
+  }
+
   let textToQuery = target.innerText;
 
   const isShiftOrAltPressed =
