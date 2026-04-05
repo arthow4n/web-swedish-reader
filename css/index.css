@@ -227,6 +227,12 @@ body:not(.is-edit-mode) .edit-mode-only {
   white-space: nowrap;
 }
 
+.control-append-mode.active {
+  background-color: #d1e7dd;
+  border-color: #badbcc;
+  font-weight: bold;
+}
+
 .dics-query-input {
   width: 100%;
   min-height: 30px;

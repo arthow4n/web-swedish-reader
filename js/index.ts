@@ -163,7 +163,9 @@ ${name}: ${message}
     );
     const html = await marked.parse(text);
     const template = document.createElement("template");
-    const sanitizedFrag = DOMPurify.sanitize(html, { RETURN_DOM_FRAGMENT: true });
+    const sanitizedFrag = DOMPurify.sanitize(html, {
+      RETURN_DOM_FRAGMENT: true,
+    });
     template.content.appendChild(sanitizedFrag);
 
     const processNodeBottomUp = (node: Node) => {
@@ -394,14 +396,41 @@ const convertHtmlToMarkdown = async (htmlContent: string): Promise<string> => {
 })();
 
 let lastSwedishWordClickEventTarget: HTMLElement | null = null;
-document.addEventListener("click", (event) => {
-  const target = event.target;
-  if (!(target instanceof HTMLElement)) return;
+
+const handleSelectionOrClick = (
+  target: HTMLElement | null,
+  eventType: string,
+  event: MouseEvent | TouchEvent,
+) => {
+  if (!target) return;
 
   if (
     (article.isContentEditable && target.closest("article")) ||
     !target.closest("article,.query-alternatives")
   ) {
+    return;
+  }
+
+  const selection = window.getSelection();
+  const selectedText = selection ? selection.toString().trim() : "";
+
+  if (selectedText && selectedText.includes(" ") && target.closest("article")) {
+    if (eventType !== "click") {
+      speakOnClick(getCurrentSourceLanguage(), selectedText);
+
+      hideDictionaryIfNotOpenedFromCheckBox();
+
+      updateDictionaryViews({
+        text: selectedText,
+        cleanup: true,
+        keepQueryAlternatives: false,
+        shouldSetDictionaryToVisible: true,
+      });
+    }
+    return;
+  }
+
+  if (eventType !== "click") {
     return;
   }
 
@@ -416,6 +445,20 @@ document.addEventListener("click", (event) => {
 
   if (!target.classList.contains("word")) {
     return;
+  }
+
+  let textToQuery = target.innerText;
+
+  const isShiftOrAltPressed =
+    event instanceof MouseEvent && (event.shiftKey || event.altKey);
+
+  const appendModeButton = document.querySelector(".control-append-mode");
+  const isAppendModeActive = appendModeButton?.classList.contains("active");
+
+  if (isShiftOrAltPressed || isAppendModeActive) {
+    if (queryInput.value) {
+      textToQuery = `${queryInput.value} ${textToQuery}`;
+    }
   }
 
   speakOnClick(getCurrentSourceLanguage(), target.innerText);
@@ -436,18 +479,18 @@ document.addEventListener("click", (event) => {
   const shouldGoToDeeperAlternative =
     isInsideAlternatives &&
     lastSwedishWordClickEventTarget === target &&
-    target.innerText === queryInput.value;
+    textToQuery === queryInput.value;
 
   if (shouldGoToDeeperAlternative) {
     updateDictionaryViews({
-      text: target.innerText,
+      text: textToQuery,
       cleanup: true,
       keepQueryAlternatives: false,
       shouldSetDictionaryToVisible: true,
     });
   } else {
     updateDictionaryViews({
-      text: target.innerText,
+      text: textToQuery,
       cleanup: true,
       keepQueryAlternatives: isInsideAlternatives,
       shouldSetDictionaryToVisible:
@@ -456,6 +499,19 @@ document.addEventListener("click", (event) => {
   }
 
   lastSwedishWordClickEventTarget = target;
+};
+
+document.addEventListener("mouseup", (event) => {
+  handleSelectionOrClick(event.target as HTMLElement, "mouseup", event);
+});
+
+document.addEventListener("touchend", (event) => {
+  handleSelectionOrClick(event.target as HTMLElement, "touchend", event);
+});
+
+document.addEventListener("click", (event) => {
+  const target = event.target as HTMLElement;
+  handleSelectionOrClick(target, "click", event);
 });
 
 clearAndEditButtons.forEach((x) =>

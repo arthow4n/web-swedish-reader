@@ -103,14 +103,12 @@
 
             if (url.host.endsWith("flashback.org")) {
               const root = document.cloneNode(true);
-              root
-                .querySelectorAll(".post-user")
-                .forEach(
-                  (x) => {
-                    const username = x.querySelector(".post-user-username")?.innerText.trim() ?? "";
-                    x.replaceChildren(root.createTextNode(username));
-                  }
-                );
+              root.querySelectorAll(".post-user").forEach((x) => {
+                const username =
+                  x.querySelector(".post-user-username")?.innerText.trim() ??
+                  "";
+                x.replaceChildren(root.createTextNode(username));
+              });
 
               root.querySelectorAll(".post-bbcode-quote").forEach((x) => {
                 const fragment = root.createDocumentFragment();
