@@ -1,20 +1,23 @@
 import { set, get, createStore } from "idb-keyval";
-import { uniq } from "./utils.mjs";
+import { uniq } from "./utils";
 
 const dictionaryStore = createStore("wsr-dictionary", "wsr-dictionary");
 
-const installDictionary = async (dictionaryName, moduleDataAccessor) => {
+const installDictionary = async <T>(
+  dictionaryName: string,
+  moduleDataAccessor: (m: any) => T,
+): Promise<T> => {
   const storageKey = `_2_${dictionaryName}`;
   const dir = `${location.origin}/web-swedish-reader-data/${dictionaryName}`;
 
   try {
     const { getInfo } = await import(`${dir}/${dictionaryName}.meta.mjs`);
-    const { chunks, totalEntriesCount } = getInfo();
+    const { chunks } = getInfo();
 
     if (chunks.length !== 1) {
       throw new Error(`Can't update ${dictionaryName}.`);
     }
-    const { name, version: expectedVersion, entriesCount } = chunks[0];
+    const { name, version: expectedVersion } = chunks[0];
 
     const stored = await get(storageKey, dictionaryStore);
 
@@ -41,15 +44,26 @@ const installDictionary = async (dictionaryName, moduleDataAccessor) => {
     );
     return data;
   } catch (err) {
-    queryAlternativesLocal.innerHTML = `Error! ${queryAlternativesLocal.innerHTML}`;
+    const queryAlternativesLocal = document.querySelector(
+      ".query-alternatives-line-local",
+    );
+    if (queryAlternativesLocal) {
+      queryAlternativesLocal.innerHTML = `Error! ${queryAlternativesLocal.innerHTML}`;
+    }
     throw err;
   }
 };
 
 const installDictionaries = async () => {
   const [folketsCompound, folketsSven] = await Promise.all([
-    installDictionary("folkets-compound", (m) => new Set(m.getCompoundParts())),
-    installDictionary("folkets-sven", (m) => m.getTranslationLookUp()),
+    installDictionary(
+      "folkets-compound",
+      (m) => new Set<string>(m.getCompoundParts()),
+    ),
+    installDictionary(
+      "folkets-sven",
+      (m) => m.getTranslationLookUp() as Record<string, string[]>,
+    ),
   ]);
 
   return {
@@ -60,12 +74,20 @@ const installDictionaries = async () => {
 
 const installationPromise = installDictionaries();
 
-export const queryCompounds = async (word) => {
+export const queryCompounds = async (word: string) => {
   const { folketsCompound } = await installationPromise;
 
-  const compoundsSet = new Set();
+  const compoundsSet = new Set<string>();
 
-  const sliceDownForward = ({ word, init, power }) => {
+  const sliceDownForward = ({
+    word,
+    init,
+    power,
+  }: {
+    word: string;
+    init: boolean;
+    power: number;
+  }): any[] => {
     if (!word) {
       return [];
     }
@@ -127,7 +149,15 @@ export const queryCompounds = async (word) => {
       : [word];
   };
 
-  const sliceDownBackward = ({ word, init, power }) => {
+  const sliceDownBackward = ({
+    word,
+    init,
+    power,
+  }: {
+    word: string;
+    init: boolean;
+    power: number;
+  }): any[] => {
     if (!word) {
       return [];
     }
@@ -188,7 +218,7 @@ export const queryCompounds = async (word) => {
       : [word];
   };
 
-  const join = (x) => {
+  const join = (x: any[]): string => {
     const joined = x
       .flat(Infinity)
       .filter((x) => x)
@@ -197,7 +227,20 @@ export const queryCompounds = async (word) => {
       .replace(
         // First 2 groups are mandatory to not join e.g. o+gillar
         /(^|\+)([^s])(?:\+([^s]))(?:\+([^s]))?(?:\+([^s]))?(?:\+([^s]))?(?:\+([^s]))?(?:\+([^s]))?(?:\+([^s]))?(?:\+([^s]))?(?:\+([^s]))?/gu,
-        (match, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11) =>
+        (
+          match: string,
+          p1: string,
+          p2: string,
+          p3: string,
+          p4: string,
+          p5: string,
+          p6: string,
+          p7: string,
+          p8: string,
+          p9: string,
+          p10: string,
+          p11: string,
+        ) =>
           [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11]
             .filter((x) => x)
             .join(""),
@@ -234,7 +277,9 @@ export const getCurrentSourceLanguage = () => {
   return sourceLanguage;
 };
 
-export const queryEnglishTranslation = async (word) => {
+export const queryEnglishTranslation = async (
+  word: string,
+): Promise<string[]> => {
   const sourceLanguage = getCurrentSourceLanguage();
   if (sourceLanguage !== "sv") {
     try {
@@ -242,9 +287,9 @@ export const queryEnglishTranslation = async (word) => {
         `https://fetch-swe-compounds.deno.dev/analyse?cacheBuster=5&sourceLanguage=${sourceLanguage}&word=${encodeURIComponent(
           word,
         )}`,
-      ).then((x) => x.json());
+      ).then((x) => x.json() as Promise<any[]>);
 
-      return uniq(res.flatMap((r) => r.definitions));
+      return uniq(res.flatMap((r: any) => r.definitions));
     } catch (err) {
       console.error(err);
       return [];

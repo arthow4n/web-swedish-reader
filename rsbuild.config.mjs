@@ -1,10 +1,12 @@
 import { defineConfig } from "@rsbuild/core";
+import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
 
 export default defineConfig({
+  plugins: [pluginTypeCheck()],
   source: {
     preEntry: ["normalize.css", "sakura.css/css/sakura.css", "./css/index.css"],
     entry: {
-      index: "./js/index.mjs",
+      index: "./js/index.ts",
     },
   },
   html: {
@@ -18,6 +20,6 @@ export default defineConfig({
   output: {
     assetPrefix: "./",
     filenameHash: false,
-    copy: [{ from: "./bookmarklets.html" }, { from: "./serviceWorker.mjs" }],
+    copy: [{ from: "./bookmarklets.html" }],
   },
 });

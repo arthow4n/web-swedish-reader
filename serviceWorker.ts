@@ -1,11 +1,15 @@
-const getCachePathName = (pathFromRoot) => {
-  return import.meta.resolve(pathFromRoot);
+/// <reference lib="webworker" />
+
+const sw = self as unknown as ServiceWorkerGlobalScope;
+
+const getCachePathName = (pathFromRoot: string) => {
+  return new URL(pathFromRoot, self.location.origin).href;
 };
 
 const assetCacheName = "assets";
 
-self.addEventListener("install", (event) => {
-  self.skipWaiting();
+sw.addEventListener("install", (event: ExtendableEvent) => {
+  sw.skipWaiting();
 
   event.waitUntil(
     caches.open(assetCacheName).then((cache) => {
@@ -32,14 +36,14 @@ self.addEventListener("install", (event) => {
   );
 });
 
-self.addEventListener("fetch", (event) => {
+sw.addEventListener("fetch", (event: FetchEvent) => {
   // Drop browser extension requests
   if (!event.request.url.startsWith("http")) {
     return;
   }
 
   if (!navigator.onLine) {
-    event.respondWith(caches.match(event.request));
+    event.respondWith(caches.match(event.request) as Promise<Response>);
     return;
   }
 
@@ -55,7 +59,7 @@ self.addEventListener("fetch", (event) => {
         return response;
       })
       .catch(() => {
-        return caches.match(event.request);
+        return caches.match(event.request) as Promise<Response>;
       }),
   );
 });

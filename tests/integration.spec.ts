@@ -1,7 +1,7 @@
-const { test, expect } = require("@playwright/test");
+import { test, expect, Page, BrowserContext } from "@playwright/test";
 
 test.describe("Web Swedish Reader Core Flows", () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }: { page: Page }) => {
     // Navigate to the base URL (managed by playwright webServer)
     await page.goto("/");
   });
@@ -9,6 +9,9 @@ test.describe("Web Swedish Reader Core Flows", () => {
   test("paste text and click words to view dictionaries", async ({
     page,
     context,
+  }: {
+    page: Page;
+    context: BrowserContext;
   }) => {
     // Check we start in edit mode with a blank article
     const article = page.locator("article");
@@ -50,6 +53,9 @@ test.describe("Web Swedish Reader Core Flows", () => {
   test("open settings and toggle English reader mode", async ({
     page,
     context,
+  }: {
+    page: Page;
+    context: BrowserContext;
   }) => {
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     await page.evaluate(() => navigator.clipboard.writeText("Hello world."));
@@ -84,11 +90,14 @@ test.describe("Web Swedish Reader Core Flows", () => {
   test("paste markdown and verify correct formatting", async ({
     page,
     context,
+  }: {
+    page: Page;
+    context: BrowserContext;
   }) => {
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     const markdownText = `# Rubrik\n\n* En lista\n* Två saker`;
     await page.evaluate(
-      (text) => navigator.clipboard.writeText(text),
+      (text: string) => navigator.clipboard.writeText(text),
       markdownText,
     );
 
@@ -109,7 +118,13 @@ test.describe("Web Swedish Reader Core Flows", () => {
     await expect(article).toHaveAttribute("data-is-markdown", "true");
   });
 
-  test("clear text and return to edit mode", async ({ page, context }) => {
+  test("clear text and return to edit mode", async ({
+    page,
+    context,
+  }: {
+    page: Page;
+    context: BrowserContext;
+  }) => {
     // Add some text first
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     await page.evaluate(() => navigator.clipboard.writeText("Test."));
@@ -125,7 +140,7 @@ test.describe("Web Swedish Reader Core Flows", () => {
     await expect(article).toHaveText("");
   });
 
-  test("import txt file", async ({ page }) => {
+  test("import txt file", async ({ page }: { page: Page }) => {
     const fileChooserPromise = page.waitForEvent("filechooser");
     await page.click(".control-import:visible");
     const fileChooser = await fileChooserPromise;
@@ -138,13 +153,13 @@ test.describe("Web Swedish Reader Core Flows", () => {
     await expect(page.locator("body")).not.toHaveClass(/is-edit-mode/);
 
     const article = page.locator("article");
-    await expect(article).toHaveAttribute("data-is-markdown", ""); // not markdown
+    await expect(article).toHaveAttribute("data-is-markdown", "false"); // not markdown
     await expect(article).toContainText("==start: test.txt");
     await expect(article).toContainText("En enkel text.");
     await expect(article).toContainText("==end: test.txt");
   });
 
-  test("import markdown file", async ({ page }) => {
+  test("import markdown file", async ({ page }: { page: Page }) => {
     const fileChooserPromise = page.waitForEvent("filechooser");
     await page.click(".control-import:visible");
     const fileChooser = await fileChooserPromise;
@@ -170,7 +185,7 @@ test.describe("Web Swedish Reader Core Flows", () => {
     await expect(strong).toHaveText("fet");
   });
 
-  test("import html file", async ({ page }) => {
+  test("import html file", async ({ page }: { page: Page }) => {
     const fileChooserPromise = page.waitForEvent("filechooser");
     await page.click(".control-import:visible");
     const fileChooser = await fileChooserPromise;

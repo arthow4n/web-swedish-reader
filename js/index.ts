@@ -4,20 +4,19 @@ import {
   showEnglishDictionary,
   updateDictionaryViews,
   englishReaderModeCheckBox,
-} from "./dictionaryView.mjs";
-import {
-  wordSelectedInAreaClassName,
-  toWordSpans,
-  debounce,
-} from "./utils.mjs";
-import { speakOnClick } from "./tts.mjs";
-import { getCurrentSourceLanguage } from "./dictionaryDatabase.mjs";
-import { bindCheckboxToSetting, settingKeys } from "./settings.mjs";
+} from "./dictionaryView";
+import { wordSelectedInAreaClassName, toWordSpans, debounce } from "./utils";
+import { speakOnClick } from "./tts";
+import { getCurrentSourceLanguage } from "./dictionaryDatabase";
+import { bindCheckboxToSetting, settingKeys } from "./settings";
 
-navigator.serviceWorker.register("./serviceWorker.mjs", {
-  scope: ".",
-  type: "module",
-});
+navigator.serviceWorker.register(
+  new URL("../serviceWorker.ts", import.meta.url),
+  {
+    scope: ".",
+    type: "module",
+  },
+);
 
 const clearAndEditButtons = document.querySelectorAll(".control-clear");
 const editButton = document.querySelector(".control-edit");
@@ -32,22 +31,22 @@ const fullScreenButton = document.querySelector(".control-full-screen");
 const clearArticleStorageButtons = document.querySelectorAll(
   ".control-settings-clear-article-storage-checkbox",
 );
-const main = document.querySelector("main");
-const article = document.querySelector("article");
+const main = document.querySelector("main") as HTMLElement;
+const article = document.querySelector("article") as HTMLElement;
 
 const articleFromLocalStorageKey = "articleFromLocalStorageKey";
 const mainScrollQueryKey = "mainScrollId";
 
-const setMainScrollState = (num) => {
-  const url = new URL(location);
+const setMainScrollState = (num: number) => {
+  const url = new URL(location.href);
   let storageId = url.searchParams.get(mainScrollQueryKey);
 
-  if (num) {
+  if (num > 0) {
     if (!storageId) {
       // Not ideal but good enough.
-      storageId = Date.now();
+      storageId = Date.now().toString();
       url.searchParams.set(mainScrollQueryKey, storageId);
-      history.replaceState({}, undefined, url);
+      history.replaceState({}, "", url.href);
       Object.keys(localStorage)
         .filter((k) => k.startsWith(`${mainScrollQueryKey}=`))
         .sort()
@@ -56,7 +55,7 @@ const setMainScrollState = (num) => {
         .forEach((key) => localStorage.removeItem(key));
     }
 
-    localStorage.setItem(`${mainScrollQueryKey}=${storageId}`, num);
+    localStorage.setItem(`${mainScrollQueryKey}=${storageId}`, num.toString());
     return;
   }
 
@@ -65,7 +64,7 @@ const setMainScrollState = (num) => {
   }
 
   localStorage.removeItem(`${mainScrollQueryKey}=${storageId}`);
-  history.replaceState({}, undefined, url);
+  history.replaceState({}, "", url.href);
 };
 
 const onMainScroll = debounce(() => {
@@ -84,10 +83,15 @@ const updateArticle = async ({
   loadScrollPosition,
   updateArticleFromLocalStorageKeyQuery,
   isMarkdown,
+}: {
+  input: string;
+  loadScrollPosition: boolean;
+  updateArticleFromLocalStorageKeyQuery: boolean;
+  isMarkdown: boolean;
 }) => {
   if (saveArticleToLocalStorage.getSetting()) {
     if (updateArticleFromLocalStorageKeyQuery) {
-      const newUrl = new URL(location);
+      const newUrl = new URL(location.href);
       const randomNumbers = new Uint16Array(16);
       crypto.getRandomValues(randomNumbers);
       const articleFromLocalStorageKeyQuery = randomNumbers.toString();
@@ -105,27 +109,27 @@ const updateArticle = async ({
         );
         localStorage.setItem(
           `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}.isMarkdown`,
-          isMarkdown,
+          isMarkdown.toString(),
         );
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
         alert(`Failed to save article into storage (storage quota exceeded?), try opening the settings and clear article storage.
 
-${err.name}: ${err.message}
+${err?.name}: ${err?.message}
 `);
       }
 
-      history.pushState({}, undefined, newUrl);
+      history.pushState({}, "", newUrl.href);
     }
   } else {
-    const newUrl = new URL(location);
+    const newUrl = new URL(location.href);
     newUrl.searchParams.delete(`${articleFromLocalStorageKey}`);
     newUrl.hash =
       "text=" +
       encodeURIComponent(input) +
       (isMarkdown ? "&isMarkdown=true" : "");
 
-    history.pushState({}, undefined, newUrl);
+    history.pushState({}, "", newUrl.href);
   }
 
   const text = input.trim();
@@ -137,41 +141,42 @@ ${err.name}: ${err.message}
   }
 
   article.dataset.rawHtml = text;
-  article.dataset.isMarkdown = isMarkdown ? "true" : "";
+  article.dataset.isMarkdown = isMarkdown ? "true" : "false";
 
   if (isMarkdown) {
     const { marked } = await import("marked");
-    const html = marked.parse(text);
+    const html = await marked.parse(text);
     const template = document.createElement("template");
     template.innerHTML = html;
 
-    const processNodeBottomUp = (node) => {
+    const processNodeBottomUp = (node: Node) => {
       if (node.childNodes && node.childNodes.length > 0) {
         Array.from(node.childNodes).forEach(processNodeBottomUp);
       }
 
       if (node.nodeType === Node.ELEMENT_NODE) {
-        if (node.tagName === "TABLE") {
+        const el = node as HTMLElement;
+        if (el.tagName === "TABLE") {
           const wrapper = document.createElement("div");
           wrapper.className = "table-scroll-wrapper";
-          node.parentNode.replaceChild(wrapper, node);
-          wrapper.appendChild(node);
-        } else if (node.tagName === "A") {
+          el.parentNode?.replaceChild(wrapper, el);
+          wrapper.appendChild(el);
+        } else if (el.tagName === "A") {
           const fragment = document.createDocumentFragment();
-          while (node.firstChild) {
-            fragment.appendChild(node.firstChild);
+          while (el.firstChild) {
+            fragment.appendChild(el.firstChild);
           }
-          node.parentNode.replaceChild(fragment, node);
-        } else if (node.tagName === "IMG") {
-          const t = document.createTextNode(node.alt || "");
-          node.parentNode.replaceChild(t, node);
+          el.parentNode?.replaceChild(fragment, el);
+        } else if (el.tagName === "IMG") {
+          const t = document.createTextNode((el as HTMLImageElement).alt || "");
+          el.parentNode?.replaceChild(t, el);
         }
       } else if (node.nodeType === Node.TEXT_NODE) {
-        const nodeText = node.nodeValue;
+        const nodeText = node.nodeValue || "";
         if (!nodeText.trim()) return;
         const tmp = document.createElement("template");
         tmp.innerHTML = toWordSpans(nodeText, { className: "" });
-        node.parentNode.replaceChild(tmp.content, node);
+        node.parentNode?.replaceChild(tmp.content, node);
       }
     };
 
@@ -196,10 +201,10 @@ ${err.name}: ${err.message}
       .join("");
   }
 
-  const url = new URL(location);
+  const url = new URL(location.href);
   if (!loadScrollPosition) {
     url.searchParams.delete(mainScrollQueryKey);
-    history.replaceState({}, undefined, url);
+    history.replaceState({}, "", url.href);
   }
 
   main.scrollTo(
@@ -208,7 +213,7 @@ ${err.name}: ${err.message}
       ? parseInt(
           localStorage.getItem(
             `${mainScrollQueryKey}=${url.searchParams.get(mainScrollQueryKey)}`,
-          ),
+          ) || "0",
           10,
         ) || 0
       : 0,
@@ -216,9 +221,17 @@ ${err.name}: ${err.message}
   main.addEventListener("scroll", onMainScroll);
 };
 
-let currentSelectedWordElementInArticle = null;
+let currentSelectedWordElementInArticle: HTMLElement | null = null;
 
-const setIsEditMode = ({ isEditable, init, forceIsMarkdown }) => {
+const setIsEditMode = ({
+  isEditable,
+  init,
+  forceIsMarkdown,
+}: {
+  isEditable: boolean;
+  init: boolean;
+  forceIsMarkdown: boolean | null;
+}) => {
   document.body.classList.remove("is-edit-mode");
 
   if (isEditable) {
@@ -253,13 +266,14 @@ const setIsEditMode = ({ isEditable, init, forceIsMarkdown }) => {
     });
   }
 
-  article.contentEditable = false;
+  article.contentEditable = "false";
 };
 
-const convertHtmlToMarkdown = async (htmlContent) => {
+const convertHtmlToMarkdown = async (htmlContent: string): Promise<string> => {
   const DOMPurifyModule = import("dompurify");
   const TurndownServiceModule = import("turndown");
-  const TurndownPluginGfmModule = import("turndown-plugin-gfm");
+  // @ts-ignore
+  const TurndownPluginGfmModule = import("turndown-plugin-gfm") as any;
   const { default: DOMPurify } = await DOMPurifyModule;
   const { default: TurndownService } = await TurndownServiceModule;
   const { gfm } = await TurndownPluginGfmModule;
@@ -276,10 +290,9 @@ const convertHtmlToMarkdown = async (htmlContent) => {
   turndownService.addRule("tableCell", {
     filter: ["th", "td"],
     replacement: function (content, node) {
-      const index = Array.prototype.indexOf.call(
-        node.parentNode.childNodes,
-        node,
-      );
+      const index = node.parentNode
+        ? Array.prototype.indexOf.call(node.parentNode.childNodes, node)
+        : -1;
       let prefix = " ";
       if (index === 0) prefix = "| ";
 
@@ -297,7 +310,9 @@ const convertHtmlToMarkdown = async (htmlContent) => {
 (async () => {
   // dictionaryQuery=... is mainly for jumping directly to the dictionary view
   // when loading web-swedish-reader from browser custom search engine.
-  const dictionaryQuery = new URL(location).searchParams.get("dictionaryQuery");
+  const dictionaryQuery = new URL(location.href).searchParams.get(
+    "dictionaryQuery",
+  );
   if (dictionaryQuery) {
     updateDictionaryViews({
       text: dictionaryQuery,
@@ -307,9 +322,9 @@ const convertHtmlToMarkdown = async (htmlContent) => {
     });
   }
 
-  const articleFromLocalStorageKeyQuery = new URL(location).searchParams.get(
-    articleFromLocalStorageKey,
-  );
+  const articleFromLocalStorageKeyQuery = new URL(
+    location.href,
+  ).searchParams.get(articleFromLocalStorageKey);
   const textFromLocalStorage =
     articleFromLocalStorageKeyQuery &&
     localStorage.getItem(
@@ -332,9 +347,9 @@ const convertHtmlToMarkdown = async (htmlContent) => {
   }
 
   const articleText = textFromLocalStorage || textFromHash;
-  const isMarkdown = textFromLocalStorage
+  const isMarkdown = !!(textFromLocalStorage
     ? isMarkdownFromLocalStorage
-    : isMarkdownFromHash;
+    : isMarkdownFromHash);
 
   if (articleText) {
     updateArticle({
@@ -352,67 +367,69 @@ const convertHtmlToMarkdown = async (htmlContent) => {
   });
 })();
 
-let lastSwedishWordClickEventTarget = null;
+let lastSwedishWordClickEventTarget: HTMLElement | null = null;
 document.addEventListener("click", (event) => {
+  const target = event.target as HTMLElement | null;
+  if (!target) return;
+
   if (
-    (article.isContentEditable && event.target.closest("article")) ||
-    !event.target.closest("article,.query-alternatives")
+    (article.isContentEditable && target.closest("article")) ||
+    !target.closest("article,.query-alternatives")
   ) {
     return;
   }
 
   if (
-    event.target.classList.contains("word-english") ||
+    target.classList.contains("word-english") ||
     englishReaderModeCheckBox.checked
   ) {
-    speakOnClick("en", event.target.innerText);
-    showEnglishDictionary(event.target.innerText);
+    speakOnClick("en", target.innerText);
+    showEnglishDictionary(target.innerText);
     return;
   }
 
-  if (!event.target.classList.contains("word")) {
+  if (!target.classList.contains("word")) {
     return;
   }
 
-  speakOnClick(getCurrentSourceLanguage(), event.target.innerText);
+  speakOnClick(getCurrentSourceLanguage(), target.innerText);
 
-  const isInsideArticle = event.target.closest("article");
+  const isInsideArticle = target.closest("article");
   if (isInsideArticle) {
     currentSelectedWordElementInArticle?.classList.remove(
       wordSelectedInAreaClassName,
     );
-    currentSelectedWordElementInArticle = event.target;
+    currentSelectedWordElementInArticle = target;
     currentSelectedWordElementInArticle.classList.add(
       wordSelectedInAreaClassName,
     );
     hideDictionaryIfNotOpenedFromCheckBox();
   }
 
-  const isInsideAlternatives = !!event.target.closest(".query-alternatives");
+  const isInsideAlternatives = !!target.closest(".query-alternatives");
   const shouldGoToDeeperAlternative =
     isInsideAlternatives &&
-    lastSwedishWordClickEventTarget === event.target &&
-    event.target.innerText === queryInput.value;
+    lastSwedishWordClickEventTarget === target &&
+    target.innerText === queryInput.value;
 
   if (shouldGoToDeeperAlternative) {
     updateDictionaryViews({
-      text: event.target.innerText,
+      text: target.innerText,
       cleanup: true,
       keepQueryAlternatives: false,
       shouldSetDictionaryToVisible: true,
     });
   } else {
     updateDictionaryViews({
-      text: event.target.innerText,
+      text: target.innerText,
       cleanup: true,
       keepQueryAlternatives: isInsideAlternatives,
       shouldSetDictionaryToVisible:
-        isInsideAlternatives &&
-        lastSwedishWordClickEventTarget === event.target,
+        isInsideAlternatives && lastSwedishWordClickEventTarget === target,
     });
   }
 
-  lastSwedishWordClickEventTarget = event.target;
+  lastSwedishWordClickEventTarget = target;
 });
 
 clearAndEditButtons.forEach((x) =>
@@ -423,7 +440,7 @@ clearAndEditButtons.forEach((x) =>
     setIsEditMode({ isEditable: true, init: false, forceIsMarkdown: null });
   }),
 );
-editButton.addEventListener("click", () => {
+editButton?.addEventListener("click", () => {
   setIsEditMode({ isEditable: true, init: false, forceIsMarkdown: null });
 });
 finishEditButtons.forEach((x) => {
@@ -440,7 +457,9 @@ importButtons.forEach((x) =>
     input.multiple = true;
     input.hidden = true;
     input.onchange = async (event) => {
-      const files = [...event.target.files];
+      const target = event.target as HTMLInputElement;
+      if (!target.files) return;
+      const files = Array.from(target.files);
       const isAnyMarkdownOrHtml = files.some(
         (file) =>
           file.type === "text/html" ||
@@ -456,7 +475,7 @@ importButtons.forEach((x) =>
             new Promise((resolve) => {
               const r = new FileReader();
 
-              const withFileStartEnd = (content) => {
+              const withFileStartEnd = (content: string) => {
                 if (isAnyMarkdownOrHtml) {
                   return `### start: ${file.name}\n\n${content}\n\n### end: ${file.name}`;
                 }
@@ -464,17 +483,18 @@ importButtons.forEach((x) =>
               };
 
               r.onload = async () => {
+                const result = r.result as string;
                 if (
                   file.type === "text/html" ||
                   file.name.endsWith(".html") ||
                   file.name.endsWith(".htm")
                 ) {
-                  const markdown = await convertHtmlToMarkdown(r.result);
+                  const markdown = await convertHtmlToMarkdown(result);
                   resolve(withFileStartEnd(markdown));
                   return;
                 }
 
-                resolve(withFileStartEnd(r.result));
+                resolve(withFileStartEnd(result));
               };
               r.onerror = () => {
                 resolve(withFileStartEnd(""));
@@ -506,7 +526,7 @@ importButtons.forEach((x) =>
   }),
 );
 
-fullScreenButton.addEventListener("click", () => {
+fullScreenButton?.addEventListener("click", () => {
   if (document.fullscreenElement) {
     document.exitFullscreen();
     return;
@@ -567,7 +587,10 @@ clearArticleStorageButtons.forEach((clearArticleStorageButton) => {
   clearArticleStorageButton.addEventListener("click", () => {
     for (let i = 0; i < localStorage.length; i++) {
       const localStorageKeyName = localStorage.key(i);
-      if (localStorageKeyName.startsWith(`${articleFromLocalStorageKey}=`)) {
+      if (
+        localStorageKeyName &&
+        localStorageKeyName.startsWith(`${articleFromLocalStorageKey}=`)
+      ) {
         localStorage.removeItem(localStorageKeyName);
       }
     }
