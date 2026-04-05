@@ -189,9 +189,9 @@ export const updateDictionaryViews = async ({
     searchWiktionaryButton.onclick = null;
     youglishSwedishButton.onclick = null;
     toggleSoButton.onclick = null;
-    queryAlternativesLocal.innerHTML = "";
-    queryAlternativesRemote.innerHTML = "";
-    queryAlternativesEnglishTranslation.innerHTML = "";
+    queryAlternativesLocal.replaceChildren();
+    queryAlternativesRemote.replaceChildren();
+    queryAlternativesEnglishTranslation.replaceChildren();
     saol.removeAttribute("src");
     englishDictionary.removeAttribute("src");
     return;
@@ -260,7 +260,7 @@ export const updateDictionaryViews = async ({
   };
 
   const setLocal = async () => {
-    queryAlternativesLocal.innerHTML = "";
+    queryAlternativesLocal.replaceChildren();
 
     if (getCurrentSourceLanguage() !== "sv") {
       return;
@@ -268,14 +268,18 @@ export const updateDictionaryViews = async ({
 
     const localEntry = await queryCompounds(cleanedText);
     if (queryInput.value === cleanedText) {
-      queryAlternativesLocal.innerHTML = !localEntry
-        ? ""
-        : toWordSpans(
+      if (!localEntry) {
+        queryAlternativesLocal.replaceChildren();
+      } else {
+        queryAlternativesLocal.replaceChildren(
+          toWordSpans(
             uniq([...localEntry.compounds, ...localEntry.baseforms])
               .filter((x) => x)
               .join(", "),
             { className: "" },
-          );
+          )
+        );
+      }
 
       markAvailableEnglishTranslationsInDescendants(queryAlternativesLocal);
     }
@@ -283,9 +287,9 @@ export const updateDictionaryViews = async ({
 
   const setRemote = async () => {
     const remoteCompounds = await new Promise<any[]>(async (resolve) => {
-      queryAlternativesRemote.innerHTML = "";
-      queryAlternativesSwedishDefinition.innerHTML = "";
-      queryAlternativesSwedishDefinition2.innerHTML = "";
+      queryAlternativesRemote.replaceChildren();
+      queryAlternativesSwedishDefinition.replaceChildren();
+      queryAlternativesSwedishDefinition2.replaceChildren();
 
       const resolveEmpty = () => {
         resolve([]);
@@ -330,22 +334,26 @@ export const updateDictionaryViews = async ({
         .filter((x) => x)
         .join(", ");
 
-      queryAlternativesRemote.innerHTML = toWordSpans(wordParts, {
-        className: "",
-      });
+      queryAlternativesRemote.replaceChildren(
+        toWordSpans(wordParts, { className: "" })
+      );
       markAvailableEnglishTranslationsInDescendants(queryAlternativesRemote);
 
-      queryAlternativesSwedishDefinition.innerHTML = toWordSpans(
-        saolCompounds.flatMap((r: any) => r.definitions).join("; "),
-        { className: "" },
+      queryAlternativesSwedishDefinition.replaceChildren(
+        toWordSpans(
+          saolCompounds.flatMap((r: any) => r.definitions).join("; "),
+          { className: "" },
+        )
       );
       markAvailableEnglishTranslationsInDescendants(
         queryAlternativesSwedishDefinition,
       );
 
-      queryAlternativesSwedishDefinition2.innerHTML = toWordSpans(
-        soCompounds.flatMap((r: any) => r.definitions).join("; "),
-        { className: "" },
+      queryAlternativesSwedishDefinition2.replaceChildren(
+        toWordSpans(
+          soCompounds.flatMap((r: any) => r.definitions).join("; "),
+          { className: "" },
+        )
       );
       markAvailableEnglishTranslationsInDescendants(
         queryAlternativesSwedishDefinition2,
@@ -354,16 +362,18 @@ export const updateDictionaryViews = async ({
   };
 
   const setEnglishTranslation = async () => {
-    queryAlternativesEnglishTranslation.innerHTML = "";
+    queryAlternativesEnglishTranslation.replaceChildren();
 
     const translations = await queryEnglishTranslation(cleanedText);
 
     if (queryInput.value === cleanedText) {
-      queryAlternativesEnglishTranslation.innerHTML = toWordSpans(
-        translations.length ? translations.join("; ") : cleanedText,
-        {
-          className: "word-english",
-        },
+      queryAlternativesEnglishTranslation.replaceChildren(
+        toWordSpans(
+          translations.length ? translations.join("; ") : cleanedText,
+          {
+            className: "word-english",
+          },
+        )
       );
     }
   };

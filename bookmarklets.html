@@ -106,23 +106,23 @@
               root
                 .querySelectorAll(".post-user")
                 .forEach(
-                  (x) =>
-                    (x.innerHTML =
-                      x
-                        .querySelector(".post-user-username")
-                        ?.innerText.trim() ?? ""),
+                  (x) => {
+                    const username = x.querySelector(".post-user-username")?.innerText.trim() ?? "";
+                    x.replaceChildren(root.createTextNode(username));
+                  }
                 );
 
               root.querySelectorAll(".post-bbcode-quote").forEach((x) => {
-                x.innerHTML = x.innerText
+                const fragment = root.createDocumentFragment();
+                x.innerText
                   .trim()
                   .split("\n")
-                  .map((x) => {
+                  .forEach((line) => {
                     const p = root.createElement("p");
-                    p.innerText = `>> ${x}`;
-                    return p.outerHTML;
-                  })
-                  .join("\n");
+                    p.innerText = `>> ${line}`;
+                    fragment.appendChild(p);
+                  });
+                x.replaceChildren(fragment);
               });
 
               root.querySelectorAll(".post-heading").forEach(

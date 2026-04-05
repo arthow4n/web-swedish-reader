@@ -54,7 +54,7 @@ const installDictionary = async <T>(
     if (!(queryAlternativesLocal instanceof HTMLElement)) {
       throw new Error("Query alternatives local not found");
     }
-    queryAlternativesLocal.innerHTML = `Error! ${queryAlternativesLocal.innerHTML}`;
+    queryAlternativesLocal.textContent = `Error! ${queryAlternativesLocal.textContent}`;
     throw err;
   }
 };
