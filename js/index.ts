@@ -613,14 +613,10 @@ pasteHtmlButtons.forEach((pasteButton) =>
 
 clearArticleStorageButtons.forEach((clearArticleStorageButton) => {
   clearArticleStorageButton.addEventListener("click", () => {
-    for (let i = 0; i < localStorage.length; i++) {
-      const localStorageKeyName = localStorage.key(i);
-      if (
-        localStorageKeyName &&
-        localStorageKeyName.startsWith(`${articleFromLocalStorageKey}=`)
-      ) {
-        localStorage.removeItem(localStorageKeyName);
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith(`${articleFromLocalStorageKey}=`)) {
+        localStorage.removeItem(key);
       }
-    }
+    });
   });
 });
