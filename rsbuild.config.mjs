@@ -2,13 +2,9 @@ import { defineConfig } from "@rsbuild/core";
 
 export default defineConfig({
   source: {
+    preEntry: ["normalize.css", "sakura.css/css/sakura.css", "./css/index.css"],
     entry: {
-      index: [
-        "normalize.css",
-        "sakura.css/css/sakura.css",
-        "./css/index.css",
-        "./js/index.mjs",
-      ],
+      index: "./js/index.mjs",
     },
   },
   html: {
