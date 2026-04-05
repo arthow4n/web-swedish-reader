@@ -13,9 +13,9 @@
 - Integration tests are located in the `tests/` directory and implemented using Playwright. These tests act as living documents of the expected features. You MUST run them using `npm run test` and ensure they pass before pushing any code changes.
 - Tests should be updated as the coding agent go. TDD is recommended.
 
-## Git
+## Git/GitHub operations
 
-- Begin the commit message with the coding agent name.
+- Begin the commit message and pull request title with the coding agent name.
   - Bad example
     - Add X and do Y
   - Good examples
