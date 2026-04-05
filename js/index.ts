@@ -157,9 +157,12 @@ ${err?.name}: ${err?.message}
 
   if (isMarkdown) {
     const { marked } = await import(/* webpackChunkName: "marked" */ "marked");
+    const { default: DOMPurify } = await import(
+      /* webpackChunkName: "dompurify" */ "dompurify"
+    );
     const html = await marked.parse(text);
     const template = document.createElement("template");
-    template.innerHTML = html;
+    template.innerHTML = DOMPurify.sanitize(html);
 
     const processNodeBottomUp = (node: Node) => {
       if (node.childNodes && node.childNodes.length > 0) {
