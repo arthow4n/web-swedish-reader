@@ -251,7 +251,6 @@ export const queryCompounds = async (word: string) => {
             .join(""),
       );
 
-    console.log(`Compound tree for ${word}: ${joined} => ${JSON.stringify(x)}`);
     return joined;
   };
 
