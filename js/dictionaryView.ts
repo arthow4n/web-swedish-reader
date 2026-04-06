@@ -208,6 +208,8 @@ export const updateDictionaryViews = async ({
     toggleSoButton.onclick = null;
     queryAlternativesLocal.replaceChildren();
     queryAlternativesRemote.replaceChildren();
+    queryAlternativesSwedishDefinition.replaceChildren();
+    queryAlternativesSwedishDefinition2.replaceChildren();
     queryAlternativesEnglishTranslation.replaceChildren();
     saol.removeAttribute("src");
     englishDictionary.removeAttribute("src");
@@ -257,6 +259,15 @@ export const updateDictionaryViews = async ({
     if (shouldSetDictionaryToVisible) {
       setIsDictionaryVisible(true);
     }
+  } else {
+    queryAlternativesLocal.replaceChildren();
+    queryAlternativesRemote.replaceChildren();
+    queryAlternativesSwedishDefinition.replaceChildren();
+    queryAlternativesSwedishDefinition2.replaceChildren();
+    queryAlternativesEnglishTranslation.replaceChildren();
+    saol.dataset.src = "";
+    saol.removeAttribute("src");
+    englishDictionary.removeAttribute("src");
   }
 
   const markAvailableEnglishTranslationsInDescendants = async (
@@ -511,6 +522,13 @@ _pureReaderModeButton.addEventListener("click", () => {
   isPureReaderModeActive = !isPureReaderModeActive;
   updatePureReaderModeClass();
   writeSetting(settingKeysPureReaderMode, isPureReaderModeActive);
+  updateDictionaryViews({
+    text: queryInput.value,
+    cleanup: true,
+    keepQueryAlternatives: false,
+    shouldSetDictionaryToVisible: !isPureReaderModeActive,
+    preventQuery: isPureReaderModeActive,
+  });
 });
 
 updatePureReaderModeClass();
