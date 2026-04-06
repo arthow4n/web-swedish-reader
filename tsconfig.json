@@ -12,11 +12,21 @@
     "jsx": "react-jsx",
     "isolatedModules": true,
     "allowJs": true,
-    "lib": ["dom", "dom.iterable", "esnext", "webworker"],
-    "types": ["node"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext",
+      "webworker"
+    ],
+    "types": [
+      "node"
+    ],
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
     "noEmit": true
-  }
+  },
+  "exclude": [
+    "rsbuild.config.mjs"
+  ]
 }
