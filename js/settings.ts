@@ -48,6 +48,8 @@ export const settingKeys = {
   __settings_saveArticleToLocalStorageCheckbox_checked:
     "__settings_saveArticleToLocalStorageCheckbox_checked",
   __settings_ttsVolume: "__settings_ttsVolume",
+  __settings_openRouterApiKey: "__settings_openRouterApiKey",
+  __settings_openRouterModel: "__settings_openRouterModel",
 };
 
 export const bindCheckboxToSetting = ({
@@ -109,3 +111,15 @@ export const bindTextInputToSetting = ({
     element: input,
   };
 };
+
+export const openRouterApiKeySetting = bindTextInputToSetting({
+  selector: ".settings-openrouter-api-key",
+  settingKey: settingKeys.__settings_openRouterApiKey,
+  defaultValue: "",
+});
+
+export const openRouterModelSetting = bindTextInputToSetting({
+  selector: ".settings-openrouter-model",
+  settingKey: settingKeys.__settings_openRouterModel,
+  defaultValue: "openrouter/auto",
+});

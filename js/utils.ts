@@ -64,3 +64,11 @@ export const sleep = async (ms: number): Promise<void> => {
     }, ms);
   });
 };
+
+export const getContextForElement = (element: HTMLElement): string => {
+  const blockAncestor = element.closest('p, li, h1, h2, h3, h4, h5, h6, article');
+  if (blockAncestor instanceof HTMLElement) {
+    return blockAncestor.innerText;
+  }
+  return element.innerText;
+};

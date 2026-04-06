@@ -244,6 +244,41 @@ body:not(.is-edit-mode) .edit-mode-only {
   display: none;
 }
 
+.control-ai-explain {
+  background-color: #e0f7fa;
+  border: 1px solid #b2ebf2;
+  color: #00838f;
+  font-weight: bold;
+  padding: 0 8px;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+
+.control-ai-explain:active {
+  background-color: #b2ebf2;
+}
+
+.ai-explanation-container {
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-radius: 6px;
+  font-size: 0.95em;
+  margin-bottom: 12px;
+  border-left: 4px solid #00bcd4;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ai-explanation-content p,
+.ai-explanation-content ol,
+.ai-explanation-content ul {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
 .dic {
   flex: 1;
   overflow: hidden;

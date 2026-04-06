@@ -244,7 +244,7 @@ ${name}: ${message}
   main.addEventListener("scroll", onMainScroll);
 };
 
-let currentSelectedWordElementInArticle: HTMLElement | null = null;
+export let currentSelectedWordElementInArticle: HTMLElement | null = null;
 
 const setIsEditMode = ({
   isEditable,

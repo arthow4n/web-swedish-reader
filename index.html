@@ -108,12 +108,17 @@
               Sla
             </button>
             <button type="button" class="control-youglish-swedish">Yo</button>
+            <button type="button" class="control-ai-explain" title="Explain with AI">AI</button>
           </div>
           <label class="control-label label-dics-expand"
             ><span class="control-label-text">+ </span
             ><span><input type="checkbox" checked /></span
           ></label>
         </form>
+        <div class="ai-explanation-container" style="display: none;">
+          <div class="ai-explanation-meta"></div>
+          <div class="ai-explanation-content"></div>
+        </div>
         <div class="dic dic-sub-single">
           <iframe
             class="dic-iframe dic-english"
@@ -186,6 +191,18 @@
               type="checkbox"
               class="settings-english-reader-mode-checkbox"
             />
+          </label>
+        </section>
+        <section>
+          <h3>OpenRouter AI Integration</h3>
+          <label>
+            OpenRouter API Key:
+            <input type="password" class="settings-openrouter-api-key" placeholder="sk-or-v1-..." />
+          </label>
+          <p><small>Get your API key from <a href="https://openrouter.ai/settings/keys" target="_blank">openrouter.ai</a>. The key is stored locally in your browser.</small></p>
+          <label>
+            OpenRouter Model:
+            <input type="text" class="settings-openrouter-model" value="openrouter/auto" />
           </label>
         </section>
         <div><button class="control-settings-close">Close</button></div>
