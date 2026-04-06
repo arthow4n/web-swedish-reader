@@ -90,7 +90,8 @@ article[contenteditable] * {
   }
 
   .pure-reader-mode .reader {
-    grid: 100% / 100%;
+    grid: 1fr auto / 100%;
+    padding-bottom: 40px;
   }
 }
 
@@ -159,6 +160,10 @@ article {
   position: static;
   display: flex;
   justify-content: flex-end;
+}
+
+.control-pure-reader-mode {
+  cursor: pointer;
 }
 
 .query-alternatives-so-expanded .query-alternatives-line {

@@ -89,13 +89,12 @@ if (!(_englishReaderModeCheckBox instanceof HTMLInputElement)) {
 }
 export const englishReaderModeCheckBox = _englishReaderModeCheckBox;
 
-const _pureReaderModeCheckBox = document.querySelector(
-  ".settings-pure-reader-mode-checkbox",
+const _pureReaderModeButton = document.querySelector(
+  ".control-pure-reader-mode",
 );
-if (!(_pureReaderModeCheckBox instanceof HTMLInputElement)) {
-  throw new Error("Pure reader mode checkbox not found");
+if (!(_pureReaderModeButton instanceof HTMLButtonElement)) {
+  throw new Error("Pure reader mode button not found");
 }
-export const pureReaderModeCheckBox = _pureReaderModeCheckBox;
 
 const saol = document.querySelector(".dic-saol");
 if (!(saol instanceof HTMLIFrameElement)) {
@@ -496,17 +495,24 @@ englishReaderModeCheckBox.addEventListener("change", () => {
 });
 
 const pureReaderModeClassName = "pure-reader-mode";
-export const settingKeysPureReaderModeCheckBox = "__settings_pureReaderModeCheckBox_checked";
+export const settingKeysPureReaderMode = "__settings_pureReaderMode_active";
 
-pureReaderModeCheckBox.addEventListener("change", () => {
-  document.body.classList.remove(pureReaderModeClassName);
-  if (pureReaderModeCheckBox.checked) {
+let isPureReaderModeActive = readSetting(settingKeysPureReaderMode, false);
+
+const updatePureReaderModeClass = () => {
+  if (isPureReaderModeActive) {
     document.body.classList.add(pureReaderModeClassName);
+  } else {
+    document.body.classList.remove(pureReaderModeClassName);
   }
-  writeSetting(settingKeysPureReaderModeCheckBox, pureReaderModeCheckBox.checked);
+};
+
+_pureReaderModeButton.addEventListener("click", () => {
+  isPureReaderModeActive = !isPureReaderModeActive;
+  updatePureReaderModeClass();
+  writeSetting(settingKeysPureReaderMode, isPureReaderModeActive);
 });
 
-pureReaderModeCheckBox.checked = readSetting(settingKeysPureReaderModeCheckBox, false);
-if (pureReaderModeCheckBox.checked) {
-  document.body.classList.add(pureReaderModeClassName);
-}
+updatePureReaderModeClass();
+
+export const getIsPureReaderMode = () => isPureReaderModeActive;

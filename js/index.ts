@@ -4,7 +4,7 @@ import {
   showEnglishDictionary,
   updateDictionaryViews,
   englishReaderModeCheckBox,
-  pureReaderModeCheckBox,
+  getIsPureReaderMode,
 } from "./dictionaryView";
 import { wordSelectedInAreaClassName, toWordSpans, debounce } from "./utils";
 import { speakOnClick } from "./tts";
@@ -458,7 +458,7 @@ const handleClick = (
     lastSwedishWordClickEventTarget === target &&
     textToQuery === queryInput.value;
 
-  if (pureReaderModeCheckBox.checked) {
+  if (getIsPureReaderMode()) {
     updateDictionaryViews({
       text: textToQuery,
       cleanup: true,
