@@ -397,10 +397,9 @@ const convertHtmlToMarkdown = async (htmlContent: string): Promise<string> => {
 
 let lastSwedishWordClickEventTarget: HTMLElement | null = null;
 
-const handleSelectionOrClick = (
+const handleClick = (
   target: HTMLElement | null,
-  eventType: string,
-  event: MouseEvent | TouchEvent,
+  event: MouseEvent,
 ) => {
   if (!target) return;
 
@@ -408,29 +407,6 @@ const handleSelectionOrClick = (
     (article.isContentEditable && target.closest("article")) ||
     !target.closest("article,.query-alternatives")
   ) {
-    return;
-  }
-
-  const selection = window.getSelection();
-  const selectedText = selection ? selection.toString().trim() : "";
-
-  if (selectedText && selectedText.includes(" ") && target.closest("article")) {
-    if (eventType !== "click") {
-      speakOnClick(getCurrentSourceLanguage(), selectedText);
-
-      hideDictionaryIfNotOpenedFromCheckBox();
-
-      updateDictionaryViews({
-        text: selectedText,
-        cleanup: true,
-        keepQueryAlternatives: false,
-        shouldSetDictionaryToVisible: true,
-      });
-    }
-    return;
-  }
-
-  if (eventType !== "click") {
     return;
   }
 
@@ -447,8 +423,7 @@ const handleSelectionOrClick = (
     return;
   }
 
-  // Prevent multiple clicks triggered by playwright from mixing up the query
-  // if selection already updated it in this run
+  // Prevent single click from triggering dictionary when user is selecting text.
   const currentSelection = window.getSelection();
   const currentSelectedText = currentSelection
     ? currentSelection.toString().trim()
@@ -515,17 +490,9 @@ const handleSelectionOrClick = (
   lastSwedishWordClickEventTarget = target;
 };
 
-document.addEventListener("mouseup", (event) => {
-  handleSelectionOrClick(event.target as HTMLElement, "mouseup", event);
-});
-
-document.addEventListener("touchend", (event) => {
-  handleSelectionOrClick(event.target as HTMLElement, "touchend", event);
-});
-
 document.addEventListener("click", (event) => {
   const target = event.target as HTMLElement;
-  handleSelectionOrClick(target, "click", event);
+  handleClick(target, event);
 });
 
 clearAndEditButtons.forEach((x) =>
