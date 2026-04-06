@@ -97,9 +97,9 @@ export const getContextForElement = (element: HTMLElement): string => {
 
 ### 3. OpenRouter Service (`js/llm.ts`)
 
-Create a new file `js/llm.ts` to handle the API calls. Note: The OpenRouter quickstart suggests using `@openrouter/sdk`. Since `web-swedish-reader` uses Rsbuild, you can install it via npm or just use native `fetch`.
+Create a new file `js/llm.ts` to handle the API calls. We will use native `fetch` to keep dependencies minimal.
 
-**Option A: Using native `fetch` (Simpler, fewer dependencies):**
+**Prompting Strategy:** It's critical to separate the `system` instructions from the `user` input context. The system prompt sets the persona and output constraints, while the user prompt supplies the dynamic content.
 
 ```typescript
 import { openRouterApiKeySetting, openRouterModelSetting } from "./settings";
@@ -112,28 +112,30 @@ export const fetchAIExplanation = async (word: string, context: string): Promise
     throw new Error("OpenRouter API Key not set. Please add it in settings.");
   }
 
-  const systemPrompt = `You are an expert Swedish language tutor.
-The user is reading a Swedish text. They clicked on the word: "${word}".
-The surrounding context is: "${context}".
+  const systemPrompt = `You are an expert Swedish language tutor. Your task is to explain a Swedish word chosen by the user, specifically focusing on its meaning within the provided sentence context.
 
-Please provide:
-1. The meaning of the word in this specific context (in English).
-2. The base form (lemma) of the word.
-3. If it's a compound word, break it down.
-4. Brief grammatical info (e.g., gender, tense).
-Keep the response very concise and formatted in Markdown.`;
+Please provide your response strictly in the following Markdown format, keeping explanations concise:
+1. **Meaning in Context**: (English translation of the word as used here)
+2. **Base Form**: (The lemma of the word)
+3. **Compound Breakdown**: (If it's a compound word, break it down. If not, say "N/A")
+4. **Grammar Info**: (Brief details like gender, definite/indefinite, tense, or part of speech)`;
+
+  const userPrompt = `I am reading a Swedish text and clicked on the word: "${word}".\nThe surrounding sentence context is: "${context}".\n\nPlease explain it.`;
 
   const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${apiKey}`,
-      "HTTP-Referer": window.location.href,
-      "X-OpenRouter-Title": "web-swedish-reader",
+      "HTTP-Referer": window.location.href, // Recommended by OpenRouter for ranking
+      "X-OpenRouter-Title": "web-swedish-reader", // Recommended by OpenRouter
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
       model: model,
-      messages: [{ role: "user", content: systemPrompt }],
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt }
+      ],
     })
   });
 
@@ -210,11 +212,57 @@ aiExplainButton?.addEventListener("click", async () => {
 });
 ```
 
-### 5. Final Polish
+### 5. Final Polish & Responsive CSS (`css/index.css`)
+
+To ensure the "AI Explain" button and output container look excellent on both mobile and desktop screens, we need robust, responsive CSS.
+
+**Button Styling:** The AI button inside the `.form-dics-query` `.flex` container needs to stand out without breaking the layout on narrow screens (like an iPhone 13).
+
+```css
+/* Update styling for the AI button to make it visually distinct */
+.control-ai-explain {
+  background-color: #e0f7fa;
+  border: 1px solid #b2ebf2;
+  color: #00838f;
+  font-weight: bold;
+  padding: 0 8px; /* Slightly wider padding for tap target on mobile */
+  margin-left: 4px; /* Space from other buttons */
+  flex-shrink: 0; /* Prevent shrinking on small screens */
+}
+
+.control-ai-explain:active {
+  background-color: #b2ebf2;
+}
+```
+
+**Container Styling:** The explanation container should scale fluidly and provide clear structure.
+
+```css
+/* AI Explanation Box */
+.ai-explanation-container {
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-radius: 6px;
+  font-size: 0.95em;
+  margin-bottom: 12px;
+  border-left: 4px solid #00bcd4; /* Accent color to indicate AI origin */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  width: 100%; /* Ensure it spans the full width of the aside column */
+  box-sizing: border-box; /* Prevent padding from overflowing the container */
+}
+
+/* Ensure markdown outputs wrap correctly on small screens */
+.ai-explanation-content p,
+.ai-explanation-content ol,
+.ai-explanation-content ul {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  line-height: 1.5;
+  word-wrap: break-word; /* Prevent long words from breaking layout */
+}
+```
 
 - **Dependencies:** The application already includes `marked` and `dompurify` which are perfect for securely rendering the Markdown response from the OpenRouter API. Use them in the LLM response renderer.
-- **Dependencies (Optional):** If using `@openrouter/sdk` instead of `fetch`, add it via `npm install @openrouter/sdk`. (However, raw fetch is highly recommended here for bundle size and simplicity).
-- **CSS:** Add basic styling for `.ai-explanation-container` so it visually fits between the static dictionary alternatives and the iframes.
 
 ## Summary
 
