@@ -9,6 +9,10 @@ import { wordSelectedInAreaClassName, toWordSpans, debounce } from "./utils";
 import { speakOnClick } from "./tts";
 import { getCurrentSourceLanguage } from "./dictionaryDatabase";
 import { bindCheckboxToSetting, settingKeys } from "./settings";
+import { marked } from "marked";
+import DOMPurify from "dompurify";
+import TurndownService from "turndown";
+import { gfm } from "turndown-plugin-gfm";
 
 navigator.serviceWorker.register("./serviceWorker.js", {
   scope: "./",
@@ -157,10 +161,6 @@ ${name}: ${message}
   article.dataset.isMarkdown = isMarkdown ? "true" : "false";
 
   if (isMarkdown) {
-    const { marked } = await import(/* webpackChunkName: "marked" */ "marked");
-    const { default: DOMPurify } = await import(
-      /* webpackChunkName: "dompurify" */ "dompurify"
-    );
     const html = await marked.parse(text);
     const template = document.createElement("template");
     const sanitizedFrag = DOMPurify.sanitize(html, {
@@ -293,19 +293,6 @@ const setIsEditMode = ({
 };
 
 const convertHtmlToMarkdown = async (htmlContent: string): Promise<string> => {
-  const DOMPurifyModule = import(
-    /* webpackChunkName: "dompurify" */ "dompurify"
-  );
-  const TurndownServiceModule = import(
-    /* webpackChunkName: "turndown" */ "turndown"
-  );
-  const TurndownPluginGfmModule = import(
-    /* webpackChunkName: "turndown-plugin-gfm" */ "turndown-plugin-gfm"
-  );
-  const { default: DOMPurify } = await DOMPurifyModule;
-  const { default: TurndownService } = await TurndownServiceModule;
-  const { gfm } = await TurndownPluginGfmModule;
-
   const cleanHtml = DOMPurify.sanitize(htmlContent);
 
   const turndownService = new TurndownService({
