@@ -89,6 +89,14 @@ if (!(_englishReaderModeCheckBox instanceof HTMLInputElement)) {
 }
 export const englishReaderModeCheckBox = _englishReaderModeCheckBox;
 
+const _pureReaderModeCheckBox = document.querySelector(
+  ".settings-pure-reader-mode-checkbox",
+);
+if (!(_pureReaderModeCheckBox instanceof HTMLInputElement)) {
+  throw new Error("Pure reader mode checkbox not found");
+}
+export const pureReaderModeCheckBox = _pureReaderModeCheckBox;
+
 const saol = document.querySelector(".dic-saol");
 if (!(saol instanceof HTMLIFrameElement)) {
   throw new Error("SAOL iframe not found");
@@ -180,11 +188,13 @@ export const updateDictionaryViews = async ({
   cleanup,
   keepQueryAlternatives,
   shouldSetDictionaryToVisible,
+  preventQuery,
 }: {
   text: string;
   cleanup: boolean;
   keepQueryAlternatives: boolean;
   shouldSetDictionaryToVisible: boolean;
+  preventQuery?: boolean;
 }) => {
   const cleanedText = (
     cleanup ? text.replace(/(^[^\p{L}]+|[^\p{L}]+$)/gu, "") : text
@@ -233,7 +243,7 @@ export const updateDictionaryViews = async ({
       "query-alternatives-so-expanded",
     );
   };
-  {
+  if (!preventQuery) {
     const next = `https://svenska.se/tre/?sok=${encodedText}`;
     saol.dataset.src = next;
 
@@ -386,9 +396,9 @@ export const updateDictionaryViews = async ({
   };
 
   Promise.all([
-    !keepQueryAlternatives && setLocal().catch(console.error),
-    !keepQueryAlternatives && setRemote().catch(console.error),
-    setEnglishTranslation().catch(console.error),
+    !preventQuery && !keepQueryAlternatives && setLocal().catch(console.error),
+    !preventQuery && !keepQueryAlternatives && setRemote().catch(console.error),
+    !preventQuery && setEnglishTranslation().catch(console.error),
   ]).then(() => {
     if (queryInput.value === cleanedText && !keepQueryAlternatives) {
       queryAlternativesContainer.scrollTo(0, 0);
@@ -484,3 +494,19 @@ englishReaderModeCheckBox.addEventListener("change", () => {
     document.body.classList.add(englishReaderModeClassName);
   }
 });
+
+const pureReaderModeClassName = "pure-reader-mode";
+export const settingKeysPureReaderModeCheckBox = "__settings_pureReaderModeCheckBox_checked";
+
+pureReaderModeCheckBox.addEventListener("change", () => {
+  document.body.classList.remove(pureReaderModeClassName);
+  if (pureReaderModeCheckBox.checked) {
+    document.body.classList.add(pureReaderModeClassName);
+  }
+  writeSetting(settingKeysPureReaderModeCheckBox, pureReaderModeCheckBox.checked);
+});
+
+pureReaderModeCheckBox.checked = readSetting(settingKeysPureReaderModeCheckBox, false);
+if (pureReaderModeCheckBox.checked) {
+  document.body.classList.add(pureReaderModeClassName);
+}

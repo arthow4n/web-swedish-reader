@@ -1,0 +1,23 @@
+
+> web-swedish-reader@1.0.0 dev
+> rsbuild dev
+
+Rsbuild v1.7.5
+
+  ➜  Local:    http://localhost:3000/
+  ➜  Network:  http://192.168.0.2:3000/
+
+start   build started...
+ready   built in 0.25 s (worker)
+ready   built in 0.63 s (web)
+start   building removed ./bookmarklets.html
+ready   built in 0.06 s (web)
+start   building index.html
+ready   built in 0.12 s (web)
+start   building js/dictionaryView.ts
+ready   built in 0.07 s (web)
+start   building js/index.ts
+ready   built in 0.05 s (web)
+start   building css/index.css
+ready   built in 0.05 s (web)
+error   [browser] Uncaught (in promise) TypeError: Failed to fetch dynamically imported module: http://localhost:3000/web-swedish-reader-data/folkets-compound/folkets-compound.meta.mjs

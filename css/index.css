@@ -73,6 +73,11 @@ article[contenteditable] * {
     grid: 50% 50% / 100%;
     padding: 16px;
   }
+
+  .pure-reader-mode.is-dictionary-visible .reader {
+    grid: 1fr auto / 100%;
+    padding: 16px 16px 40px;
+  }
 }
 
 @media (min-width: 768px) {
@@ -82,6 +87,10 @@ article[contenteditable] * {
     padding: 8px 32px;
     max-width: 1280px;
     margin: auto;
+  }
+
+  .pure-reader-mode .reader {
+    grid: 100% / 100%;
   }
 }
 
@@ -140,6 +149,16 @@ article {
   position: absolute;
   top: 0;
   right: 0;
+}
+
+.pure-reader-mode .query-alternatives {
+  display: none;
+}
+
+.pure-reader-mode .query-alternatives-floating-button-row {
+  position: static;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .query-alternatives-so-expanded .query-alternatives-line {
@@ -274,6 +293,14 @@ body:not(.is-edit-mode) .edit-mode-only {
 
 .dic-sub-single.active ~ .dic {
   display: none;
+}
+
+.pure-reader-mode .dic {
+  display: none !important;
+}
+
+.pure-reader-mode .label-dics-expand {
+  display: none !important;
 }
 
 .dic-iframe {

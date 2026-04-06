@@ -4,6 +4,7 @@ import {
   showEnglishDictionary,
   updateDictionaryViews,
   englishReaderModeCheckBox,
+  pureReaderModeCheckBox,
 } from "./dictionaryView";
 import { wordSelectedInAreaClassName, toWordSpans, debounce } from "./utils";
 import { speakOnClick } from "./tts";
@@ -457,21 +458,31 @@ const handleClick = (
     lastSwedishWordClickEventTarget === target &&
     textToQuery === queryInput.value;
 
-  if (shouldGoToDeeperAlternative) {
+  if (pureReaderModeCheckBox.checked) {
     updateDictionaryViews({
       text: textToQuery,
       cleanup: true,
       keepQueryAlternatives: false,
-      shouldSetDictionaryToVisible: true,
+      shouldSetDictionaryToVisible: false,
+      preventQuery: true,
     });
   } else {
-    updateDictionaryViews({
-      text: textToQuery,
-      cleanup: true,
-      keepQueryAlternatives: isInsideAlternatives,
-      shouldSetDictionaryToVisible:
-        isInsideAlternatives && lastSwedishWordClickEventTarget === target,
-    });
+    if (shouldGoToDeeperAlternative) {
+      updateDictionaryViews({
+        text: textToQuery,
+        cleanup: true,
+        keepQueryAlternatives: false,
+        shouldSetDictionaryToVisible: true,
+      });
+    } else {
+      updateDictionaryViews({
+        text: textToQuery,
+        cleanup: true,
+        keepQueryAlternatives: isInsideAlternatives,
+        shouldSetDictionaryToVisible:
+          isInsideAlternatives && lastSwedishWordClickEventTarget === target,
+      });
+    }
   }
 
   lastSwedishWordClickEventTarget = target;
