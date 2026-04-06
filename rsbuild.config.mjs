@@ -2,9 +2,9 @@ import { defineConfig } from "@rsbuild/core";
 import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
 
 export default defineConfig({
-  plugins: [pluginTypeCheck()],
   environments: {
     web: {
+      plugins: [pluginTypeCheck()],
       source: {
         preEntry: [
           "normalize.css",
