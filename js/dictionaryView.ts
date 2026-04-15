@@ -234,7 +234,7 @@ export const updateDictionaryViews = async ({
     );
   };
   {
-    const next = `https://svenska.se/tre/?sok=${encodedText}`;
+    const next = `https://svenska.se/?q=${encodedText}&exactMatch=true&activeTab=alla`;
     saol.dataset.src = next;
 
     if (checkIsDictionaryVisible() && getCurrentSourceLanguage() === "sv") {
