@@ -384,7 +384,10 @@ const convertHtmlToMarkdown = async (htmlContent: string): Promise<string> => {
 
 let lastSwedishWordClickEventTarget: HTMLElement | null = null;
 
-const handleClick = (target: HTMLElement | null, event: MouseEvent) => {
+const handleClick = (
+  target: HTMLElement | null,
+  event: MouseEvent,
+) => {
   if (!target) return;
 
   if (
