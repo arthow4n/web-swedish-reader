@@ -303,7 +303,11 @@ export const updateDictionaryViews = async ({
         resolve([]);
       };
 
-      if (location.origin !== "https://arthow4n.github.io") {
+      if (
+        location.origin !== "https://arthow4n.github.io" &&
+        location.hostname !== "localhost" &&
+        location.hostname !== "127.0.0.1"
+      ) {
         resolveEmpty();
         return;
       }
@@ -334,13 +338,16 @@ export const updateDictionaryViews = async ({
         (r: any) => r.upstream === "so",
       );
 
-      const wordParts = uniq([
+      const parts = uniq([
         ...saolCompounds.map((r: any) => r.baseform),
         ...saolCompounds.map((r: any) => r.compoundsLemma.join("+")),
         ...saolCompounds.map((r: any) => r.compounds.join("+")),
-      ])
-        .filter((x) => x)
-        .join(", ");
+      ]).filter((x) => x);
+
+      const partsWithoutOriginal = parts.filter((x) => x !== cleanedText);
+      partsWithoutOriginal.push(cleanedText);
+
+      const wordParts = partsWithoutOriginal.join(", ");
 
       queryAlternativesRemote.replaceChildren(
         toWordSpans(wordParts, { className: "" }),
