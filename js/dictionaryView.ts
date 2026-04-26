@@ -488,7 +488,7 @@ englishReaderModeCheckBox.addEventListener("change", () => {
 bindTextInputToSetting({
   selector: ".settings-dictionary-offset-mobile",
   settingKey: settingKeys.__settings_dictionary_offset_mobile,
-  defaultValue: "515",
+  defaultValue: "415",
   onChange: (value) => {
     document.documentElement.style.setProperty(
       "--dic-saol-offset-mobile",
