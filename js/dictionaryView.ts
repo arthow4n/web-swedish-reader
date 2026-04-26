@@ -484,3 +484,61 @@ englishReaderModeCheckBox.addEventListener("change", () => {
     document.body.classList.add(englishReaderModeClassName);
   }
 });
+
+bindTextInputToSetting({
+  selector: ".settings-dictionary-offset-mobile",
+  settingKey: settingKeys.__settings_dictionary_offset_mobile,
+  defaultValue: "515",
+  onChange: (value) => {
+    document.documentElement.style.setProperty(
+      "--dic-saol-offset-mobile",
+      `${value}px`,
+    );
+  },
+});
+document.documentElement.style.setProperty(
+  "--dic-saol-offset-mobile",
+  `${readSetting(settingKeys.__settings_dictionary_offset_mobile, "515")}px`,
+);
+
+bindTextInputToSetting({
+  selector: ".settings-dictionary-offset-tablet",
+  settingKey: settingKeys.__settings_dictionary_offset_tablet,
+  defaultValue: "470",
+  onChange: (value) => {
+    document.documentElement.style.setProperty(
+      "--dic-saol-offset-tablet",
+      `${value}px`,
+    );
+  },
+});
+document.documentElement.style.setProperty(
+  "--dic-saol-offset-tablet",
+  `${readSetting(settingKeys.__settings_dictionary_offset_tablet, "470")}px`,
+);
+
+bindTextInputToSetting({
+  selector: ".settings-dictionary-offset-desktop",
+  settingKey: settingKeys.__settings_dictionary_offset_desktop,
+  defaultValue: "420",
+  onChange: (value) => {
+    document.documentElement.style.setProperty(
+      "--dic-saol-offset-desktop",
+      `${value}px`,
+    );
+  },
+});
+document.documentElement.style.setProperty(
+  "--dic-saol-offset-desktop",
+  `${readSetting(settingKeys.__settings_dictionary_offset_desktop, "420")}px`,
+);
+
+const resetButton = document.querySelector(".control-settings-reset");
+if (resetButton instanceof HTMLButtonElement) {
+  resetButton.addEventListener("click", () => {
+    Object.values(settingKeys).forEach((key) => {
+      localStorage.removeItem(key);
+    });
+    location.reload();
+  });
+}

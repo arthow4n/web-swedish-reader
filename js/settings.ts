@@ -48,6 +48,9 @@ export const settingKeys = {
   __settings_saveArticleToLocalStorageCheckbox_checked:
     "__settings_saveArticleToLocalStorageCheckbox_checked",
   __settings_ttsVolume: "__settings_ttsVolume",
+  __settings_dictionary_offset_mobile: "__settings_dictionary_offset_mobile",
+  __settings_dictionary_offset_tablet: "__settings_dictionary_offset_tablet",
+  __settings_dictionary_offset_desktop: "__settings_dictionary_offset_desktop",
 };
 
 export const bindCheckboxToSetting = ({
