@@ -282,7 +282,7 @@ body:not(.is-edit-mode) .edit-mode-only {
 }
 
 :root {
-  --dic-saol-offset-mobile: 515px;
+  --dic-saol-offset-mobile: 415px;
   --dic-saol-offset-tablet: 470px;
   --dic-saol-offset-desktop: 420px;
 }
