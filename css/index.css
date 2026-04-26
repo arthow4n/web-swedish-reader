@@ -281,24 +281,30 @@ body:not(.is-edit-mode) .edit-mode-only {
   height: 100%;
 }
 
+:root {
+  --dic-saol-offset-mobile: 515px;
+  --dic-saol-offset-tablet: 470px;
+  --dic-saol-offset-desktop: 420px;
+}
+
 /* Known issue: These magic numbers don't work well when the page is zoomed in. */
 .dic-saol {
   /* Magic number for skipping the website header */
-  margin-top: -515px;
-  height: calc(100% + 515px);
+  margin-top: calc(var(--dic-saol-offset-mobile) * -1);
+  height: calc(100% + var(--dic-saol-offset-mobile));
 }
 
 @media screen and (min-width: 473px) {
   .dic-saol {
-    margin-top: -470px;
-    height: calc(100% + 470px);
+    margin-top: calc(var(--dic-saol-offset-tablet) * -1);
+    height: calc(100% + var(--dic-saol-offset-tablet));
   }
 }
 
 @media screen and (min-width: 943px) {
   .dic-saol {
-    margin-top: -420px;
-    height: calc(100% + 420px);
+    margin-top: calc(var(--dic-saol-offset-desktop) * -1);
+    height: calc(100% + var(--dic-saol-offset-desktop));
   }
 }
 
