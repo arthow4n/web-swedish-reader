@@ -209,6 +209,7 @@ ${name}: ${message}
     article.appendChild(template.content);
   } else {
     article.replaceChildren();
+    const fragment = document.createDocumentFragment();
     text.split("\n").forEach((line) => {
       const p = document.createElement("p");
       line
@@ -220,8 +221,9 @@ ${name}: ${message}
           }
           p.appendChild(toWordSpans(x, { className: "" }));
         });
-      article.appendChild(p);
+      fragment.appendChild(p);
     });
+    article.appendChild(fragment);
   }
 
   const url = new URL(location.href);
@@ -384,10 +386,7 @@ const convertHtmlToMarkdown = async (htmlContent: string): Promise<string> => {
 
 let lastSwedishWordClickEventTarget: HTMLElement | null = null;
 
-const handleClick = (
-  target: HTMLElement | null,
-  event: MouseEvent,
-) => {
+const handleClick = (target: HTMLElement | null, event: MouseEvent) => {
   if (!target) return;
 
   if (
