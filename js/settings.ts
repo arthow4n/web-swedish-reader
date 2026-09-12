@@ -1,3 +1,6 @@
+import { set } from "idb-keyval";
+import { dataStore } from "./storage";
+
 const settingsButton = document.querySelector(".control-settings");
 if (!(settingsButton instanceof HTMLElement)) {
   throw new Error("Settings button not found");
@@ -22,6 +25,9 @@ settingsButton.addEventListener("click", () => {
 
 export const writeSetting = (key: string, value: any) => {
   localStorage.setItem(key, JSON.stringify(value));
+  set(key, JSON.stringify(value), dataStore).catch((err) => {
+    console.error(`Failed to write setting ${key} to IndexedDB:`, err);
+  });
 };
 
 export const readSetting = <T>(key: string, defaultValue: T): T => {

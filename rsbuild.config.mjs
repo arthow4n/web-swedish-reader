@@ -15,6 +15,11 @@ export default defineConfig({
           index: "./js/index.ts",
         },
       },
+      performance: {
+        chunkSplit: {
+          strategy: "all-in-one",
+        },
+      },
       html: {
         template: "./index.html",
       },

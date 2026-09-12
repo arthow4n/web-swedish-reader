@@ -13,6 +13,18 @@ import { marked } from "marked";
 import DOMPurify from "dompurify";
 import TurndownService from "turndown";
 import { gfm } from "turndown-plugin-gfm";
+import {
+  articleFromLocalStorageKey,
+  mainScrollQueryKey,
+  saveArticleToStorage,
+  getArticleFromStorage,
+  clearAllArticlesFromStorage,
+  saveScrollPosition,
+  getScrollPosition,
+  removeScrollPosition,
+  pruneScrollPositions,
+  migrateLocalStorageToIndexedDB,
+} from "./storage";
 
 navigator.serviceWorker.register("./serviceWorker.js", {
   scope: "./",
@@ -50,10 +62,7 @@ if (!(article instanceof HTMLElement)) {
   throw new Error("Article element not found");
 }
 
-const articleFromLocalStorageKey = "articleFromLocalStorageKey";
-const mainScrollQueryKey = "mainScrollId";
-
-const setMainScrollState = (num: number) => {
+const setMainScrollState = async (num: number) => {
   const url = new URL(location.href);
   let storageId = url.searchParams.get(mainScrollQueryKey);
 
@@ -62,15 +71,10 @@ const setMainScrollState = (num: number) => {
       storageId = crypto.randomUUID();
       url.searchParams.set(mainScrollQueryKey, storageId);
       history.replaceState({}, "", url.href);
-      Object.keys(localStorage)
-        .filter((k) => k.startsWith(`${mainScrollQueryKey}=`))
-        .sort()
-        .reverse()
-        .slice(2048)
-        .forEach((key) => localStorage.removeItem(key));
+      await pruneScrollPositions();
     }
 
-    localStorage.setItem(`${mainScrollQueryKey}=${storageId}`, num.toString());
+    await saveScrollPosition({ storageId, position: num });
     return;
   }
 
@@ -78,7 +82,7 @@ const setMainScrollState = (num: number) => {
     return;
   }
 
-  localStorage.removeItem(`${mainScrollQueryKey}=${storageId}`);
+  await removeScrollPosition({ storageId });
   history.replaceState({}, "", url.href);
 };
 
@@ -118,14 +122,11 @@ const updateArticle = async ({
       newUrl.hash = "";
 
       try {
-        localStorage.setItem(
-          `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}`,
-          input,
-        );
-        localStorage.setItem(
-          `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}.isMarkdown`,
-          isMarkdown.toString(),
-        );
+        await saveArticleToStorage({
+          key: articleFromLocalStorageKeyQuery,
+          text: input,
+          isMarkdown,
+        });
       } catch (err: unknown) {
         console.error(err);
         const name = err instanceof Error ? err.name : "Error";
@@ -227,22 +228,16 @@ ${name}: ${message}
   }
 
   const url = new URL(location.href);
-  if (!loadScrollPosition) {
+  let scrollPosition = 0;
+  const scrollStorageId = url.searchParams.get(mainScrollQueryKey);
+  if (loadScrollPosition && scrollStorageId) {
+    scrollPosition = await getScrollPosition({ storageId: scrollStorageId });
+  } else if (!loadScrollPosition) {
     url.searchParams.delete(mainScrollQueryKey);
     history.replaceState({}, "", url.href);
   }
 
-  main.scrollTo(
-    0,
-    loadScrollPosition
-      ? parseInt(
-          localStorage.getItem(
-            `${mainScrollQueryKey}=${url.searchParams.get(mainScrollQueryKey)}`,
-          ) || "0",
-          10,
-        ) || 0
-      : 0,
-  );
+  main.scrollTo(0, scrollPosition);
   main.addEventListener("scroll", onMainScroll);
 };
 
@@ -325,6 +320,8 @@ const convertHtmlToMarkdown = async (htmlContent: string): Promise<string> => {
 };
 
 (async () => {
+  await migrateLocalStorageToIndexedDB();
+
   // dictionaryQuery=... is mainly for jumping directly to the dictionary view
   // when loading web-swedish-reader from browser custom search engine.
   const dictionaryQuery = new URL(location.href).searchParams.get(
@@ -342,16 +339,19 @@ const convertHtmlToMarkdown = async (htmlContent: string): Promise<string> => {
   const articleFromLocalStorageKeyQuery = new URL(
     location.href,
   ).searchParams.get(articleFromLocalStorageKey);
-  const textFromLocalStorage =
-    articleFromLocalStorageKeyQuery &&
-    localStorage.getItem(
-      `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}`,
-    );
-  const isMarkdownFromLocalStorage =
-    articleFromLocalStorageKeyQuery &&
-    localStorage.getItem(
-      `${articleFromLocalStorageKey}=${articleFromLocalStorageKeyQuery}.isMarkdown`,
-    ) === "true";
+
+  let textFromStorage: string | null = null;
+  let isMarkdownFromStorage = false;
+
+  if (articleFromLocalStorageKeyQuery) {
+    const stored = await getArticleFromStorage({
+      key: articleFromLocalStorageKeyQuery,
+    });
+    if (stored) {
+      textFromStorage = stored.text;
+      isMarkdownFromStorage = stored.isMarkdown;
+    }
+  }
 
   const hashQuery = new URLSearchParams(location.hash.slice(1));
   let textFromHash = hashQuery.get("text");
@@ -363,13 +363,13 @@ const convertHtmlToMarkdown = async (htmlContent: string): Promise<string> => {
     isMarkdownFromHash = true;
   }
 
-  const articleText = textFromLocalStorage || textFromHash;
-  const isMarkdown = !!(textFromLocalStorage
-    ? isMarkdownFromLocalStorage
+  const articleText = textFromStorage || textFromHash;
+  const isMarkdown = !!(textFromStorage
+    ? isMarkdownFromStorage
     : isMarkdownFromHash);
 
   if (articleText) {
-    updateArticle({
+    await updateArticle({
       input: articleText,
       loadScrollPosition: true,
       updateArticleFromLocalStorageKeyQuery: !articleFromLocalStorageKeyQuery,
@@ -634,11 +634,7 @@ pasteHtmlButtons.forEach((pasteButton) =>
 );
 
 clearArticleStorageButtons.forEach((clearArticleStorageButton) => {
-  clearArticleStorageButton.addEventListener("click", () => {
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith(`${articleFromLocalStorageKey}=`)) {
-        localStorage.removeItem(key);
-      }
-    });
+  clearArticleStorageButton.addEventListener("click", async () => {
+    await clearAllArticlesFromStorage();
   });
 });

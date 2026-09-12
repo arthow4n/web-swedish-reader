@@ -10,6 +10,8 @@ import {
   settingKeys,
   writeSetting,
 } from "./settings";
+import { del } from "idb-keyval";
+import { dataStore } from "./storage";
 
 const _queryInput = document.querySelector(".dics-query-input");
 if (!(_queryInput instanceof HTMLInputElement)) {
@@ -535,10 +537,15 @@ document.documentElement.style.setProperty(
 
 const resetButton = document.querySelector(".control-settings-reset");
 if (resetButton instanceof HTMLButtonElement) {
-  resetButton.addEventListener("click", () => {
-    Object.values(settingKeys).forEach((key) => {
-      localStorage.removeItem(key);
-    });
+  resetButton.addEventListener("click", async () => {
+    await Promise.all(
+      Object.values(settingKeys).map(async (key) => {
+        localStorage.removeItem(key);
+        try {
+          await del(key, dataStore);
+        } catch {}
+      }),
+    );
     location.reload();
   });
 }

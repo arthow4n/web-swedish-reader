@@ -273,4 +273,171 @@ test.describe("Web Swedish Reader Core Flows", () => {
     const strong = page.locator("article strong");
     await expect(strong).toHaveText("fet");
   });
+
+  test("save article to IndexedDB storage instead of local storage", async ({
+    page,
+    context,
+  }: {
+    page: Page;
+    context: BrowserContext;
+  }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+
+    // Open settings and enable saving article to storage
+    await page.click(".control-settings");
+    const saveCheckbox = page.locator(
+      ".settings-save-article-to-local-storage-checkbox",
+    );
+    await saveCheckbox.check();
+    await page.click(".settings-modal .control-settings-close:visible");
+
+    // Paste text
+    const text = "En sparad text i IndexedDB.";
+    await page.evaluate(
+      (val: string) => navigator.clipboard.writeText(val),
+      text,
+    );
+    await page.click(".control-paste");
+
+    // URL should now contain articleFromLocalStorageKey
+    await expect(page).toHaveURL(/articleFromLocalStorageKey=/);
+
+    // Get the key from URL
+    const url = new URL(page.url());
+    const storageKey = url.searchParams.get("articleFromLocalStorageKey");
+    expect(storageKey).toBeTruthy();
+
+    // Verify it is NOT saved in localStorage
+    const localVal = await page.evaluate(
+      (key: string) =>
+        localStorage.getItem(`articleFromLocalStorageKey=${key}`),
+      storageKey!,
+    );
+    expect(localVal).toBeNull();
+
+    // Verify it IS saved in IndexedDB
+    const idbVal = await page.evaluate(async (key: string) => {
+      return new Promise<string | null>((resolve, reject) => {
+        const req = indexedDB.open("wsr-data");
+        req.onerror = () => reject(req.error);
+        req.onsuccess = () => {
+          const db = req.result;
+          const tx = db.transaction("wsr-data", "readonly");
+          const store = tx.objectStore("wsr-data");
+          const getReq = store.get(`articleFromLocalStorageKey=${key}`);
+          getReq.onsuccess = () => resolve(getReq.result ?? null);
+          getReq.onerror = () => reject(getReq.error);
+        };
+      });
+    }, storageKey!);
+    expect(idbVal).toBe(text);
+
+    // Reload the page and ensure article is retrieved from IndexedDB
+    await page.reload();
+    await expect(page.locator("article")).toContainText(
+      "En sparad text i IndexedDB.",
+    );
+  });
+
+  test("automatically migrate legacy article from localStorage to IndexedDB", async ({
+    page,
+  }: {
+    page: Page;
+  }) => {
+    const legacyKey = "legacy_test_key_123";
+    const legacyText = "Detta är en gammal text från localStorage.";
+
+    // Seed legacy article data into localStorage before loading page
+    await page.evaluate(
+      ({ key, text }: { key: string; text: string }) => {
+        localStorage.setItem(`articleFromLocalStorageKey=${key}`, text);
+        localStorage.setItem(
+          `articleFromLocalStorageKey=${key}.isMarkdown`,
+          "false",
+        );
+      },
+      { key: legacyKey, text: legacyText },
+    );
+
+    // Navigate to page with the legacy article key
+    await page.goto(`/?articleFromLocalStorageKey=${legacyKey}`);
+
+    // Verify the article text is displayed
+    await expect(page.locator("article")).toContainText(legacyText);
+
+    // Verify it was removed from localStorage (migrated)
+    const inLocalStorage = await page.evaluate(
+      (key: string) =>
+        localStorage.getItem(`articleFromLocalStorageKey=${key}`),
+      legacyKey,
+    );
+    expect(inLocalStorage).toBeNull();
+
+    // Verify it now exists in IndexedDB
+    const inIndexedDB = await page.evaluate(async (key: string) => {
+      return new Promise<string | null>((resolve, reject) => {
+        const req = indexedDB.open("wsr-data");
+        req.onerror = () => reject(req.error);
+        req.onsuccess = () => {
+          const db = req.result;
+          const tx = db.transaction("wsr-data", "readonly");
+          const store = tx.objectStore("wsr-data");
+          const getReq = store.get(`articleFromLocalStorageKey=${key}`);
+          getReq.onsuccess = () => resolve(getReq.result ?? null);
+          getReq.onerror = () => reject(getReq.error);
+        };
+      });
+    }, legacyKey);
+    expect(inIndexedDB).toBe(legacyText);
+  });
+
+  test("clear article storage deletes data from IndexedDB", async ({
+    page,
+    context,
+  }: {
+    page: Page;
+    context: BrowserContext;
+  }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+
+    // Enable storage and save an article
+    await page.click(".control-settings");
+    await page
+      .locator(".settings-save-article-to-local-storage-checkbox")
+      .check();
+    await page.click(".settings-modal .control-settings-close:visible");
+
+    await page.evaluate(() =>
+      navigator.clipboard.writeText("Text som ska raderas."),
+    );
+    await page.click(".control-paste");
+
+    await expect(page).toHaveURL(/articleFromLocalStorageKey=/);
+
+    const url = new URL(page.url());
+    const storageKey = url.searchParams.get("articleFromLocalStorageKey");
+    expect(storageKey).toBeTruthy();
+
+    // Open settings and click Clear article storage
+    await page.click(".control-settings");
+    await page.click(".control-settings-clear-article-storage-checkbox");
+    await page.click(".settings-modal .control-settings-close:visible");
+
+    // Verify it was deleted from IndexedDB
+    const inIndexedDB = await page.evaluate(async (key: string) => {
+      return new Promise<string | null>((resolve, reject) => {
+        const req = indexedDB.open("wsr-data");
+        req.onerror = () => reject(req.error);
+        req.onsuccess = () => {
+          const db = req.result;
+          const tx = db.transaction("wsr-data", "readonly");
+          const store = tx.objectStore("wsr-data");
+          const getReq = store.get(`articleFromLocalStorageKey=${key}`);
+          getReq.onsuccess = () => resolve(getReq.result ?? null);
+          getReq.onerror = () => reject(getReq.error);
+        };
+      });
+    }, storageKey!);
+    expect(inIndexedDB).toBeNull();
+  });
 });

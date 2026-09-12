@@ -6,22 +6,18 @@ const getCachePathName = (pathFromRoot: string) => {
   return new URL(pathFromRoot, self.location.origin).href;
 };
 
-const assetCacheName = "assets";
+const assetCacheName = "assets-v2";
 
 sw.addEventListener("install", (event: ExtendableEvent) => {
   sw.skipWaiting();
 
   event.waitUntil(
-    caches.open(assetCacheName).then((cache) => {
-      cache.addAll([
+    caches.open(assetCacheName).then(async (cache) => {
+      const urls = [
         getCachePathName("./"),
         getCachePathName("./bookmarklets.html"),
         getCachePathName("./index.html"),
         getCachePathName("./static/js/index.js"),
-        getCachePathName("./static/js/async/marked.js"),
-        getCachePathName("./static/js/async/dompurify.js"),
-        getCachePathName("./static/js/async/turndown.js"),
-        getCachePathName("./static/js/async/turndown-plugin-gfm.js"),
         getCachePathName("./static/css/index.css"),
         getCachePathName(
           "../web-swedish-reader-data/folkets-compound/folkets-compound.chunk.001.mjs",
@@ -35,8 +31,32 @@ sw.addEventListener("install", (event: ExtendableEvent) => {
         getCachePathName(
           "../web-swedish-reader-data/folkets-sven/folkets-sven.meta.mjs",
         ),
-      ]);
+      ];
+
+      await Promise.all(
+        urls.map(async (url) => {
+          try {
+            await cache.add(url);
+          } catch (err) {
+            console.warn(`Failed to cache ${url}:`, err);
+          }
+        }),
+      );
     }),
+  );
+});
+
+sw.addEventListener("activate", (event: ExtendableEvent) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys.map((key) => {
+          if (key !== assetCacheName) {
+            return caches.delete(key);
+          }
+        }),
+      ),
+    ),
   );
 });
 
