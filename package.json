@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "dompurify": "3.3.3",
-    "idb-keyval": "6.2.2",
+    "idb-keyval": "6.3.0",
     "marked": "17.0.5",
     "normalize.css": "8.0.1",
     "sakura.css": "1.5.1",
