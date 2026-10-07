@@ -28,7 +28,7 @@
     "typescript": "7.0.2"
   },
   "dependencies": {
-    "dompurify": "3.3.3",
+    "dompurify": "3.4.16",
     "idb-keyval": "6.3.0",
     "marked": "17.0.5",
     "normalize.css": "8.0.1",
