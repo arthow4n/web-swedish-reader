@@ -30,7 +30,7 @@
   "dependencies": {
     "dompurify": "3.4.16",
     "idb-keyval": "6.3.0",
-    "marked": "17.0.5",
+    "marked": "18.1.0",
     "normalize.css": "8.0.1",
     "sakura.css": "1.5.1",
     "turndown": "7.2.4",
